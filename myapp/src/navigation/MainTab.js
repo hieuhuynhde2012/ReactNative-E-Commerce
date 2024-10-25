@@ -12,7 +12,8 @@ const MainTab = () => {
   return (
     <Tab.Navigator>
       <Tab.Screen name="Home" component={HomeScreen} options={{
-        tabBarIcon: () => <Icon name="home" type="font-awesome" />
+        tabBarIcon: () => <Icon name="home" type="font-awesome" />,
+        headerShown: false
       }} />
       <Tab.Screen name="Category" component={CategoryScreen} options={{
         tabBarIcon: () => <Icon name="list" type="font-awesome" />

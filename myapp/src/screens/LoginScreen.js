@@ -3,29 +3,30 @@ import { View, Text, TouchableOpacity, StyleSheet, Image, Alert } from 'react-na
 import { useNavigation } from '@react-navigation/native';
 import CustomInput from '../components/CustomInput'; // Import CustomInput
 import { apiLogin } from '../apis/user'; // Import apiLogin từ user.js
+import { AuthContext } from '../context/AuthContext';
 
 const LoginScreen = () => {
   const navigation = useNavigation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const { user } = useContext(AuthContext);
 
   // Hàm xử lý khi người dùng nhấn login
-  const handleLogin = async () => {
-    try {
-      const response = await apiLogin({ email, password }); // Gọi API login
-      if (response?.success) {
-        // Điều hướng đến màn hình chính nếu login thành công
+  const handleLogin = () => {
+    // Kiểm tra nếu người dùng trong AuthContext có tồn tại
+    if (user) {
+      // So sánh email và password với giá trị trong AuthContext
+      if (email === user.email && password === user.password) {
+        // Điều hướng đến màn hình chính nếu đăng nhập thành công
         navigation.navigate('Main');
       } else {
-        // Thông báo nếu login thất bại
-        Alert.alert('Login failed', response?.message || 'Invalid credentials');
+        // Thông báo nếu email hoặc password không đúng
+        Alert.alert('Login failed', 'Invalid email or password');
       }
-    } catch (error) {
-      console.error('Login error:', error);
-      Alert.alert('Error', 'Something went wrong. Please try again.');
+    } else {
+      // Nếu không có user trong AuthContext (không có người dùng mặc định)
+      Alert.alert('Login failed', 'No user found');
     }
-    // console.log(email)
-    // console.log(password)
   };
 
   return (
