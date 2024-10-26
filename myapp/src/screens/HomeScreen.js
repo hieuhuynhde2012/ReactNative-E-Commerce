@@ -193,9 +193,8 @@ const HomeScreen = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("https://fakestoreapi.com/products")
-        setProducts(response.data);
-
+        const response = await axios.get("http://192.168.1.88:5000/api/product")
+        setProducts(response.data.productData);
       } catch(error) {
         console.log("error message", error)
       }
