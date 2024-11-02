@@ -1,6 +1,7 @@
-import axios from '../axios';
+import axios from '../config/axios';
 
-export const apiGetCategories = () => axios({
-    url: '/productcategory/',
-    method: 'get'
-})
+export const apiGetCategories = () =>
+    axios({
+        url: '/productcategory/',
+        method: 'get',
+    });

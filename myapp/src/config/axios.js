@@ -10,24 +10,22 @@ const instance = axios.create({
 instance.interceptors.request.use(
     async (config) => {
         try {
-            // const localStorageData = await AsyncStorage.getItem(
-            //     'persist:shop/user',
-            // );
-            // if (localStorageData) {
-            //     const parsedData = JSON.parse(localStorageData);
-            //     const accessToken = parsedData?.token;
-            const accessToken =
-                'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NjJiYzdmZDU5ZGJmNWE1ZjJmMTc2OTciLCJyb2xlIjoiMTk5OSIsImlhdCI6MTcyOTkyNTg5MCwiZXhwIjoxNzMwNTMwNjkwfQ.RBhXWGwvhTC2G5gzPVdvhcbi2G-VzzcfWPFcs5WdVJo';
-            if (accessToken) {
-                config.headers['Authorization'] = `Bearer ${accessToken}`;
+            const localStorageData = await AsyncStorage.getItem('persist:user');
+            if (localStorageData) {
+                const parsedData = JSON.parse(localStorageData);
+                const accessToken = JSON.parse(parsedData?.token);
+
+                if (accessToken) {
+                    config.headers['authorization'] = `Bearer ${accessToken}`;
+                }
             }
-            // }
         } catch (error) {
             console.error(
                 'Error getting access token from AsyncStorage:',
                 error,
             );
         }
+
         return config;
     },
     (error) => {
