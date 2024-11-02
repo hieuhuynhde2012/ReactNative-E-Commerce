@@ -1,18 +1,26 @@
-import React, { createContext, useState } from 'react';
+import React, { createContext, useState } from "react";
 
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  // Tạo người dùng mặc định với email và mật khẩu "1"
-  const [user, setUser] = useState({ email: '1', password: '1' });
+  const [user, setUser] = useState(null);
 
-  const register = (userData) => {
-    // Cập nhật thông tin người dùng sau khi đăng ký thành công
-    setUser(userData);
+  const login = (email, password) => {
+    if (email === "1" && password === "1") {
+      setUser({ email });
+      return true; // Đăng nhập thành công
+    } else {
+      alert("Invalid credentials");
+      return false; // Đăng nhập không thành công
+    }
+  };
+
+  const logout = () => {
+    setUser(null);
   };
 
   return (
-    <AuthContext.Provider value={{ user, register }}>
+    <AuthContext.Provider value={{ user, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

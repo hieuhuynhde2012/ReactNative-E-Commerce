@@ -2,75 +2,39 @@ import React, { useState, useContext } from 'react';
 import { View, Image, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import CustomInput from '../components/CustomInput';
 import { AuthContext } from '../context/AuthContext'; // Sử dụng AuthContext
-import { apiRegister } from '../apis';
 
 const RegisterScreen = ({ navigation }) => {
-  //const [username, setUsername] = useState('');
+  const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [firstname, setFirstname] = useState('');  // Thêm firstname
-  const [lastname, setLastname] = useState('');    // Thêm lastname
-  const [mobile, setMobile] = useState('');        // Thêm mobile
-  const { register } = useContext(AuthContext);    // Thêm register vào AuthContext
+  const { login } = useContext(AuthContext); // Truy cập AuthContext
 
-  const handleRegister = async () => {
-    try {
-      // Kiểm tra các trường đầu vào
-      if (!email || !password || !firstname || !lastname || !mobile) {
-        alert('Please fill in all fields');
-        return;
+  const handleRegister = () => {
+    // Logic đăng ký người dùng
+    if (password === confirmPassword) {
+      if (login(email, password)) {
+        navigation.navigate('Login'); // Điều hướng đến Main sau khi đăng ký thành công
       }
-  
-      if (password === confirmPassword) {
-        // Gọi API với email, password, và các thông tin khác
-        const response = await apiRegister({ email, password, firstname, lastname, mobile });
-        
-        // Kiểm tra phản hồi từ API
-        console.log('API Response:', response);
-        
-        if (response.success) {
-          navigation.navigate('CompleteRegister', { status: 'succeed' });
-        } else {
-          alert('Registration failed: ' + response.message);
-        }
-      } else {
-        alert('Passwords do not match');
-      }
-    } catch (error) {
-      // Kiểm tra lỗi có phản hồi hay không
-      if (error.response) {
-        // Lỗi phía server trả về
-        console.error('Register error (server):', error.response.data);
-        alert('Server error: ' + error.response.data.message);
-      } else if (error.request) {
-        // Lỗi khi không có phản hồi từ server
-        console.error('Register error (no response):', error.request);
-        alert('No response from server. Please check your connection.');
-      } else {
-        // Lỗi phát sinh ở client
-        console.error('Register error (client):', error.message);
-        alert('An error occurred: ' + error.message);
-      }
+    } else {
+      alert('Passwords do not match');
     }
   };
-  
-  
 
   return (
     <View style={styles.container}>
       <Image
-        source={require('../assets/logo.png')} // Đường dẫn tới hình ảnh logo
+        source={{uri: 'https://upload.wikimedia.org/wikipedia/commons/1/18/React_Native_Logo.png'}} 
         style={styles.image}
       />
       <Text style={styles.header}>Create New Account</Text>
-
-      {/* <CustomInput
+      
+      <CustomInput
         iconName="account-circle"
         placeholder="Username"
         value={username}
         onChangeText={setUsername}
-      /> */}
+      />
       
       <CustomInput
         iconName="email"
@@ -93,27 +57,6 @@ const RegisterScreen = ({ navigation }) => {
         secureTextEntry
         value={confirmPassword}
         onChangeText={setConfirmPassword}
-      />
-
-      <CustomInput
-        iconName="account-box"
-        placeholder="First Name"
-        value={firstname}
-        onChangeText={setFirstname}
-      />
-
-      <CustomInput
-        iconName="account-box"
-        placeholder="Last Name"
-        value={lastname}
-        onChangeText={setLastname}
-      />
-
-      <CustomInput
-        iconName="phone"
-        placeholder="Mobile Number"
-        value={mobile}
-        onChangeText={setMobile}
       />
 
       <TouchableOpacity style={styles.registerButton} onPress={handleRegister}>
@@ -140,9 +83,12 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   image: {
+    width: 100,
+    height: 100,
     alignSelf: 'center',
     marginTop: 80,
     marginBottom: 20,
+    borderRadius: 50
   },
   registerButton: {
     backgroundColor: 'red',

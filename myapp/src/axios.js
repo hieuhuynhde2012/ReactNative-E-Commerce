@@ -17,7 +17,7 @@ instance.interceptors.request.use(
             //     const parsedData = JSON.parse(localStorageData);
             //     const accessToken = parsedData?.token;
             const accessToken =
-                'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NjJiYzdmZDU5ZGJmNWE1ZjJmMTc2OTciLCJyb2xlIjoiMTk5OSIsImlhdCI6MTcyOTkyNTg5MCwiZXhwIjoxNzMwNTMwNjkwfQ.RBhXWGwvhTC2G5gzPVdvhcbi2G-VzzcfWPFcs5WdVJo';
+                'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NjJiYzdmZDU5ZGJmNWE1ZjJmMTc2OTciLCJyb2xlIjoiMTk5OSIsImlhdCI6MTczMDUxNDg3MSwiZXhwIjoxNzMxMTE5NjcxfQ.mhsEWdA6W5hb1mVS-7mgqlYoxuAhG9MHCtWapGrESRg';
             if (accessToken) {
                 config.headers['Authorization'] = `Bearer ${accessToken}`;
             }
