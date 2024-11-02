@@ -1,23 +1,49 @@
-import React from "react";
-import { NavigationContainer } from "@react-navigation/native";
-import { AuthProvider } from "./src/context/AuthContext";
-import AuthStack from "./src/navigation/AuthStack";
+
+import React from 'react';
+import { StyleSheet, SafeAreaView } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import AppNavigation from './src/navigation/AppNavigation';
+import { Provider } from 'react-redux';
+import { PersistGate } from 'redux-persist/integration/react';
+import { store, persistor } from './src/store/redux';
+import CustomedAlert from './src/components/CustomedAlert';
+import { useSelector } from 'react-redux';
 import { ModalPortal } from "react-native-modals";
-import { StatusBar } from "react-native";
+
 const App = () => {
-  return (
-    <AuthProvider>
-      <NavigationContainer>
-        <AuthStack />
-        <StatusBar
-          barStyle="dark-content" // Adjust text color to light-content or dark-content as needed
-          backgroundColor="transparent" // Makes the background transparent
-          translucent={true} // Enables transparency on Android
-        />
-      </NavigationContainer>
-      <ModalPortal />
-    </AuthProvider>
-  );
+    return (
+        <Provider store={store}>
+            <PersistGate loading={null} persistor={persistor}>
+                <AppContent />
+            </PersistGate>
+        </Provider>
+    );
+
 };
+
+const AppContent = () => {
+    const { isShownModal, modalChildren } = useSelector((state) => state.app);
+
+    return (
+        <SafeAreaView style={styles.container}>
+            <NavigationContainer>
+                <CustomedAlert
+                    visible={isShownModal}
+                    children={modalChildren}
+                />
+                     <ModalPortal />
+                <AppNavigation />
+            </NavigationContainer>
+       
+        </SafeAreaView>
+    );
+};
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: '#fff',
+    },
+});
 
 export default App;
