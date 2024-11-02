@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import LoginScreen from '../screens/auth/LoginScreen';
@@ -6,9 +7,11 @@ import CompleteRegister from '../screens/auth/CompleteRegister';
 import EmailVerificationScreen from '../screens/auth/EmailVerificationScreen';
 import ResetPasswordScreen from '../screens/auth/ResetPasswordScreen';
 
+
 const Stack = createStackNavigator();
 
 const AuthStack = () => {
+
     return (
         <Stack.Navigator>
             <Stack.Screen
@@ -38,6 +41,7 @@ const AuthStack = () => {
             />
         </Stack.Navigator>
     );
+
 };
 
 export default AuthStack;

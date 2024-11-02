@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { StyleSheet, SafeAreaView } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
@@ -7,6 +8,7 @@ import { PersistGate } from 'redux-persist/integration/react';
 import { store, persistor } from './src/store/redux';
 import CustomedAlert from './src/components/CustomedAlert';
 import { useSelector } from 'react-redux';
+import { ModalPortal } from "react-native-modals";
 
 const App = () => {
     return (
@@ -16,6 +18,7 @@ const App = () => {
             </PersistGate>
         </Provider>
     );
+
 };
 
 const AppContent = () => {
@@ -28,8 +31,10 @@ const AppContent = () => {
                     visible={isShownModal}
                     children={modalChildren}
                 />
+                     <ModalPortal />
                 <AppNavigation />
             </NavigationContainer>
+       
         </SafeAreaView>
     );
 };

@@ -10,6 +10,7 @@ const instance = axios.create({
 instance.interceptors.request.use(
     async (config) => {
         try {
+
             const localStorageData = await AsyncStorage.getItem('persist:user');
             if (localStorageData) {
                 const parsedData = JSON.parse(localStorageData);
