@@ -35,13 +35,14 @@ const AppContent = () => {
             </NavigationContainer>
         </SafeAreaView>
     );
+
 };
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#fff',
-    },
+  container: {
+    flex: 1,
+    backgroundColor: "#fff",
+  },
 });
 
 export default App;

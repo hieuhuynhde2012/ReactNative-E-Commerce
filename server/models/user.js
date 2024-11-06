@@ -51,6 +51,17 @@ var userSchema = new mongoose.Schema(
         address: {
             type: String,
         },
+        additionalAddress: [{
+            name: String,
+            mobileNo: String,
+            houseNo: String,
+            street: String,
+            landmark: String,
+            city: String,
+            country: String,
+            postalCode: String,
+
+        }],
         wishlist: [{ type: mongoose.Types.ObjectId, ref: 'Product' }],
         isBlocked: {
             type: Boolean,

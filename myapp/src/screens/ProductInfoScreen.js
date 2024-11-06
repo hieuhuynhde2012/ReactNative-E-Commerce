@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   View,
   StyleSheet,
@@ -14,17 +14,35 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import Feather from "@expo/vector-icons/Feather";
 import { useRoute } from "@react-navigation/native";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import { useDispatch, useSelector } from "react-redux";
+import { updateCart, addToCart } from "../store/user/userSlice";
+import { showLoading, hideLoading } from "../store/app/appSlice";
 
 const ProductInfoScreen = () => {
   const route = useRoute();
   const { width } = Dimensions.get("window");
   const height = (width * 100) / 100;
-
+  const [addedToCart, setAddedToCart] = useState(false);
+  const dispatch = useDispatch();
+  const addItemToCart = (item) => {
+    setAddedToCart(true);
+    dispatch(addToCart(item));
+    setTimeout(() => {
+      setAddedToCart(false);
+    }, 6000);
+  };
+  const cart = useSelector((state) => state.user.cart);
+ // console.log(cart);
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       <View style={styles.searchBarContainer}>
         <Pressable style={styles.searchBar}>
-          <AntDesign style={styles.searchIcon} name="search1" size={22} color="black" />
+          <AntDesign
+            style={styles.searchIcon}
+            name="search1"
+            size={22}
+            color="black"
+          />
           <TextInput placeholder="Search" />
         </Pressable>
         <Feather name="mic" size={24} color="black" />
@@ -42,7 +60,11 @@ const ProductInfoScreen = () => {
                 <Text style={styles.discountText}>40% off</Text>
               </View>
               <View style={styles.shareButton}>
-                <MaterialCommunityIcons name="share-variant" size={24} color="black" />
+                <MaterialCommunityIcons
+                  name="share-variant"
+                  size={24}
+                  color="black"
+                />
               </View>
             </View>
             <View style={styles.heartButton}>
@@ -54,7 +76,9 @@ const ProductInfoScreen = () => {
 
       <View style={styles.infoContainer}>
         <Text style={styles.productTitle}>{route?.params?.title}</Text>
-        <Text style={styles.productPrice}>{(route?.params.price / 24000).toFixed(2)} $</Text>
+        <Text style={styles.productPrice}>
+          {(route?.params.price / 24000).toFixed(2)} $
+        </Text>
       </View>
 
       <Text style={styles.separator} />
@@ -86,14 +110,23 @@ const ProductInfoScreen = () => {
         <Text>Deliver To HCM - 70000</Text>
       </View>
 
-      <Text style={styles.inStockText}>IN Stock</Text>
+      <Text style={styles.inStockText}>In Stock</Text>
 
-      <Pressable style={styles.addToCartButton}>
-        <Text>Add to Cart</Text>
+      <Pressable
+        onPress={() => addItemToCart(route?.params?.item)}
+        style={styles.addToCartButton}
+      >
+        {addedToCart ? (
+          <View >
+            <Text style={styles.addToCartText}>Added to Cart</Text>
+          </View>
+        ) : (
+          <Text style={styles.addToCartText}>Add to Cart</Text>
+        )}
       </Pressable>
 
       <Pressable style={styles.buyNowButton}>
-        <Text>Buy Now</Text>
+        <Text style={styles.addToCartText}>Buy Now</Text>
       </Pressable>
     </ScrollView>
   );
@@ -101,7 +134,7 @@ const ProductInfoScreen = () => {
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 45,
+    // marginTop: 45,
     flex: 1,
     backgroundColor: "white",
   },
@@ -203,16 +236,16 @@ const styles = StyleSheet.create({
   },
   table: {
     borderWidth: 1,
-    borderColor: '#D0D0D0',
+    borderColor: "#D0D0D0",
     borderRadius: 5,
-    overflow: 'hidden',
+    overflow: "hidden",
   },
   tableRow: {
-    flexDirection: 'row',
+    flexDirection: "row",
     padding: 10,
-    justifyContent: 'space-between',
+    justifyContent: "space-between",
     borderBottomWidth: 1,
-    borderBottomColor: '#D0D0D0',
+    borderBottomColor: "#D0D0D0",
   },
   rowText: {
     fontSize: 15,
@@ -243,6 +276,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginHorizontal: 10,
     marginVertical: 10,
+  },
+  addToCartText : {
+    color: 'white'
+
   },
   buyNowButton: {
     backgroundColor: "#ef0505",

@@ -26,8 +26,14 @@ import { ModalContent, SlideAnimation } from "react-native-modals";
 import { BottomModal } from "react-native-modals";
 import Carousel from "react-native-snap-carousel";
 import Entypo from "@expo/vector-icons/Entypo";
+import { useDispatch, useSelector } from "react-redux";
+import { updateCart } from "../store/user/userSlice";
+import { showLoading, hideLoading } from "../store/app/appSlice";
+import { apiGetAdditionalAddress, apiGetCurrent } from "../apis";
+
 const HomeScreen = () => {
   const navigation = useNavigation();
+  const dispatch = useDispatch();
   const { width: viewportWidth } = Dimensions.get("window");
   const list = [
     {
@@ -72,10 +78,12 @@ const HomeScreen = () => {
   ];
 
   const [offers, setOffers] = useState([]);
-
+  const [addresses, setAddresses] = useState([]);
   const [products, setProducts] = useState([]);
   const [open, setOpen] = useState(false);
   const [category, setCategory] = useState("All");
+  const [selectedAddress, setSelectedAddress] = useState("");
+  console.log(selectedAddress);
   const [items, setItems] = useState([
     { label: "All", value: "All" },
     { label: "Laptop", value: "Laptop" },
@@ -117,7 +125,35 @@ const HomeScreen = () => {
     setOpen(true);
   }, []);
   const [modalVisible, setModalVisible] = useState(false);
+  const cart = useSelector((state) => state.user.cart);
+  console.log(cart);
 
+  useEffect(() => {
+    const fetchUserAndAddresses = async () => {
+      try {
+        const userResponse = await apiGetCurrent();
+        if (userResponse.success) {
+          const userID = userResponse.rs._id;
+          //console.log(userID);
+
+          const addressResponse = await apiGetAdditionalAddress(userID);
+
+          if (addressResponse.success) {
+            //console.log(addressResponse.additionalAddress);
+            setAddresses(addressResponse.additionalAddress);
+          } else {
+            console.log("Failed to fetch addresses:", addressResponse.message);
+          }
+        } else {
+          console.log("Failed to fetch user:", userResponse.message);
+        }
+      } catch (error) {
+        console.log("Error:", error);
+      }
+    };
+
+    fetchUserAndAddresses();
+  }, []);
   return (
     <>
       <SafeAreaView style={styles.container}>
@@ -142,9 +178,13 @@ const HomeScreen = () => {
             <Ionicons name="location-outline" size={24} color="black" />
 
             <Pressable>
-              <Text style={styles.locationText}>
-                Deliver to Ho Chi Minh City
-              </Text>
+              {selectedAddress ? (
+                <Text>Deliver to {selectedAddress?.name} - {selectedAddress?.street}</Text>
+              ) : (
+                <Text style={styles.locationText}>
+                  Add a Adress
+                </Text>
+              )}
             </Pressable>
             <MaterialIcons name="keyboard-arrow-down" size={24} color="black" />
           </Pressable>
@@ -304,14 +344,47 @@ const HomeScreen = () => {
               Select a delivery location to see product availability
             </Text>
           </View>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            {/* alredy added address*/}
+          <ScrollView
+            style={{ flexDirection: "row-reverse" }}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+          >
+            {addresses?.map((item, index) => (
+              <Pressable
+                onPress={() => setSelectedAddress(item)}
+                style={[
+                  styles.addressesButtonContainer,
+                  {
+                    backgroundColor:
+                      selectedAddress === item ? "#FBCEB1" : "white",
+                  },
+                ]}
+              >
+                <View style={styles.addressesInfoContainer}>
+                  <Text style={styles.addressesInfoText}>{item?.name}</Text>
+                  <Entypo name="location-pin" size={24} color="#ee3131" />
+                </View>
+
+                <Text numberOfLines={1} style={styles.addressesDetailInfoText}>
+                  {item?.houseNo}, {item?.landmark}
+                </Text>
+                <Text style={styles.addressesDetailInfoText}>
+                  {item?.street}
+                </Text>
+                <Text style={styles.addressesDetailInfoText}>
+                  {item?.country}
+                </Text>
+                {/* <Text style={styles.addressesDetailInfoText}>Phone number: {item?.mobileNo}</Text>
+              <Text style={styles.addressesDetailInfoText}>Pin code: {item?.postalCode}</Text> */}
+              </Pressable>
+            ))}
             <Pressable
-            onPress={() => {
-              setModalVisible(false);
-              navigation.navigate("Address");
-            }}
-             style={styles.addAdressContainer}>
+              onPress={() => {
+                setModalVisible(false);
+                navigation.navigate("Address");
+              }}
+              style={styles.addAdressContainer}
+            >
               <Text style={styles.addAdressText}>
                 Add an Address or pick-up point
               </Text>
@@ -324,11 +397,11 @@ const HomeScreen = () => {
               <Text style={styles.addPinCodeText}>Enter a VietNam pincode</Text>
             </View>
             <View style={styles.addPinCodeContainer}>
-            <Ionicons name="locate-sharp" size={24} color="#ee3131" />
+              <Ionicons name="locate-sharp" size={24} color="#ee3131" />
               <Text style={styles.addPinCodeText}>Use my crrent location</Text>
             </View>
             <View style={styles.addPinCodeContainer}>
-            <AntDesign name="earth" size={24} color="#ee3131" />
+              <AntDesign name="earth" size={24} color="#ee3131" />
               <Text style={styles.addPinCodeText}>Deliver outside VietNam</Text>
             </View>
           </View>
@@ -349,8 +422,6 @@ const styles = StyleSheet.create({
     padding: 10,
     flexDirection: "row",
     alignItems: "center",
-    
-    
   },
   searchBox: {
     flexDirection: "row",
@@ -438,8 +509,12 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   dropdownContainer: {
-    borderColor: "#B7B7B7",
+    borderColor: "white",
     height: 30,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
   },
   productsFilterContainer: {
     flexDirection: "row",
@@ -491,6 +566,32 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     gap: 7,
     marginBottom: 30,
+  },
+  addressesInfoContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 3,
+  },
+  addressesInfoText: {
+    fontSize: 13,
+    fontWeight: "bold",
+  },
+  addressesButtonContainer: {
+    width: 140,
+    height: 140,
+    borderColor: "#D0D0D0",
+    borderWidth: 1,
+    padding: 10,
+    justifyContent: "center",
+    alignItems: "center",
+    gap: 3,
+    marginRight: 15,
+    marginTop: 10,
+  },
+  addressesDetailInfoText: {
+    fontSize: 13,
+    textAlign: "center",
+    width: 130,
   },
 });
 
