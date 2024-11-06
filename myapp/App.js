@@ -1,14 +1,13 @@
-
 import React from 'react';
-import { StyleSheet, SafeAreaView } from 'react-native';
+import { StyleSheet, SafeAreaView, StatusBar } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import AppNavigation from './src/navigation/AppNavigation';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import { store, persistor } from './src/store/redux';
-import CustomedAlert from './src/components/CustomedAlert';
-import { useSelector } from 'react-redux';
-import { ModalPortal } from "react-native-modals";
+import { ModalPortal } from 'react-native-modals';
+import CustomedLoading from './src/components/common/CustomedLoading';
+import CustomedAlert from './src/components/common/CustomedAlert';
 
 const App = () => {
     return (
@@ -18,23 +17,22 @@ const App = () => {
             </PersistGate>
         </Provider>
     );
-
 };
 
 const AppContent = () => {
-    const { isShownModal, modalChildren } = useSelector((state) => state.app);
-
     return (
         <SafeAreaView style={styles.container}>
             <NavigationContainer>
-                <CustomedAlert
-                    visible={isShownModal}
-                    children={modalChildren}
+                <CustomedLoading />
+                <CustomedAlert />
+                <ModalPortal />
+                <StatusBar
+                    barStyle="dark-content"
+                    backgroundColor="transparent"
+                    translucent={true}
                 />
-                     <ModalPortal />
                 <AppNavigation />
             </NavigationContainer>
-       
         </SafeAreaView>
     );
 };

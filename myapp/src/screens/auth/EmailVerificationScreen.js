@@ -6,7 +6,6 @@ import {
     TouchableWithoutFeedback,
     TouchableOpacity,
     Image,
-    Alert,
     KeyboardAvoidingView,
     Platform,
     ScrollView,
@@ -18,30 +17,54 @@ import logo from '../../assets/logo.png';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { apiForgotPassword } from '../../apis';
+import { useDispatch } from 'react-redux';
+import { showLoading, hideLoading, showAlert } from '../../store/app/appSlice';
+import { validate } from '../../utils/helpers';
 
 const EmailVerificationScreen = ({ navigation }) => {
     const [email, setEmail] = useState('');
     const [isShowKeyboard, setIsShowKeyboard] = useState(true);
     const [isShowPassword, setIsShowPassword] = useState(false);
+    const [invalidFields, setInvalidFields] = useState([]);
+    const dispatch = useDispatch();
 
     const handleVerifyEmail = async () => {
-        if (email.trim() === '') {
-            Alert.alert('', 'Email is required', [{ text: 'OK' }]);
+        const payload = { email };
+        const isValid = validate(payload, setInvalidFields);
+
+        if (isValid > 0) {
             setEmail('');
             return;
         } else {
             try {
+                dispatch(showLoading());
                 const res = await apiForgotPassword({ email });
+                dispatch(hideLoading());
 
                 if (res.success) {
                     setEmail('');
                     navigation.navigate('ResetPassword');
                 } else {
-                    Alert.alert('', `${res.message}`, [{ text: 'OK' }]);
+                    dispatch(
+                        showAlert({
+                            title: 'Failed to verify email',
+                            icon: 'warning',
+                            message:
+                                'Your email is incorrect or not in our system, please try again!',
+                        }),
+                    );
                 }
             } catch (error) {
+                dispatch(hideLoading());
                 setEmail('');
-                Alert.alert('', `${error.message}`, [{ text: 'OK' }]);
+                dispatch(
+                    showAlert({
+                        title: 'Failed to verify email',
+                        icon: 'warning',
+                        message:
+                            'Your email is incorrect or not in our system, please try again!',
+                    }),
+                );
             }
         }
     };
@@ -59,10 +82,6 @@ const EmailVerificationScreen = ({ navigation }) => {
             keyboardDidHide.remove();
         };
     }, []);
-
-    const toggleIsShowPassword = () => {
-        setIsShowPassword(!isShowPassword);
-    };
 
     return (
         <KeyboardAvoidingView
@@ -96,6 +115,9 @@ const EmailVerificationScreen = ({ navigation }) => {
                                     value={email}
                                     onChangeText={setEmail}
                                     type="email"
+                                    invalidFields={invalidFields}
+                                    setInvalidFields={setInvalidFields}
+                                    nameKey="email"
                                 />
                             </View>
 
