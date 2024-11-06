@@ -6,7 +6,6 @@ import {
     TouchableWithoutFeedback,
     TouchableOpacity,
     Image,
-    Alert,
     KeyboardAvoidingView,
     Platform,
     ScrollView,
@@ -18,6 +17,9 @@ import logo from '../../assets/logo.png';
 import { apiRegister, apiCompleteRegister } from '../../apis';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { useDispatch } from 'react-redux';
+import { showLoading, hideLoading, showAlert } from '../../store/app/appSlice';
+import { validate } from '../../utils/helpers';
 
 const RegisterScreen = ({ navigation }) => {
     const [firstname, setFirstname] = useState('');
@@ -29,88 +31,107 @@ const RegisterScreen = ({ navigation }) => {
     const [isVerifiedEmail, setIsVerifiedEmail] = useState(false);
     const [isShowKeyboard, setIsShowKeyboard] = useState(true);
     const [isShowPassword, setIsShowPassword] = useState(false);
+    const [invalidFields, setInvalidFields] = useState([]);
+
+    const resetSignupData = () => {
+        setFirstname('');
+        setLastname('');
+        setMobile('');
+        setEmail('');
+        setPassword('');
+    };
+    const dispatch = useDispatch();
 
     const handleSignup = async () => {
-        if (
-            email.trim() === '' ||
-            password.trim() === '' ||
-            firstname.trim() === '' ||
-            lastname.trim() === '' ||
-            mobile.trim() === ''
-        ) {
-            Alert.alert('', 'all fields are required', [{ text: 'OK' }]);
-            setFirstname('');
-            setLastname('');
-            setMobile('');
-            setEmail('');
-            setPassword('');
+        const payload = { firstname, lastname, mobile, email, password };
+        const isValid = validate(payload, setInvalidFields);
+
+        if (isValid > 0) {
+            resetSignupData();
             return;
         }
         try {
-            const res = await apiRegister({
-                email,
-                firstname,
-                lastname,
-                password,
-                mobile,
-            });
+            dispatch(showLoading());
+            const res = await apiRegister(payload);
+            dispatch(hideLoading());
+
             if (res.success) {
-                setFirstname('');
-                setLastname('');
-                setMobile('');
-                setEmail('');
-                setPassword('');
+                resetSignupData();
                 setIsVerifiedEmail(true);
             } else {
-                setFirstname('');
-                setLastname('');
-                setMobile('');
-                setEmail('');
-                setPassword('');
-                Alert.alert('', `${res.message}`, [{ text: 'OK' }]);
-                console.log('signup failed', res);
+                resetSignupData();
+                dispatch(
+                    showAlert({
+                        title: 'Failed to sign up',
+                        icon: 'warning',
+                        message: `${res.message}`,
+                    }),
+                );
             }
         } catch (error) {
-            setFirstname('');
-            setLastname('');
-            setMobile('');
-            setEmail('');
-            setPassword('');
-            Alert.alert('', `${error.message}`, [{ text: 'OK' }]);
-            console.log('signup failed', error.message);
+            dispatch(hideLoading());
+            resetSignupData();
+            dispatch(
+                showAlert({
+                    title: 'Failed to sign up',
+                    icon: 'warning',
+                    message: `${error.message}`,
+                }),
+            );
         }
     };
 
     const handleCompleteSignup = async () => {
-        if (token.trim() === '') {
-            Alert.alert('', 'registration code is required', [{ text: 'OK' }]);
+        const payload = { token };
+        const isValid = validate(payload, setInvalidFields);
+
+        if (isValid > 0) {
             setToken('');
             return;
         } else {
             try {
+                dispatch(showLoading());
                 const res = await apiCompleteRegister(token);
+                dispatch(hideLoading());
+
                 if (res.success) {
                     setToken('');
-                    Alert.alert(
-                        '',
-                        `${res.message}, press "OK" to log into your account`,
-                        [
-                            {
-                                text: 'OK',
-                                onPress: () => navigation.navigate('Login'),
-                            },
-                        ],
+                    dispatch(
+                        showAlert({
+                            title: 'Sign up successfully',
+                            icon: 'shield-checkmark',
+                            message: `${res.message}, press OK to log into your account`,
+                            onConfirm: () => navigation.navigate('Login'),
+                        }),
                     );
                 } else {
-                    Alert.alert('', `${res.message}`, [{ text: 'OK' }]);
+                    dispatch(
+                        showAlert({
+                            title: 'Sign up failed',
+                            icon: 'warning',
+                            message: `${res.message} try again!`,
+                            onConfirmText: 'Verify again',
+                            onCancelText: 'Go back',
+                            onCancel: () => setIsVerifiedEmail(false),
+                        }),
+                    );
                     setToken('');
                 }
             } catch (error) {
-                Alert.alert('', `${error.message}`, [{ text: 'OK' }]);
+                dispatch(hideLoading());
+                dispatch(
+                    showAlert({
+                        title: 'Sign up failed',
+                        icon: 'warning',
+                        message: `${error.message} try again!`,
+                        onConfirmText: 'Verify again',
+                        conCancelText: 'Go back',
+                        onCancel: () => setIsVerifiedEmail(false),
+                    }),
+                );
                 setToken('');
             }
         }
-        setIsVerifiedEmail(false);
     };
 
     useEffect(() => {
@@ -167,6 +188,9 @@ const RegisterScreen = ({ navigation }) => {
                                             placeholder="Enter your registration code"
                                             value={token}
                                             onChangeText={setToken}
+                                            invalidFields={invalidFields}
+                                            setInvalidFields={setInvalidFields}
+                                            nameKey="token"
                                         />
                                     </View>
 
@@ -202,6 +226,9 @@ const RegisterScreen = ({ navigation }) => {
                                             placeholder="First name"
                                             value={firstname}
                                             onChangeText={setFirstname}
+                                            invalidFields={invalidFields}
+                                            setInvalidFields={setInvalidFields}
+                                            nameKey="firstname"
                                         />
                                         <CustomedInput
                                             LeftIcon={() => (
@@ -214,6 +241,9 @@ const RegisterScreen = ({ navigation }) => {
                                             placeholder="Last name"
                                             value={lastname}
                                             onChangeText={setLastname}
+                                            invalidFields={invalidFields}
+                                            setInvalidFields={setInvalidFields}
+                                            nameKey="lastname"
                                         />
                                         <CustomedInput
                                             LeftIcon={() => (
@@ -229,6 +259,9 @@ const RegisterScreen = ({ navigation }) => {
                                                 setMobile(value + '')
                                             }
                                             type="number"
+                                            invalidFields={invalidFields}
+                                            setInvalidFields={setInvalidFields}
+                                            nameKey="mobile"
                                         />
                                         <CustomedInput
                                             LeftIcon={() => (
@@ -242,6 +275,9 @@ const RegisterScreen = ({ navigation }) => {
                                             value={email}
                                             onChangeText={setEmail}
                                             type="email"
+                                            invalidFields={invalidFields}
+                                            setInvalidFields={setInvalidFields}
+                                            nameKey="email"
                                         />
                                         <CustomedInput
                                             LeftIcon={() => (
@@ -259,6 +295,9 @@ const RegisterScreen = ({ navigation }) => {
                                                     ? 'text'
                                                     : 'password'
                                             }
+                                            invalidFields={invalidFields}
+                                            setInvalidFields={setInvalidFields}
+                                            nameKey="password"
                                             RightIcon={() => (
                                                 <TouchableOpacity
                                                     onPress={

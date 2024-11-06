@@ -6,7 +6,6 @@ import {
     TouchableWithoutFeedback,
     TouchableOpacity,
     Image,
-    Alert,
     KeyboardAvoidingView,
     Platform,
     ScrollView,
@@ -20,16 +19,14 @@ import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 
 import { useDispatch } from 'react-redux';
 import { login } from '../../store/user/userSlice';
-import { showLoading, hideLoading } from '../../store/app/appSlice';
+import { showLoading, hideLoading, showAlert } from '../../store/app/appSlice';
 import { validate } from '../../utils/helpers';
-import CustomedLoading from '../../components/CustomedLoading';
 
 const LoginScreen = ({ navigation }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [isShowKeyboard, setIsShowKeyboard] = useState(true);
     const [isShowPassword, setIsShowPassword] = useState(false);
-
     const [invalidFields, setInvalidFields] = useState([]);
 
     const resetLoggedInData = () => {
@@ -62,12 +59,25 @@ const LoginScreen = ({ navigation }) => {
                 );
             } else {
                 resetLoggedInData();
-                Alert.alert('', `${res.message}`, [{ text: 'OK' }]);
+                dispatch(
+                    showAlert({
+                        title: 'Error',
+                        icon: 'warning',
+                        message: res.message,
+                    }),
+                );
             }
         } catch (error) {
             resetLoggedInData();
             dispatch(hideLoading());
-            Alert.alert('', `${error.message}`, [{ text: 'OK' }]);
+            dispatch(
+                showAlert({
+                    title: 'Failed to login',
+                    icon: 'warning',
+                    message:
+                        'Your email or password is incorrect, please try again!',
+                }),
+            );
         }
     };
 

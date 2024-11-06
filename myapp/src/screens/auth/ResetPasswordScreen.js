@@ -6,7 +6,6 @@ import {
     TouchableWithoutFeedback,
     TouchableOpacity,
     Image,
-    Alert,
     KeyboardAvoidingView,
     Platform,
     ScrollView,
@@ -18,50 +17,60 @@ import logo from '../../assets/logo.png';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { apiResetPassword } from '../../apis';
+import { useDispatch } from 'react-redux';
+import { showLoading, hideLoading, showAlert } from '../../store/app/appSlice';
+import { validate } from '../../utils/helpers';
 
 const ResetPasswordScreen = ({ navigation }) => {
     const [password, setPassword] = useState('');
     const [otp, setOtp] = useState('');
     const [isShowKeyboard, setIsShowKeyboard] = useState(true);
     const [isShowPassword, setIsShowPassword] = useState(false);
+    const dispatch = useDispatch();
+
+    const [invalidFields, setInvalidFields] = useState([]);
 
     const handleLogin = async () => {
-        if (password === '' || otp.trim() === '') {
-            Alert.alert(
-                '',
-                'you must fill in all fields to reset your password',
-                [{ text: 'OK' }],
-            );
-
+        const payload = { password, otp };
+        const isValid = validate(payload, setInvalidFields);
+        if (isValid > 0) {
             setPassword('');
             setOtp('');
             return;
         } else {
             try {
+                dispatch(showLoading());
                 const res = await apiResetPassword({
                     password,
                     token: otp,
                 });
+                dispatch(hideLoading());
 
                 if (res.success) {
                     setPassword('');
                     setOtp('');
-                    Alert.alert(
-                        '',
-                        `${res.message}, press "OK" to log into your account`,
-                        [
-                            {
-                                text: 'OK',
-                                onPress: () => navigation.navigate('Login'),
-                            },
-                        ],
+                    dispatch(
+                        showAlert({
+                            title: 'Password reset successful',
+                            icon: 'shield-checkmark',
+                            message:
+                                'Awesome, your password has been reset successfully, please press OK to log into your account!',
+                            onConfirm: () => navigation.navigate('Login'),
+                        }),
                     );
                 } else {
                     console.log('reset password failed', res.message);
                 }
             } catch (error) {
-                Alert.alert('', `${error.message}`, [{ text: 'OK' }]);
-                console.log('reset password failed', error.message);
+                dispatch(hideLoading());
+                dispatch(
+                    showAlert({
+                        title: 'Password reset failed',
+                        icon: 'warning',
+                        message:
+                            'Your password has been failed to reset, please try again!',
+                    }),
+                );
             }
         }
     };
@@ -116,6 +125,9 @@ const ResetPasswordScreen = ({ navigation }) => {
                                     value={password}
                                     onChangeText={setPassword}
                                     type={isShowPassword ? 'text' : 'password'}
+                                    invalidFields={invalidFields}
+                                    setInvalidFields={setInvalidFields}
+                                    nameKey="password"
                                     RightIcon={() => (
                                         <TouchableOpacity
                                             onPress={() => {
@@ -150,6 +162,9 @@ const ResetPasswordScreen = ({ navigation }) => {
                                     value={otp}
                                     onChangeText={setOtp}
                                     type="email"
+                                    invalidFields={invalidFields}
+                                    setInvalidFields={setInvalidFields}
+                                    nameKey="otp"
                                 />
                             </View>
 
@@ -158,6 +173,23 @@ const ResetPasswordScreen = ({ navigation }) => {
                                     title="RESET PASSWORD"
                                     handleOnPress={handleLogin}
                                 />
+                            </View>
+                        </View>
+                        <View style={styles.bottomContent}>
+                            <View style={styles.bottomFooter}>
+                                <TouchableOpacity
+                                    style={styles.bottomFooterBtnWrapper}
+                                    onPress={() => navigation.navigate('Login')}
+                                >
+                                    <MaterialIcons
+                                        name="keyboard-backspace"
+                                        size={24}
+                                        color="#ee3131"
+                                    />
+                                    <Text style={styles.bottomFooterBtn}>
+                                        Back to log in
+                                    </Text>
+                                </TouchableOpacity>
                             </View>
                         </View>
                     </ScrollView>
@@ -215,6 +247,12 @@ const styles = StyleSheet.create({
     },
     bottomFooterText: {
         fontSize: 18,
+    },
+    bottomFooterBtnWrapper: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 8,
     },
     bottomFooterBtn: {
         color: '#ee3131',

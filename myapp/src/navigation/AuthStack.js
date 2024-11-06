@@ -1,17 +1,13 @@
-
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import LoginScreen from '../screens/auth/LoginScreen';
 import RegisterScreen from '../screens/auth/RegisterScreen';
-import CompleteRegister from '../screens/auth/CompleteRegister';
 import EmailVerificationScreen from '../screens/auth/EmailVerificationScreen';
 import ResetPasswordScreen from '../screens/auth/ResetPasswordScreen';
-
 
 const Stack = createStackNavigator();
 
 const AuthStack = () => {
-
     return (
         <Stack.Navigator>
             <Stack.Screen
@@ -34,14 +30,8 @@ const AuthStack = () => {
                 component={RegisterScreen}
                 options={{ headerShown: false, gestureEnabled: false }}
             />
-            <Stack.Screen
-                name="CompleteRegister"
-                component={CompleteRegister}
-                options={{ headerShown: false, gestureEnabled: false }}
-            />
         </Stack.Navigator>
     );
-
 };
 
 export default AuthStack;

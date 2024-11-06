@@ -3,14 +3,15 @@ import { API_URI } from '@env';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const instance = axios.create({
+
     baseURL: 'http://192.168.1.3:5000/api',
+
 });
 
 // Add a request interceptor
 instance.interceptors.request.use(
     async (config) => {
         try {
-
             const localStorageData = await AsyncStorage.getItem('persist:user');
             if (localStorageData) {
                 const parsedData = JSON.parse(localStorageData);
