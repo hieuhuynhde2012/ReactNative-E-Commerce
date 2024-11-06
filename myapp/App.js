@@ -35,7 +35,7 @@ const AppContent = () => {
             </NavigationContainer>
         </SafeAreaView>
     );
->>>>>>> master
+
 };
 
 const styles = StyleSheet.create({
