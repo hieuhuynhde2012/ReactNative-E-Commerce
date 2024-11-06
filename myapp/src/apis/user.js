@@ -86,3 +86,17 @@ export const apiUpdateWishlist = (pid) =>
         url: `/user/wishlist/` + pid,
         method: 'put',
     });
+export const apiAddAdditionalAddress = (data) => {
+    return axios({
+        url: '/user/additional-address',
+        method: 'post',
+        data,
+    });
+};
+
+export const apiGetAdditionalAddress = (_id) => {
+    return axios({
+        url: `/user/additional-address/${_id}`,
+        method: 'get',
+    });
+};

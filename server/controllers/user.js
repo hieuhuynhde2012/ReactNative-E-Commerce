@@ -469,6 +469,43 @@ const createUsers = asyncHandler(async (req, res) => {
     });
 });
 
+const addAdditionalAddress = asyncHandler(async (req, res) => {
+    const { _id } = req.user;
+    const newAddress = req.body.additionalAddress;
+    if (!newAddress) throw new Error('Missing address details');
+
+    const user = await User.findByIdAndUpdate(
+        _id,
+        { $push: { additionalAddress: newAddress } },
+        { new: true },
+    ).select('-refreshToken -password -role');
+
+    return res.status(200).json({
+        success: !!user,
+        updatedUser: user || 'User not found!',
+    });
+});
+
+const getAdditionalAddress = asyncHandler(async (req, res) => {
+    const { _id } = req.params; 
+
+    const user = await User.findById(_id).select('additionalAddress'); 
+
+    if (!user) {
+        return res.status(404).json({
+            success: false,
+            message: 'User not found!',
+        });
+    }
+
+    return res.status(200).json({
+        success: true,
+        additionalAddress: user.additionalAddress,
+    });
+});
+
+
+
 const updateWishlist = asyncHandler(async (req, res) => {
     const { pid } = req.params;
     const { _id } = req.user;
@@ -523,4 +560,6 @@ module.exports = {
     createUsers,
     removeProductFromCart,
     updateWishlist,
+    addAdditionalAddress,
+    getAdditionalAddress
 };

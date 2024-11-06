@@ -49,7 +49,7 @@ const LoginScreen = ({ navigation }) => {
         }
 
         try {
-            dispatch(showLoading(<CustomedLoading />));
+            dispatch(showLoading());
             const res = await apiLogin({ email, password });
             dispatch(hideLoading());
             if (res.success) {

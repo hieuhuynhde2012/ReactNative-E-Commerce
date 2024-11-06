@@ -15,6 +15,8 @@ router.put('/resetpassword', ctrls.resetPassword);
 router.get('/', [verifyAccessToken, isAdmin], ctrls.getUsers);
 router.put('/current', verifyAccessToken, uploader.single('avatar'), ctrls.updateUser);
 router.put('/address', [verifyAccessToken], ctrls.updateUserAddress);
+router.post('/additional-address', [verifyAccessToken], ctrls.addAdditionalAddress);
+router.get('/additional-address/:_id', [verifyAccessToken], ctrls.getAdditionalAddress);
 router.put('/cart', [verifyAccessToken], ctrls.updateUserCart);
 router.delete('/remove-cart/:pid/:color', [verifyAccessToken], ctrls.removeProductFromCart);
 router.delete('/:uid', [verifyAccessToken, isAdmin], ctrls.deleteUser);

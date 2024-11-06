@@ -1,14 +1,59 @@
 import React, { useState } from "react";
 import { View, Text, ScrollView, StyleSheet } from "react-native";
 import { Pressable, TextInput } from "react-native-gesture-handler";
+import { apiAddAdditionalAddress } from "../apis";
+import { Alert } from "react-native";
+import { useNavigation } from "@react-navigation/native";
 
 const AddressScreen = () => {
+  const navigation = useNavigation();
+  const [country, setCountry] = useState("");
   const [name, setName] = useState("");
   const [mobileNo, setMobileNo] = useState("");
   const [houseNo, setHouseNo] = useState("");
   const [street, setStreet] = useState("");
   const [landmark, setLanmark] = useState("");
   const [postalCode, setPostalCode] = useState("");
+
+  const handleAddAddress = async () => {
+    const address = {
+      country,
+      name,
+      mobileNo,
+      houseNo,
+      street,
+      landmark,
+      postalCode,
+    };
+
+    try {
+      const response = await apiAddAdditionalAddress({
+        additionalAddress: address,
+      });
+      if (response.success) {
+        Alert.alert("Success", "Address added successfully!");
+        setCountry("");
+        setName("");
+        setMobileNo("");
+        setHouseNo("");
+        setStreet("");
+        setLanmark("");
+        setPostalCode("");
+
+        setTimeout(() => {
+          navigation.goBack();
+        }, 500);
+      } else {
+        Alert.alert(
+          "Error",
+          response.data ? response.data.updatedUser : "Unknown error"
+        );
+      }
+    } catch (error) {
+      console.error(error);
+      Alert.alert("Error", "Failed to add address. Please try again.");
+    }
+  };
   return (
     <ScrollView style={styles.addressContainer}>
       <View style={styles.addressBlock} />
@@ -17,7 +62,9 @@ const AddressScreen = () => {
         <Text style={styles.addAddressText}>Add a new Address</Text>
 
         <TextInput
-          placeholder="VietNam"
+          value={country}
+          placeholder="Enter your country"
+          onChangeText={(text) => setCountry(text)}
           placeholderTextColor={"black"}
           style={styles.addFieldInput}
         ></TextInput>
@@ -51,17 +98,17 @@ const AddressScreen = () => {
             onChangeText={(text) => setHouseNo(text)}
             placeholderTextColor={"black"}
             style={styles.addFieldInput}
-            placeholder=""
+            placeholder="Enter your house number"
           />
         </View>
         <View>
           <Text style={styles.addField}>Area, street, sector, village</Text>
           <TextInput
-            value={setStreet}
+            value={street}
             onChangeText={(text) => setStreet(text)}
             placeholderTextColor={"black"}
             style={styles.addFieldInput}
-            placeholder=""
+            placeholder="Enter your street"
           />
         </View>
         <View>
@@ -85,7 +132,10 @@ const AddressScreen = () => {
           />
         </View>
 
-        <Pressable style={styles.addAddressButtonContainer}>
+        <Pressable
+          style={styles.addAddressButtonContainer}
+          onPress={handleAddAddress}
+        >
           <Text style={styles.addAddressButtonText}>Add Address</Text>
         </Pressable>
       </View>
@@ -97,7 +147,7 @@ export default AddressScreen;
 
 const styles = StyleSheet.create({
   addressContainer: {
-    marginTop: 50,
+    backgroundColor: "white",
   },
   addressBlock: {
     height: 50,
