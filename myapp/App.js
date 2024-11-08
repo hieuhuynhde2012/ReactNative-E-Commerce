@@ -22,10 +22,10 @@ const App = () => {
 const AppContent = () => {
     return (
         <SafeAreaView style={styles.container}>
+               
             <NavigationContainer>
                 <CustomedLoading />
                 <CustomedAlert />
-                <ModalPortal />
                 <StatusBar
                     barStyle="dark-content"
                     backgroundColor="transparent"
@@ -33,6 +33,7 @@ const AppContent = () => {
                 />
                 <AppNavigation />
             </NavigationContainer>
+            <ModalPortal />
         </SafeAreaView>
     );
 

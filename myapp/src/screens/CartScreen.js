@@ -22,9 +22,12 @@ const CartScreen = () => {
   const navigation = useNavigation();
   const cart = useSelector((state) => state.user.cart);
   //console.log(cart);
-  const total = cart
-    ?.map((item) => (item.price / 24000).toFixed(2) * item.quantity)
-    .reduce((curr, prev) => curr + prev, 0);
+  const total = parseFloat(
+    cart
+      ?.map((item) => (item.price / 24000) * item.quantity)
+      .reduce((curr, prev) => curr + prev, 0)
+      .toFixed(2)
+  );
   const dispatch = useDispatch();
   const increaseQuantity = (item) => {
     dispatch(incementQuantity(item));

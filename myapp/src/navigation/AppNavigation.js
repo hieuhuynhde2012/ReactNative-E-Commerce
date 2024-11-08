@@ -9,6 +9,7 @@ import ProductInfoScreen from "../screens/ProductInfoScreen";
 import AddressScreen from "../screens/AddressScreen";
 import AddAddressScreen from "../screens/AddAddressScreen";
 import ConfirmationScreen from "../screens/ConfirmationScreen";
+import OrderScreen from "../screens/OrderScreen";
 
 const Stack = createStackNavigator();
 
@@ -47,6 +48,11 @@ const AppNavigation = () => {
           <Stack.Screen
             name="Confirm"
             component={ConfirmationScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Order"
+            component={OrderScreen}
             options={{ headerShown: false }}
           />
         </>

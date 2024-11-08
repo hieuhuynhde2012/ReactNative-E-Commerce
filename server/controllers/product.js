@@ -134,6 +134,61 @@ const getProducts = asyncHandler(async (req, res) => {
   }
 });
 
+
+// Hàm xử lý tìm kiếm sản phẩm
+const mongoose = require("mongoose");
+ // Đảm bảo đường dẫn đúng đến model Product
+
+const searchProduct = async (req, res) => {
+  const { key } = req.params;  // Lấy giá trị tìm kiếm từ route parameter ':key'
+
+  // Kiểm tra nếu không có giá trị tìm kiếm 'key' trong route params
+  if (!key || key.trim() === "") {
+    return res.status(400).json({ success: false, message: "Search key 'key' is required and cannot be empty" });
+  }
+
+  try {
+    // Kiểm tra xem key có phải là ObjectId hợp lệ không
+    let searchQuery = {};
+
+    if (mongoose.Types.ObjectId.isValid(key)) {
+      // Nếu key là ObjectId hợp lệ, tìm kiếm theo _id
+      searchQuery._id = mongoose.Types.ObjectId(key);
+    } else {
+      // Nếu key không phải ObjectId, tìm kiếm các trường khác
+      searchQuery = {
+        $or: [
+          { title: { $regex: key, $options: "i" } },   // Tìm kiếm theo title
+          { brand: { $regex: key, $options: "i" } },    // Tìm kiếm theo brand
+          { category: { $regex: key, $options: "i" } },  // Tìm kiếm theo category
+          { description: { $regex: key, $options: "i" } }, // Tìm kiếm theo description
+          { color: { $regex: key, $options: "i" } },     // Tìm kiếm theo color
+        ]
+      };
+    }
+
+    // Tìm kiếm sản phẩm với searchQuery
+    const products = await Product.find(searchQuery);
+
+    if (!products || products.length === 0) {
+      return res.status(404).json({ success: false, message: "No products found" });
+    }
+
+    // Trả về kết quả tìm kiếm
+    return res.status(200).json({
+      success: true,
+      count: products.length,
+      products,
+    });
+  } catch (error) {
+    // Xử lý lỗi nếu có
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+
+
+
 //  Update product
 const updateProduct = asyncHandler(async (req, res) => {
   const { pid } = req.params;
@@ -269,4 +324,5 @@ module.exports = {
   ratings,
   uploadProductImages,
   addVariant,
+  searchProduct
 };

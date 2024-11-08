@@ -44,8 +44,15 @@ export default ProductItem;
 
 const styles = StyleSheet.create({
   container: {
-    marginHorizontal: 20,
-    marginVertical: 25,
+    marginVertical: 15,
+    borderWidth: 1, 
+    borderColor: "#D0d0d0",
+    borderRadius: 5, 
+    padding: 10,
+    //width: "48%",
+    paddingHorizontal: 7,
+    marginRight: 10,
+    marginLeft: 5
   },
   image: {
     width: 150,
