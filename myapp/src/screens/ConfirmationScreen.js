@@ -1,10 +1,17 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { View, Text, StyleSheet, ScrollView, Pressable } from "react-native";
-import { apiGetAdditionalAddress, apiGetCurrent } from "../apis";
 import Entypo from "@expo/vector-icons/Entypo";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useDispatch, useSelector } from "react-redux";
+import {
+  apiGetAdditionalAddress,
+  apiGetCurrent,
+  apiDeleteAdditionalAddress,
+  apiEditAdditionalAddress,
+  apiSetDefaultAddress,
+} from "../apis";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 
 const ConfirmationScreen = () => {
   const steps = [
@@ -26,6 +33,7 @@ const ConfirmationScreen = () => {
   const [addresses, setAddresses] = useState([]);
   const [option, setOption] = useState(false);
   const [selectedOption, setSelectedOption] = useState("");
+  const [selectedAddress, setselectedAddress] = useState("");
   const handlePlaceOrder = async() => {
     
   }
@@ -55,7 +63,58 @@ const ConfirmationScreen = () => {
       console.log("Error:", error);
     }
   };
-  const [selectedAddress, setselectedAddress] = useState("");
+  useFocusEffect(
+    useCallback(() => {
+      fetchUserAndAddresses();
+    })
+  );
+  const onDeleteAddress = async (addressId) => {
+    Alert.alert(
+      "Confirm Deletion",
+      "Are you sure you want to delete this address?",
+      [
+        {
+          text: "No",
+          onPress: () => console.log("Address deletion cancelled"),
+          style: "cancel",
+        },
+        {
+          text: "Yes",
+          onPress: async () => {
+            try {
+              const response = await apiDeleteAdditionalAddress(addressId);
+              if (response.success) {
+                console.log("Address deleted successfully");
+              } else {
+                console.log("Failed to delete address");
+              }
+            } catch (error) {
+              console.error("Error deleting address:", error);
+            }
+          },
+        },
+      ],
+      { cancelable: true }
+    );
+  };
+
+  const handleSetDefaultAddress = async (addressId) => {
+    try {
+      const response = await apiSetDefaultAddress(addressId);
+      if (response.success) {
+        Alert.alert("Success", "Address set as default successfully!");
+      } else {
+        Alert.alert(
+          "Error",
+          response.data.message || "Failed to set as default."
+        );
+      }
+    } catch (error) {
+      console.error(error);
+      Alert.alert("Error", "An error occurred. Please try again.");
+    }
+  };
+  
   return (
     <ScrollView style={styles.container}>
       <View style={styles.viewContainer}>

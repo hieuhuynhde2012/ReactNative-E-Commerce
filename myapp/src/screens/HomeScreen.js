@@ -12,6 +12,7 @@ import {
   KeyboardAvoidingView,
   TouchableWithoutFeedback,
   FlatList,
+  TouchableOpacity,
 } from "react-native";
 import axios from "axios";
 import AntDesign from "@expo/vector-icons/AntDesign";
@@ -23,7 +24,7 @@ import ProductItem from "../components/ProductItem";
 import { apiGetProducts, apiSearchProduct } from "../apis/product";
 import DropDownPicker from "react-native-dropdown-picker";
 import ProductBar from "../components/ProductBar";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { color } from "react-native-elements/dist/helpers";
 import { Dimensions } from "react-native";
 import { ModalContent, SlideAnimation } from "react-native-modals";
@@ -34,6 +35,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { updateCart } from "../store/user/userSlice";
 import { showLoading, hideLoading } from "../store/app/appSlice";
 import { apiGetAdditionalAddress, apiGetCurrent } from "../apis";
+import { Audio } from "expo-av";
 
 const HomeScreen = () => {
   const navigation = useNavigation();
@@ -49,32 +51,68 @@ const HomeScreen = () => {
   const [loading, setLoading] = useState(false);
   const [product, setProduct] = useState([]);
   const [showResults, setShowResults] = useState(false);
+  const [recording, setRecording] = useState(null);
+  const [isRecording, setIsRecording] = useState(false);
+  const [isListening, setIsListening] = useState(false);
   const handleSearch = async (key) => {
-    // Accept search key as a parameter
     if (key.trim() !== "") {
-      setLoading(true); // Start loading
+      setLoading(true);
       try {
-        const response = await apiSearchProduct(key); // Call API to search products
-        setProduct(response.products);
-        console.log("API Response:", response.products);
+        const response = await apiSearchProduct(key);
+        // const responseLimit = res
+        setProduct(response.products.slice(0, 5));
+        //console.log(response.products.slice(0, 5));
         setShowResults(true);
       } catch (error) {
         console.error("Error fetching products:", error);
       } finally {
-        setLoading(false); // Stop loading
+        setLoading(false);
       }
     } else {
       setProduct([]);
-      setShowResults(false); // Clear products if search key is empty
+      setShowResults(false);
     }
   };
 
   const handleOutsidePress = () => {
-    setShowResults(false); // Hide results when pressing outside
-    setSearchKey(""); // Optional: Clear search input
-    setProduct([]); // Optional: Clear products
+    setShowResults(false);
+    setSearchKey("");
+    setProduct([]);
   };
 
+  // useEffect(() => {
+  //   Voice._onSpeechStart = onSpeechStart;
+  //   Voice._onSpeechEnd = onSpeechEnd;
+  //   Voice._onSpeechResults = onSpeechResults;
+
+  //   return () => {
+  //     Voice.destroy.then(Voice.removeAllListeners);
+  //   };
+  // }, []);
+
+  // const onSpeechStart = (e) => {
+  //   console.log('Speech started');
+  // };
+
+  // const onSpeechEnd = (e) => {
+  //   console.log('Speech ended');
+  // };
+
+  // const onSpeechResults = (e) => {
+  //   const { value } = e;
+  //   if (value && value.length > 0) {
+  //     setSearchKey(value[0]); // Set the first recognized value as the search key
+  //     handleSearch(value[0]); // Call your existing search function
+  //   }
+  // };
+
+  // const startListening = async () => {
+  //   try {
+  //     await Voice.start('en-US'); // You can change the language code as needed
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
   //console.log(selectedAddress);
   const dispatch = useDispatch();
   const [addedToCart, setAddedToCart] = useState(false);
@@ -207,44 +245,49 @@ const HomeScreen = () => {
   const [modalVisible, setModalVisible] = useState(false);
 
   useEffect(() => {
-    const fetchUserAndAddresses = async () => {
-      try {
-        const userResponse = await apiGetCurrent();
-        if (userResponse.success) {
-          const userID = userResponse.rs._id;
-          //console.log(userID);
-
-          const addressResponse = await apiGetAdditionalAddress(userID);
-
-          if (addressResponse.success) {
-            //console.log(addressResponse.additionalAddress);
-            setAddresses(addressResponse.additionalAddress);
-          } else {
-            console.log("Failed to fetch addresses:", addressResponse.message);
-          }
-        } else {
-          console.log("Failed to fetch user:", userResponse.message);
-        }
-      } catch (error) {
-        console.log("Error:", error);
-      }
-    };
-
     fetchUserAndAddresses();
   }, []);
+
+  const fetchUserAndAddresses = async () => {
+    try {
+      const userResponse = await apiGetCurrent();
+      if (userResponse.success) {
+        const userID = userResponse.rs._id;
+        //console.log(userID);
+
+        const addressResponse = await apiGetAdditionalAddress(userID);
+
+        if (addressResponse.success) {
+          //console.log(addressResponse.additionalAddress);
+          setAddresses(addressResponse.additionalAddress);
+        } else {
+          console.log("Failed to fetch addresses:", addressResponse.message);
+        }
+      } else {
+        console.log("Failed to fetch user:", userResponse.message);
+      }
+    } catch (error) {
+      console.log("Error:", error);
+    }
+  };
+  //refresh the addresses when the component comes to the focused element
+  useFocusEffect(
+    useCallback(() => {
+      fetchUserAndAddresses();
+    })
+  );
   return (
     <>
       <SafeAreaView style={styles.container}>
-        <TouchableWithoutFeedback onPress={handleOutsidePress}>
-          <ScrollView>
-            <View style={[styles.searchContainer, showResults && styles.expandedSearchContainer]}>
-              <Pressable style={styles.searchBox}>
-                <AntDesign
-                  style={styles.icon}
-                  name="search1"
-                  size={22}
-                  color="black"
-                />
+        <ScrollView>
+          <TouchableWithoutFeedback onPress={handleOutsidePress}>
+            <View
+              style={[
+                styles.searchContainer,
+                showResults && styles.expandedSearchContainer,
+              ]}
+            >
+              <View style={styles.searchBox}>
                 <TextInput
                   style={styles.input}
                   placeholder="Search"
@@ -254,184 +297,200 @@ const HomeScreen = () => {
                     handleSearch(text);
                   }}
                 />
-               
-              </Pressable>
 
-              {showResults && (
-                <View style={styles.resultsWrapper}>
-
-                  <FlatList
-                    data={product}
-                    keyExtractor={(item) => item._id}
-                    renderItem={({ item }) => (
-                      <Text style={styles.resultItem} numberOfLines={1}>{item.title}</Text>
-                    )}
-                    style={styles.resultsContainer}
-                  />
+                {showResults && (
+                  <View style={styles.resultsWrapper}>
+                    <FlatList
+                      data={product}
+                      keyExtractor={(item) => item._id}
+                      renderItem={({ item }) => (
+                        <TouchableOpacity
+                          activeOpacity={0.7}
+                          onPress={() =>
+                            navigation.navigate("Info", {
+                              id: item?._id,
+                              title: item?.title,
+                              price: item?.price,
+                              carouseImages: item.images,
+                              color: item?.color,
+                              description: item?.description,
+                              item: item,
+                            })
+                          }
+                        >
+                          <Text style={styles.resultItem} numberOfLines={1}>
+                            {item.title}
+                          </Text>
+                        </TouchableOpacity>
+                      )}
+                      style={styles.resultsContainer}
+                    />
                   </View>
                 )}
-
-              <Feather name="mic" size={24} color="black" />
-            </View>
-
-            <Pressable
-              onPress={() => setModalVisible(!modalVisible)}
-              style={styles.locationContainer}
-            >
-              <Ionicons name="location-outline" size={24} color="black" />
-
-              <Pressable>
-                {selectedAddress ? (
-                  <Text>
-                    Deliver to {selectedAddress?.name} -{" "}
-                    {selectedAddress?.street}
-                  </Text>
-                ) : (
-                  <Text style={styles.locationText}>Add a Adress</Text>
-                )}
-              </Pressable>
-              <MaterialIcons
-                name="keyboard-arrow-down"
-                size={24}
-                color="black"
-              />
-            </Pressable>
-
-            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-              {list.map((item, index) => (
-                <Pressable key={index} style={styles.listItemContainer}>
-                  <Image
-                    style={styles.listItemImage}
-                    source={{ uri: item.image }}
-                  />
-                  <Text style={styles.listItemText}>{item?.name}</Text>
-                </Pressable>
-              ))}
-            </ScrollView>
-
-            <Carousel
-              data={images}
-              renderItem={({ item }) => (
-                <Image
-                  source={{ uri: item }}
-                  style={{ width: viewportWidth, height: 200 }}
-                />
-              )}
-              sliderWidth={viewportWidth}
-              itemWidth={viewportWidth}
-              autoplay
-              loop
-            />
-
-            <Text style={styles.trendingDealsTitle}>
-              Trending Deals of the week
-            </Text>
-            <View style={styles.productsContainer}>
-              {deals.slice(0, 4).map((item, index) => (
-                <Pressable
-                  onPress={() =>
-                    navigation.navigate("Info", {
-                      id: item._id,
-                      title: item.title,
-                      price: item?.price,
-                      carouseImages: item.images,
-                      color: item?.color,
-                      description: item?.description,
-                      item: item,
-                    })
-                  }
-                  key={index}
-                  style={styles.productItem}
-                >
-                  <Image
-                    style={styles.productImage}
-                    source={{ uri: item?.thumb }}
-                  />
-
-                  <Text numberOfLines={1} style={styles.productTitle}>
-                    {item?.title}
-                  </Text>
-                  <View style={styles.productInfo}>
-                    <Text style={styles.productPrice}>
-                      {(item?.price / 24000).toFixed(2)} $
-                    </Text>
-                    <Text style={styles.productRating}>
-                      {item?.totalRating} ⭐️
-                    </Text>
-                    {/* <Text style={styles.productSold}>{item?.sold}</Text> */}
-                  </View>
-                  <ProductBar
-                    numberOfProducts={item?.quantity - item?.sold}
-                    totalProducts={item?.quantity}
-                  />
-                </Pressable>
-              ))}
-            </View>
-            <Text style={styles.separator} />
-            <Text style={styles.dealsTitle}>Today's Deals</Text>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-              {offers.slice(0, 4).map((item, index) => (
-                <Pressable
-                  onPress={() =>
-                    navigation.navigate("Info", {
-                      id: item._id,
-                      title: item.title,
-                      price: item?.price,
-                      carouseImages: item.images,
-                      color: item?.color,
-                      description: item?.description,
-                      item: item,
-                    })
-                  }
-                  style={styles.offersItem}
-                >
-                  <Image
-                    style={styles.offerImage}
-                    source={{ uri: item?.thumb }}
-                  />
-                  <View style={styles.offerDiscountContainer}>
-                    <Text style={styles.offerDiscountText}>Up to 40% Off</Text>
-                  </View>
-                </Pressable>
-              ))}
-            </ScrollView>
-            <Text style={styles.separator} />
-            <View
-              style={{
-                marginHorizontal: 10,
-                width: "45%",
-                marginBottom: open ? 50 : 15,
-                marginTop: 20,
-              }}
-            >
-              <View style={{ zIndex: 3000 }}>
-                <DropDownPicker
-                  style={[{ marginBottom: open ? 150 : 1 }]}
-                  open={open}
-                  value={category}
-                  items={items}
-                  setOpen={setOpen}
-                  setValue={setCategory}
-                  setItems={setItems}
-                  placeholder="Choose category"
-                  placeholderStyle={{ color: "gray" }}
-                  onOpen={onGenderOpen}
-                  zIndex={3000}
-                  zIndexInverse={1000}
+                <AntDesign
+                  style={styles.icon}
+                  name="search1"
+                  size={22}
+                  color="black"
                 />
               </View>
+
+              {/* <Feather name="mic" size={24} color="black" /> */}
             </View>
-            <View style={styles.productsFilterContainer}>
-              {products
-                ?.filter(
-                  (item) => category === "All" || item.category === category
-                )
-                .map((item) => (
-                  <ProductItem item={item} key={item.id} />
-                ))}
-            </View>
+          </TouchableWithoutFeedback>
+
+          <Pressable
+            onPress={() => setModalVisible(!modalVisible)}
+            style={styles.locationContainer}
+          >
+            <Ionicons name="location-outline" size={24} color="black" />
+
+            <Pressable>
+              {selectedAddress ? (
+                <Text style={styles.selectedLocationText}>
+                  Deliver to {selectedAddress?.name} - {selectedAddress?.street}
+                </Text>
+              ) : (
+                <Text style={styles.locationText}>Add a Adress</Text>
+              )}
+            </Pressable>
+            <MaterialIcons name="keyboard-arrow-down" size={24} color="black" />
+          </Pressable>
+
+          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+            {list.map((item, index) => (
+              <Pressable key={index} style={styles.listItemContainer}>
+                <Image
+                  style={styles.listItemImage}
+                  source={{ uri: item.image }}
+                />
+                <Text style={styles.listItemText}>{item?.name}</Text>
+              </Pressable>
+            ))}
           </ScrollView>
-        </TouchableWithoutFeedback>
+
+          <Carousel
+            data={images}
+            renderItem={({ item }) => (
+              <Image
+                source={{ uri: item }}
+                style={{ width: viewportWidth, height: 200 }}
+              />
+            )}
+            sliderWidth={viewportWidth}
+            itemWidth={viewportWidth}
+            autoplay
+            loop
+          />
+
+          <Text style={styles.trendingDealsTitle}>
+            Trending Deals of the week
+          </Text>
+          <View style={styles.productsContainer}>
+            {deals.slice(0, 4).map((item, index) => (
+              <Pressable
+                onPress={() =>
+                  navigation.navigate("Info", {
+                    id: item._id,
+                    title: item.title,
+                    price: item?.price,
+                    carouseImages: item.images,
+                    color: item?.color,
+                    description: item?.description,
+                    item: item,
+                  })
+                }
+                key={index}
+                style={styles.productItem}
+              >
+                <Image
+                  style={styles.productImage}
+                  source={{ uri: item?.thumb }}
+                />
+
+                <Text numberOfLines={1} style={styles.productTitle}>
+                  {item?.title}
+                </Text>
+                <View style={styles.productInfo}>
+                  <Text style={styles.productPrice}>
+                    {(item?.price / 24000).toFixed(2)} $
+                  </Text>
+                  <Text style={styles.productRating}>
+                    {item?.totalRating} ⭐️
+                  </Text>
+                  {/* <Text style={styles.productSold}>{item?.sold}</Text> */}
+                </View>
+                <ProductBar
+                  numberOfProducts={item?.quantity - item?.sold}
+                  totalProducts={item?.quantity}
+                />
+              </Pressable>
+            ))}
+          </View>
+          <Text style={styles.separator} />
+          <Text style={styles.dealsTitle}>Today's Deals</Text>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+            {offers.slice(0, 4).map((item, index) => (
+              <Pressable
+                onPress={() =>
+                  navigation.navigate("Info", {
+                    id: item._id,
+                    title: item.title,
+                    price: item?.price,
+                    carouseImages: item.images,
+                    color: item?.color,
+                    description: item?.description,
+                    item: item,
+                  })
+                }
+                style={styles.offersItem}
+              >
+                <Image
+                  style={styles.offerImage}
+                  source={{ uri: item?.thumb }}
+                />
+                <View style={styles.offerDiscountContainer}>
+                  <Text style={styles.offerDiscountText}>Up to 40% Off</Text>
+                </View>
+              </Pressable>
+            ))}
+          </ScrollView>
+          <Text style={styles.separator} />
+          <View
+            style={{
+              marginHorizontal: 10,
+              width: "45%",
+              marginBottom: open ? 50 : 15,
+              marginTop: 20,
+            }}
+          >
+            <View style={{ zIndex: 3000 }}>
+              <DropDownPicker
+                style={[{ marginBottom: open ? 150 : 1 }]}
+                open={open}
+                value={category}
+                items={items}
+                setOpen={setOpen}
+                setValue={setCategory}
+                setItems={setItems}
+                placeholder="Choose category"
+                placeholderStyle={{ color: "gray" }}
+                onOpen={onGenderOpen}
+                zIndex={3000}
+                zIndexInverse={1000}
+              />
+            </View>
+          </View>
+          <View style={styles.productsFilterContainer}>
+            {products
+              ?.filter(
+                (item) => category === "All" || item.category === category
+              )
+              .map((item) => (
+                <ProductItem item={item} key={item.id} />
+              ))}
+          </View>
+        </ScrollView>
       </SafeAreaView>
 
       <BottomModal
@@ -534,10 +593,11 @@ const styles = StyleSheet.create({
     padding: 10,
     flexDirection: "row",
     alignItems: "center",
+    marginBottom: 0,
   },
   expandedSearchContainer: {
-    height: 250,
-    
+    height: 450,
+    marginTop: -200,
   },
   searchBox: {
     flexDirection: "row",
@@ -548,23 +608,27 @@ const styles = StyleSheet.create({
     borderRadius: 3,
     height: 38,
     flex: 1,
-    marginTop: 5
+    justifyContent: "space-between"
+  },
+  input: {
+    marginLeft: 10
+
   },
   resultsContainer: {
     flexDirection: "row",
     marginHorizontal: 7,
-   // gap: 10,
+    // gap: 10,
     backgroundColor: "white",
     borderRadius: 3,
-    height: 38,
+    //height: 38,
     flex: 1,
-    width: "90%"
-    
-
+    width: "105%",
+    marginTop: -100,
+    marginLeft: -7,
   },
   resultsWrapper: {
-    position: 'absolute', 
-    top: 150, 
+    position: "absolute",
+    top: 150,
     left: 10,
     right: 10,
     zIndex: 1000,
@@ -574,17 +638,18 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: "#eee",
   },
-  icon: { paddingLeft: 10 },
+  icon: { paddingLeft: 10, marginRight: 10 },
   locationContainer: {
     flexDirection: "row",
     alignItems: "center",
     gap: 5,
     padding: 10,
     backgroundColor: "#ee4731",
-     //position: 'relative'
-     zIndex: 1
+    //position: 'relative'
+    zIndex: 1,
   },
   locationText: { fontSize: 13, fontWeight: "500", color: "white" },
+  selectedLocationText: { fontSize: 13, fontWeight: "500", color: "white" },
   listItemContainer: {
     margin: 10,
     justifyContent: "center",

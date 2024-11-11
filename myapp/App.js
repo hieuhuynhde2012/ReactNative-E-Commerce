@@ -8,6 +8,8 @@ import { store, persistor } from './src/store/redux';
 import { ModalPortal } from 'react-native-modals';
 import CustomedLoading from './src/components/common/CustomedLoading';
 import CustomedAlert from './src/components/common/CustomedAlert';
+import { LogBox } from 'react-native';
+LogBox.ignoreAllLogs();
 
 const App = () => {
     return (

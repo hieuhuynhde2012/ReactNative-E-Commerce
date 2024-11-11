@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import Feather from "@expo/vector-icons/Feather";
+import Ionicons from "@expo/vector-icons/Ionicons";
 import { useDispatch, useSelector } from "react-redux";
 import {
   incementQuantity,
@@ -41,16 +41,18 @@ const CartScreen = () => {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.searchContainer}>
+        <Pressable onPress={() => navigation.goBack()}>
+          <Ionicons name="arrow-back-outline" size={24} color="white" />
+        </Pressable>
         <Pressable style={styles.searchBox}>
+          <TextInput style={styles.searchTextInput} placeholder="Search" />
           <AntDesign
             style={styles.icon}
             name="search1"
             size={22}
             color="black"
           />
-          <TextInput placeholder="Search" />
         </Pressable>
-        <Feather name="mic" size={24} color="black" />
       </View>
 
       <View style={styles.subTotalContainer}>
@@ -61,8 +63,9 @@ const CartScreen = () => {
       <Text style={styles.cartHeader}>Cart detail available</Text>
 
       <Pressable
-      onPress={() => navigation.navigate("Confirm")}
-       style={styles.buyButtonContainer}>
+        onPress={() => navigation.navigate("Confirm")}
+        style={styles.buyButtonContainer}
+      >
         <Text style={styles.buyButtonText}>
           Proceed to Buy ({cart.length}) items
         </Text>
@@ -161,12 +164,20 @@ const styles = StyleSheet.create({
   searchBox: {
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "space-between",
     marginHorizontal: 7,
     gap: 10,
     backgroundColor: "white",
     borderRadius: 3,
     height: 38,
     flex: 1,
+    //marginLeft: 10
+  },
+  searchTextInput: {
+    marginLeft: 10,
+  },
+  icon: {
+    marginRight: 10,
   },
   subTotalContainer: {
     padding: 10,
@@ -209,6 +220,9 @@ const styles = StyleSheet.create({
     width: 140,
     height: 140,
     resizeMode: "contain",
+    borderColor: "#D0d0d0",
+    borderWidth: 1,
+    marginLeft: 10
   },
   productInfoContainer: {
     backgroundColor: "white",
@@ -249,11 +263,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 5,
     borderRadius: 7,
+    borderColor: "#D0d0d0",
+    borderWidth: 1,
+    marginLeft: 10
   },
   quantityAdjust: {
     backgroundColor: "white",
-    paddingHorizontal: 18,
-    paddingVertical: 6,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderColor: "#D0d0d0",
+    borderWidth: 1,
+    borderRadius: 3
+    
   },
   pressableContainer: {
     marginTop: 15,
