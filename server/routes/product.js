@@ -30,5 +30,6 @@ router.put("/:pid", verifyAccessToken, isAdmin,  uploader.fields([
 ]), ctrls.updateProduct);
 router.delete("/:pid", [verifyAccessToken, isAdmin], ctrls.deleteProduct);
 router.get("/:pid", ctrls.getProduct);
+router.get("/search/:key", ctrls.searchProduct);
 
 module.exports = router;

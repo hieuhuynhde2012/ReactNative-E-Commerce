@@ -100,3 +100,25 @@ export const apiGetAdditionalAddress = (_id) => {
         method: 'get',
     });
 };
+
+export const apiDeleteAdditionalAddress = (addressId) => {
+    return axios({
+        url: `/user/additional-address/${addressId}`,
+        method: 'delete',
+    });
+};
+
+export const apiEditAdditionalAddress = (addressId, data) => {
+    return axios({
+        url: `/user/edit-address/${addressId}`,
+        method: 'put',
+        data,
+    });
+};
+
+export const apiSetDefaultAddress = (addressId) => {
+    return axios({
+        url: `/user/set-default/${addressId}`,
+        method: 'put',
+    });
+};

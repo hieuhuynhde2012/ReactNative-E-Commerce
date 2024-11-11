@@ -1,8 +1,17 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { View, Text, StyleSheet, ScrollView, Pressable } from "react-native";
-import { apiGetAdditionalAddress, apiGetCurrent } from "../apis";
 import Entypo from "@expo/vector-icons/Entypo";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  apiGetAdditionalAddress,
+  apiGetCurrent,
+  apiDeleteAdditionalAddress,
+  apiEditAdditionalAddress,
+  apiSetDefaultAddress,
+} from "../apis";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 
 const ConfirmationScreen = () => {
   const steps = [
@@ -11,9 +20,23 @@ const ConfirmationScreen = () => {
     { title: "Payment", content: "Payment Details" },
     { title: "Place Order", content: "Order Sumary" },
   ];
+  const cart = useSelector((state) => state.user.cart);
+  //console.log(cart);
+  const total = parseFloat(
+    cart
+      ?.map((item) => (item.price / 24000) * item.quantity)
+      .reduce((curr, prev) => curr + prev, 0)
+      .toFixed(2)
+  );
+
   const [currentStep, setCurrentStep] = useState(0);
   const [addresses, setAddresses] = useState([]);
   const [option, setOption] = useState(false);
+  const [selectedOption, setSelectedOption] = useState("");
+  const [selectedAddress, setselectedAddress] = useState("");
+  const handlePlaceOrder = async() => {
+    
+  }
   useEffect(() => {
     fetchUserAndAddresses();
   }, []);
@@ -40,7 +63,58 @@ const ConfirmationScreen = () => {
       console.log("Error:", error);
     }
   };
-  const [selectedAddress, setselectedAddress] = useState("");
+  useFocusEffect(
+    useCallback(() => {
+      fetchUserAndAddresses();
+    })
+  );
+  const onDeleteAddress = async (addressId) => {
+    Alert.alert(
+      "Confirm Deletion",
+      "Are you sure you want to delete this address?",
+      [
+        {
+          text: "No",
+          onPress: () => console.log("Address deletion cancelled"),
+          style: "cancel",
+        },
+        {
+          text: "Yes",
+          onPress: async () => {
+            try {
+              const response = await apiDeleteAdditionalAddress(addressId);
+              if (response.success) {
+                console.log("Address deleted successfully");
+              } else {
+                console.log("Failed to delete address");
+              }
+            } catch (error) {
+              console.error("Error deleting address:", error);
+            }
+          },
+        },
+      ],
+      { cancelable: true }
+    );
+  };
+
+  const handleSetDefaultAddress = async (addressId) => {
+    try {
+      const response = await apiSetDefaultAddress(addressId);
+      if (response.success) {
+        Alert.alert("Success", "Address set as default successfully!");
+      } else {
+        Alert.alert(
+          "Error",
+          response.data.message || "Failed to set as default."
+        );
+      }
+    } catch (error) {
+      console.error(error);
+      Alert.alert("Error", "An error occurred. Please try again.");
+    }
+  };
+  
   return (
     <ScrollView style={styles.container}>
       <View style={styles.viewContainer}>
@@ -195,20 +269,94 @@ const ConfirmationScreen = () => {
       )}
 
       {currentStep == 2 && (
-        <View style = {styles.paymentContainer}>
+        <View style={styles.paymentContainer}>
           <Text style={styles.paymentInfoText}>Select your payment Method</Text>
 
-          <View style ={styles.paymentInfoContainer}>
-          <Entypo
-                onPress={() => setOption(!option)}
+          <View style={styles.paymentInfoContainer}>
+            {selectedOption === "cash" ? (
+              <FontAwesome6 name="dot-circle" size={20} color="#ee3131" />
+            ) : (
+              <Entypo
+                onPress={() => setSelectedOption("cash")}
                 name="circle"
                 size={20}
                 color="gray"
               />
+            )}
 
-              <Text>Cash on delivery</Text>
-
+            <Text>Cash on delivery</Text>
           </View>
+
+          <View style={styles.paymentInfoContainer}>
+            {selectedOption === "card" ? (
+              <FontAwesome6 name="dot-circle" size={20} color="#ee3131" />
+            ) : (
+              <Entypo
+                onPress={() => setSelectedOption("card")}
+                name="circle"
+                size={20}
+                color="gray"
+              />
+            )}
+
+            <Text>Credit or debit card</Text>
+          </View>
+          <Pressable
+            onPress={() => setCurrentStep(3)}
+            style={styles.continueButtonContainer}
+          >
+            <Text style={styles.continueButtonText}>Continute</Text>
+          </Pressable>
+        </View>
+      )}
+
+      {currentStep === 3 && selectedOption === "cash" && (
+        <View style={styles.orderContainer}>
+          <Text style={styles.orderText}>Order now</Text>
+          <View style={styles.infoOrderContainer}>
+            <View>
+              <Text style={styles.detailInfoHeader}>
+                Save 10% and never run out
+              </Text>
+              <Text style={styles.detailInfoText}>Turn on auto deliveries</Text>
+            </View>
+            <MaterialIcons
+              name="keyboard-arrow-right"
+              size={24}
+              color="black"
+            />
+          </View>
+
+          <View style={styles.shippingAddressContainer}>
+            <Text>Shipping to {selectedAddress?.name}</Text>
+
+            <View style={styles.shippingDetailAddressContainer}>
+              <Text style={styles.shippingDetailAddressHeader}>Items</Text>
+
+              <Text style={styles.shippingDetailAddressText}>${total}</Text>
+            </View>
+
+            <View style={styles.shippingDetailAddressContainer}>
+              <Text style={styles.shippingDetailAddressHeader}>Delivery</Text>
+
+              <Text style={styles.shippingDetailAddressText}>0</Text>
+            </View>
+
+            <View style={styles.shippingDetailAddressContainer}>
+              <Text style={styles.orderDetailContainer}>Order total</Text>
+
+              <Text style={styles.orderDetailText}>${total}</Text>
+            </View>
+          </View>
+
+          <View style={styles.payWithInfoContainer}>
+            <Text style={styles.payWithInfoText}>Pay with</Text>
+            <Text style={styles.payWithInfo}>Pay on delivery (cash)</Text>
+          </View>
+
+          <Pressable style={styles.placeOrderButtonContainer}>
+              <Text style={styles.placeOrderButtonText}>Place your order</Text>
+            </Pressable>
         </View>
       )}
     </ScrollView>
@@ -349,13 +497,12 @@ const styles = StyleSheet.create({
     color: "white",
   },
   paymentContainer: {
-    marginHorizontal: 20
-
+    marginHorizontal: 20,
   },
   paymentInfoText: {
     fontSize: 20,
-    fontWeight: "bold"
-  }, 
+    fontWeight: "bold",
+  },
   paymentInfoContainer: {
     backgroundColor: "white",
     padding: 8,
@@ -364,7 +511,92 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 7,
-    marginTop: 12
+    marginTop: 12,
+  },
+  orderContainer: {
+    marginHorizontal: 20,
+  },
+  orderText: {
+    fontSize: 20,
+    fontWeight: "bold",
+  },
+  infoOrderContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 8,
+    backgroundColor: "white",
+    borderWidth: 1,
+    marginTop: 10,
+    borderColor: "#D0D0D0",
+  },
+  detailInfoHeader: {
+    fontSize: 17,
+    fontWeight: "bold",
+  },
+  detailInfoText: {
+    fontSize: 15,
+    color: "gray",
+    marginTop: 5,
+  },
+  shippingAddressContainer: {
+    backgroundColor: "white",
+    padding: 8,
+    borderColor: "#D0D0D0",
+    borderWidth: 1,
+    marginTop: 10,
+  },
+  shippingDetailAddressContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginTop: 7
+  },
+  shippingDetailAddressHeader: {
+    fontSize: 16,
+    fontWeight: "500",
+    color: "gray",
+  },
+  shippingDetailAddressText: {
+    color: "gray",
+    fontSize: 16,
+  },
+  orderDetailContainer: {
+    fontSize: 20,
+    fontWeight: "bold",
+  },
+  orderDetailText: {
+    color: "#ee3131",
+    fontSize: 17,
+    fontWeight: "bold",
+  },
+  payWithInfoContainer: {
+    backgroundColor: "white",
+    padding: 8,
+    borderColor: "#D0D0D0",
+    borderWidth: 1,
+    marginTop: 10,
+  },
+  payWithInfoText: {
+    fontSize: 16,
+    color: "gray"
+  },
+  payWithInfo: {
+    fontSize: 16,
+    fontWeight: "600",
+    marginTop: 7
+  },
+  placeOrderButtonContainer: {
+    backgroundColor: "#ee3131",
+    padding: 10,
+    borderRadius: 20,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 20
+  },
+  placeOrderButtonText: {
+    color: "white"
   }
+  
 });
 export default ConfirmationScreen;

@@ -504,7 +504,124 @@ const getAdditionalAddress = asyncHandler(async (req, res) => {
     });
 });
 
+const editAdditionalAddress = asyncHandler(async (req, res) => {
+    const { _id } = req.user;
+    const { addressId } = req.params;
+    const {  address } = req.body;
 
+    if (!addressId) throw new Error("Missing address ID");
+    //if (!address) throw new Error("Missing address data");
+
+    const { name, mobileNo, houseNo, street, landmark, country, postalCode } = address;
+
+    const user = await User.findById(_id);
+    if (!user) {
+        throw new Error("User not found");
+    }
+
+    const addressIndex = user.additionalAddress.findIndex(
+        (addr) => addr._id.toString() === addressId
+    );
+
+    if (addressIndex === -1) {
+        throw new Error("Address not found");
+    }
+
+    user.additionalAddress[addressIndex] = {
+        ...user.additionalAddress[addressIndex],
+        ...(name && { name }),
+        ...(mobileNo && { mobileNo }),
+        ...(houseNo && { houseNo }),
+        ...(street && { street }),
+        ...(landmark && { landmark }),
+        ...(country && { country }),
+        ...(postalCode && { postalCode }),
+    };
+
+    const updatedUser = await user.save();
+
+    return res.status(200).json({
+        success: !!updatedUser,
+        updatedUser: updatedUser || "User not found!",
+    });
+});
+
+const deleteAdditionalAddress = asyncHandler(async (req, res) => {
+    const { _id } = req.user;
+    const { addressId } = req.params;
+
+    if (!addressId) {
+        return res.status(400).json({
+            success: false,
+            message: 'Missing address ID',
+        });
+    }
+
+    const user = await User.findById(_id);
+    if (!user) {
+        return res.status(404).json({
+            success: false,
+            message: 'User not found!',
+        });
+    }
+
+    const addressExists = user.additionalAddress.some(
+        (address) => address._id.toString() === addressId
+    );
+
+    if (!addressExists) {
+        return res.status(404).json({
+            success: false,
+            message: 'Address not found!',
+        });
+    }
+
+    // Thực hiện xóa
+    const updatedUser = await User.findByIdAndUpdate(
+        _id,
+        { $pull: { additionalAddress: { _id: addressId } } },
+        { new: true }
+    ).select('-refreshToken -password -role');
+
+    return res.status(200).json({
+        success: true,
+        updatedUser,
+    });
+});
+
+const setDefaultAddress = asyncHandler(async (req, res) => {
+    const { _id } = req.user;
+    const { addressId } = req.params;  
+
+    if (!addressId) {
+        return res.status(400).json({ success: false, message: 'Missing address ID' });
+    }
+
+    const user = await User.findById(_id);
+    if (!user) {
+        return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    // Đặt tất cả các địa chỉ thành không mặc định
+    user.additionalAddress.forEach((address) => {
+        address.isDefault = false;
+    });
+
+    // Tìm địa chỉ theo ID và đặt làm mặc định
+    const address = user.additionalAddress.find((address) => address._id.toString() === addressId);
+    if (!address) {
+        return res.status(404).json({ success: false, message: 'Address not found' });
+    }
+    address.isDefault = true;
+
+    await user.save();
+
+    return res.status(200).json({
+        success: true,
+        message: 'Address set as default successfully',
+        user,
+    });
+});
 
 const updateWishlist = asyncHandler(async (req, res) => {
     const { pid } = req.params;
@@ -561,5 +678,8 @@ module.exports = {
     removeProductFromCart,
     updateWishlist,
     addAdditionalAddress,
-    getAdditionalAddress
+    getAdditionalAddress,
+    deleteAdditionalAddress,
+    editAdditionalAddress,
+    setDefaultAddress
 };

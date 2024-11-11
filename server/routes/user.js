@@ -17,11 +17,15 @@ router.put('/current', verifyAccessToken, uploader.single('avatar'), ctrls.updat
 router.put('/address', [verifyAccessToken], ctrls.updateUserAddress);
 router.post('/additional-address', [verifyAccessToken], ctrls.addAdditionalAddress);
 router.get('/additional-address/:_id', [verifyAccessToken], ctrls.getAdditionalAddress);
+router.put('/edit-address/:addressId', [verifyAccessToken], ctrls.editAdditionalAddress);
+router.put('/set-default/:addressId', [verifyAccessToken], ctrls.setDefaultAddress);
 router.put('/cart', [verifyAccessToken], ctrls.updateUserCart);
 router.delete('/remove-cart/:pid/:color', [verifyAccessToken], ctrls.removeProductFromCart);
 router.delete('/:uid', [verifyAccessToken, isAdmin], ctrls.deleteUser);
 router.put('/wishlist/:pid', [verifyAccessToken], ctrls.updateWishlist);
 router.put('/:uid', [verifyAccessToken, isAdmin], ctrls.updateUserByAdmin);
+router.delete('/additional-address/:addressId',[verifyAccessToken], ctrls.deleteAdditionalAddress);
+
 
 
 
