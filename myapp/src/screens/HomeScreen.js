@@ -9,6 +9,10 @@ import {
   TextInput,
   Image,
   StyleSheet,
+  KeyboardAvoidingView,
+  TouchableWithoutFeedback,
+  FlatList,
+  TouchableOpacity,
 } from "react-native";
 import axios from "axios";
 import AntDesign from "@expo/vector-icons/AntDesign";
@@ -17,9 +21,10 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useState, useEffect, useCallback } from "react";
 import ProductItem from "../components/ProductItem";
-import { apiGetProducts } from "../apis/product";
+import { apiGetProducts, apiSearchProduct } from "../apis/product";
 import DropDownPicker from "react-native-dropdown-picker";
-import { useNavigation } from "@react-navigation/native";
+import ProductBar from "../components/ProductBar";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { color } from "react-native-elements/dist/helpers";
 import { Dimensions } from "react-native";
 import { ModalContent, SlideAnimation } from "react-native-modals";
@@ -30,45 +35,144 @@ import { useDispatch, useSelector } from "react-redux";
 import { updateCart } from "../store/user/userSlice";
 import { showLoading, hideLoading } from "../store/app/appSlice";
 import { apiGetAdditionalAddress, apiGetCurrent } from "../apis";
+import { Audio } from "expo-av";
 
 const HomeScreen = () => {
   const navigation = useNavigation();
-  const dispatch = useDispatch();
   const { width: viewportWidth } = Dimensions.get("window");
+  const [offers, setOffers] = useState([]);
+  const [addresses, setAddresses] = useState([]);
+  const [products, setProducts] = useState([]);
+  const [deals, setDeals] = useState([]);
+  const [open, setOpen] = useState(false);
+  const [category, setCategory] = useState("All");
+  const [selectedAddress, setSelectedAddress] = useState("");
+  const [searchKey, setSearchKey] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [product, setProduct] = useState([]);
+  const [showResults, setShowResults] = useState(false);
+  const [recording, setRecording] = useState(null);
+  const [isRecording, setIsRecording] = useState(false);
+  const [isListening, setIsListening] = useState(false);
+  const handleSearch = async (key) => {
+    if (key.trim() !== "") {
+      setLoading(true);
+      try {
+        const response = await apiSearchProduct(key);
+        // const responseLimit = res
+        setProduct(response.products.slice(0, 5));
+        //console.log(response.products.slice(0, 5));
+        setShowResults(true);
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      } finally {
+        setLoading(false);
+      }
+    } else {
+      setProduct([]);
+      setShowResults(false);
+    }
+  };
+
+  const handleOutsidePress = () => {
+    setShowResults(false);
+    setSearchKey("");
+    setProduct([]);
+  };
+
+  // useEffect(() => {
+  //   Voice._onSpeechStart = onSpeechStart;
+  //   Voice._onSpeechEnd = onSpeechEnd;
+  //   Voice._onSpeechResults = onSpeechResults;
+
+  //   return () => {
+  //     Voice.destroy.then(Voice.removeAllListeners);
+  //   };
+  // }, []);
+
+  // const onSpeechStart = (e) => {
+  //   console.log('Speech started');
+  // };
+
+  // const onSpeechEnd = (e) => {
+  //   console.log('Speech ended');
+  // };
+
+  // const onSpeechResults = (e) => {
+  //   const { value } = e;
+  //   if (value && value.length > 0) {
+  //     setSearchKey(value[0]); // Set the first recognized value as the search key
+  //     handleSearch(value[0]); // Call your existing search function
+  //   }
+  // };
+
+  // const startListening = async () => {
+  //   try {
+  //     await Voice.start('en-US'); // You can change the language code as needed
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
+  //console.log(selectedAddress);
+  const dispatch = useDispatch();
+  const [addedToCart, setAddedToCart] = useState(false);
+  const addItemToCart = (item) => {
+    setAddedToCart(true);
+    dispatch(addToCart(item));
+    setTimeout(() => {
+      setAddedToCart(false);
+    }, 6000);
+  };
+  const cart = useSelector((state) => state.user.cart);
+
   const list = [
     {
       id: "0",
-      image: "https://img.lovepik.com/element/45013/9627.png_860.png",
-      name: "Deals",
+      image:
+        "https://hanoicomputercdn.com/media/product/63677_camera_wifi_4mp_ipc_f42p_imou_ho_tro_hotspot.jpg",
+      name: "Camera",
     },
     {
       id: "1",
       image:
-        "https://cdn.tgdd.vn/Products/Images/42/329149/iphone-16-pro-max-tu-nhien-thumb-600x600.jpg",
-      name: "Mobiles",
+        "https://digital-world-2.myshopify.com/cdn/shop/files/laptop_300x.jpg?v=1613166811",
+      name: "Laptop",
     },
     {
       id: "2",
       image:
-        "https://store.storeimages.cdn-apple.com/8756/as-images.apple.com/is/mbp16-spaceblack-select-202310?wid=904&hei=840&fmt=jpeg&qlt=90&.v=1697311054290",
-      name: "Laptops",
+        "https://www.svstore.vn/uploads/source/apple-watch-ultra/mqe23ref-vw-34fr-watch-49-titanium-ultra-vw-34fr-wf-co-watch-face-49-alpine-ultra-vw-34fr-wf-co-2.jpg",
+      name: "Accessories",
     },
     {
       id: "3",
-      image: "https://taingheviet.com/uploads/Jabra%20Elite%2085H/2.png",
-      name: "Headphones",
+      image:
+        "https://digital-world-2.myshopify.com/cdn/shop/files/printer_300x.jpg?v=1613166810",
+      name: "Printer",
     },
     {
       id: "4",
       image:
-        "https://hangdang.vn/wp-content/uploads/2023/09/title_iphone_15_plus_ultrahybrid_black_01.jpg",
-      name: "Back cover",
+        "https://media.currys.biz/i/currysprod/M10233499_black?$l-large$&fmt=auto",
+      name: "Speaker",
     },
     {
       id: "5",
       image:
-        "https://azskin.vn/cdn/shop/files/37e3b4255beb424bbc0a98098cb9ec09-jpeg.webp?v=1690615552",
-      name: "Charging cable",
+        "https://digital-world-2.myshopify.com/cdn/shop/files/mobile-devices_300x.jpg?v=1613166682",
+      name: "Smartphone",
+    },
+    {
+      id: "6",
+      image:
+        "https://digital-world-2.myshopify.com/cdn/shop/files/television_300x.jpg?v=1613166810",
+      name: "Television",
+    },
+    {
+      id: "5",
+      image:
+        "https://sp.yimg.com/ib/th?id=OPHS.r9lTVkznfhmwRQ474C474&o=5&pid=21.1",
+      name: "Tablet",
     },
   ];
 
@@ -77,26 +181,24 @@ const HomeScreen = () => {
     "https://images-eu.ssl-images-amazon.com/images/G/31/img22/Wireless/devjyoti/PD23/Launches/Updated_ingress1242x550_3.gif",
   ];
 
-  const [offers, setOffers] = useState([]);
-  const [addresses, setAddresses] = useState([]);
-  const [products, setProducts] = useState([]);
-  const [open, setOpen] = useState(false);
-  const [category, setCategory] = useState("All");
-  const [selectedAddress, setSelectedAddress] = useState("");
-  console.log(selectedAddress);
   const [items, setItems] = useState([
     { label: "All", value: "All" },
     { label: "Laptop", value: "Laptop" },
     { label: "Camera", value: "Camera" },
+    { label: "Accessories", value: "Accessories" },
+    { label: "Printer", value: "Printer" },
+    { label: "Speaker", value: "Speaker" },
     { label: "Smartphone", value: "Smartphone" },
+    { label: "Television", value: "Television" },
+    { label: "Tablet", value: "Tablet" },
   ]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await apiGetProducts({
-          limit: 10,
-          sort: "-totalRating",
+          limit: 100,
+          //sort: "-totalRating",
         });
         //console.log('response', response);
         setProducts(response.productData);
@@ -108,10 +210,26 @@ const HomeScreen = () => {
   }, []);
 
   useEffect(() => {
+    const fetchDeals = async () => {
+      try {
+        const response = await apiGetProducts({
+          limit: 10,
+          sort: "-totalRating",
+        });
+        //console.log('response', response);
+        setDeals(response.productData);
+      } catch (error) {
+        console.log("error message", error);
+      }
+    };
+    fetchDeals();
+  }, []);
+
+  useEffect(() => {
     const fetchOffers = async () => {
       try {
         const response = await apiGetProducts({
-          sort: "-sold",
+          sort: "-quantity",
         });
         if (response.success) setOffers(response.productData);
       } catch (error) {
@@ -125,51 +243,101 @@ const HomeScreen = () => {
     setOpen(true);
   }, []);
   const [modalVisible, setModalVisible] = useState(false);
-  const cart = useSelector((state) => state.user.cart);
-  console.log(cart);
 
   useEffect(() => {
-    const fetchUserAndAddresses = async () => {
-      try {
-        const userResponse = await apiGetCurrent();
-        if (userResponse.success) {
-          const userID = userResponse.rs._id;
-          //console.log(userID);
-
-          const addressResponse = await apiGetAdditionalAddress(userID);
-
-          if (addressResponse.success) {
-            //console.log(addressResponse.additionalAddress);
-            setAddresses(addressResponse.additionalAddress);
-          } else {
-            console.log("Failed to fetch addresses:", addressResponse.message);
-          }
-        } else {
-          console.log("Failed to fetch user:", userResponse.message);
-        }
-      } catch (error) {
-        console.log("Error:", error);
-      }
-    };
-
     fetchUserAndAddresses();
   }, []);
+
+  const fetchUserAndAddresses = async () => {
+    try {
+      const userResponse = await apiGetCurrent();
+      if (userResponse.success) {
+        const userID = userResponse.rs._id;
+        //console.log(userID);
+
+        const addressResponse = await apiGetAdditionalAddress(userID);
+
+        if (addressResponse.success) {
+          //console.log(addressResponse.additionalAddress);
+          setAddresses(addressResponse.additionalAddress);
+        } else {
+          console.log("Failed to fetch addresses:", addressResponse.message);
+        }
+      } else {
+        console.log("Failed to fetch user:", userResponse.message);
+      }
+    } catch (error) {
+      console.log("Error:", error);
+    }
+  };
+  //refresh the addresses when the component comes to the focused element
+  useFocusEffect(
+    useCallback(() => {
+      fetchUserAndAddresses();
+    })
+  );
   return (
     <>
       <SafeAreaView style={styles.container}>
         <ScrollView>
-          <View style={styles.searchContainer}>
-            <Pressable style={styles.searchBox}>
-              <AntDesign
-                style={styles.icon}
-                name="search1"
-                size={22}
-                color="black"
-              />
-              <TextInput placeholder="Search" />
-            </Pressable>
-            <Feather name="mic" size={24} color="black" />
-          </View>
+          <TouchableWithoutFeedback onPress={handleOutsidePress}>
+            <View
+              style={[
+                styles.searchContainer,
+                showResults && styles.expandedSearchContainer,
+              ]}
+            >
+              <View style={styles.searchBox}>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Search"
+                  value={searchKey}
+                  onChangeText={(text) => {
+                    setSearchKey(text);
+                    handleSearch(text);
+                  }}
+                />
+
+                {showResults && (
+                  <View style={styles.resultsWrapper}>
+                    <FlatList
+                      data={product}
+                      keyExtractor={(item) => item._id}
+                      renderItem={({ item }) => (
+                        <TouchableOpacity
+                          activeOpacity={0.7}
+                          onPress={() =>
+                            navigation.navigate("Info", {
+                              id: item?._id,
+                              title: item?.title,
+                              price: item?.price,
+                              carouseImages: item.images,
+                              color: item?.color,
+                              description: item?.description,
+                              item: item,
+                            })
+                          }
+                        >
+                          <Text style={styles.resultItem} numberOfLines={1}>
+                            {item.title}
+                          </Text>
+                        </TouchableOpacity>
+                      )}
+                      style={styles.resultsContainer}
+                    />
+                  </View>
+                )}
+                <AntDesign
+                  style={styles.icon}
+                  name="search1"
+                  size={22}
+                  color="black"
+                />
+              </View>
+
+              {/* <Feather name="mic" size={24} color="black" /> */}
+            </View>
+          </TouchableWithoutFeedback>
 
           <Pressable
             onPress={() => setModalVisible(!modalVisible)}
@@ -179,11 +347,11 @@ const HomeScreen = () => {
 
             <Pressable>
               {selectedAddress ? (
-                <Text>Deliver to {selectedAddress?.name} - {selectedAddress?.street}</Text>
-              ) : (
-                <Text style={styles.locationText}>
-                  Add a Adress
+                <Text style={styles.selectedLocationText}>
+                  Deliver to {selectedAddress?.name} - {selectedAddress?.street}
                 </Text>
+              ) : (
+                <Text style={styles.locationText}>Add a Adress</Text>
               )}
             </Pressable>
             <MaterialIcons name="keyboard-arrow-down" size={24} color="black" />
@@ -219,7 +387,7 @@ const HomeScreen = () => {
             Trending Deals of the week
           </Text>
           <View style={styles.productsContainer}>
-            {products.slice(0, 4).map((item, index) => (
+            {deals.slice(0, 4).map((item, index) => (
               <Pressable
                 onPress={() =>
                   navigation.navigate("Info", {
@@ -250,8 +418,12 @@ const HomeScreen = () => {
                   <Text style={styles.productRating}>
                     {item?.totalRating} ⭐️
                   </Text>
-                  <Text style={styles.productSold}>{item?.sold}</Text>
+                  {/* <Text style={styles.productSold}>{item?.sold}</Text> */}
                 </View>
+                <ProductBar
+                  numberOfProducts={item?.quantity - item?.sold}
+                  totalProducts={item?.quantity}
+                />
               </Pressable>
             ))}
           </View>
@@ -271,7 +443,7 @@ const HomeScreen = () => {
                     item: item,
                   })
                 }
-                style={styles.offerItem}
+                style={styles.offersItem}
               >
                 <Image
                   style={styles.offerImage}
@@ -292,23 +464,22 @@ const HomeScreen = () => {
               marginTop: 20,
             }}
           >
-            <DropDownPicker
-              style={[
-                styles.dropdownContainer,
-                { marginBottom: open ? 120 : 1 },
-              ]}
-              open={open}
-              value={category}
-              items={items}
-              setOpen={setOpen}
-              setValue={setCategory}
-              setItems={setItems}
-              placeholder="Choose category"
-              placeholderStyle={{ color: "gray" }}
-              onOpen={onGenderOpen}
-              zIndex={3000}
-              zIndexInverse={1000}
-            />
+            <View style={{ zIndex: 3000 }}>
+              <DropDownPicker
+                style={[{ marginBottom: open ? 150 : 1 }]}
+                open={open}
+                value={category}
+                items={items}
+                setOpen={setOpen}
+                setValue={setCategory}
+                setItems={setItems}
+                placeholder="Choose category"
+                placeholderStyle={{ color: "gray" }}
+                onOpen={onGenderOpen}
+                zIndex={3000}
+                zIndexInverse={1000}
+              />
+            </View>
           </View>
           <View style={styles.productsFilterContainer}>
             {products
@@ -335,7 +506,7 @@ const HomeScreen = () => {
         visible={modalVisible}
         onTouchOutside={() => setModalVisible(!modalVisible)}
       >
-        <ModalContent style={[styles.modalContentContainer]}>
+        <ModalContent style={[styles.modalContentContainer, { zIndex: 20 }]}>
           <View style={styles.modalContent}>
             <Text style={styles.modalContentHeaderText}>
               Choose your Location
@@ -422,6 +593,11 @@ const styles = StyleSheet.create({
     padding: 10,
     flexDirection: "row",
     alignItems: "center",
+    marginBottom: 0,
+  },
+  expandedSearchContainer: {
+    height: 450,
+    marginTop: -200,
   },
   searchBox: {
     flexDirection: "row",
@@ -432,16 +608,48 @@ const styles = StyleSheet.create({
     borderRadius: 3,
     height: 38,
     flex: 1,
+    justifyContent: "space-between"
   },
-  icon: { paddingLeft: 10 },
+  input: {
+    marginLeft: 10
+
+  },
+  resultsContainer: {
+    flexDirection: "row",
+    marginHorizontal: 7,
+    // gap: 10,
+    backgroundColor: "white",
+    borderRadius: 3,
+    //height: 38,
+    flex: 1,
+    width: "105%",
+    marginTop: -100,
+    marginLeft: -7,
+  },
+  resultsWrapper: {
+    position: "absolute",
+    top: 150,
+    left: 10,
+    right: 10,
+    zIndex: 1000,
+  },
+  resultItem: {
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "#eee",
+  },
+  icon: { paddingLeft: 10, marginRight: 10 },
   locationContainer: {
     flexDirection: "row",
     alignItems: "center",
     gap: 5,
     padding: 10,
     backgroundColor: "#ee4731",
+    //position: 'relative'
+    zIndex: 1,
   },
   locationText: { fontSize: 13, fontWeight: "500", color: "white" },
+  selectedLocationText: { fontSize: 13, fontWeight: "500", color: "white" },
   listItemContainer: {
     margin: 10,
     justifyContent: "center",
@@ -463,8 +671,27 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     flexWrap: "wrap",
+    justifyContent: "space-around",
   },
-  productItem: { marginHorizontal: 20, marginVertical: 25 },
+  productItem: {
+    marginVertical: 15,
+    borderWidth: 1,
+    borderColor: "#D0d0d0",
+    borderRadius: 5,
+    padding: 10,
+    //width: "48%"
+  },
+  offersItem: {
+    marginVertical: 15,
+    borderWidth: 1,
+    borderColor: "#D0d0d0",
+    borderRadius: 5,
+    padding: 10,
+    //width: "48%",
+    paddingHorizontal: 7,
+    marginRight: 10,
+    marginLeft: 5,
+  },
   productImage: { width: 150, height: 150, resizeMode: "contain" },
   productTitle: { width: 150, marginTop: 10 },
   productInfo: {

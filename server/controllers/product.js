@@ -134,7 +134,62 @@ const getProducts = asyncHandler(async (req, res) => {
   }
 });
 
-//  Update product
+
+
+const mongoose = require("mongoose");
+
+
+const searchProduct = async (req, res) => {
+  const { key } = req.params; 
+
+ 
+  if (!key || key.trim() === "") {
+    return res.status(400).json({ success: false, message: "Search key 'key' is required and cannot be empty" });
+  }
+
+  try {
+   
+    let searchQuery = {};
+
+    if (mongoose.Types.ObjectId.isValid(key)) {
+   
+      searchQuery._id = mongoose.Types.ObjectId(key);
+    } else {
+    
+      searchQuery = {
+        $or: [
+          { title: { $regex: key, $options: "i" } },   
+          { brand: { $regex: key, $options: "i" } },    
+          { category: { $regex: key, $options: "i" } },  
+          { description: { $regex: key, $options: "i" } }, 
+          { color: { $regex: key, $options: "i" } },    
+        ]
+      };
+    }
+
+  
+    const products = await Product.find(searchQuery);
+
+    if (!products || products.length === 0) {
+      return res.status(404).json({ success: false, message: "No products found" });
+    }
+
+   
+    return res.status(200).json({
+      success: true,
+      count: products.length,
+      products,
+    });
+  } catch (error) {
+  
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+
+
+
+
 const updateProduct = asyncHandler(async (req, res) => {
   const { pid } = req.params;
   const files = req.files;
@@ -152,7 +207,7 @@ const updateProduct = asyncHandler(async (req, res) => {
   });
 });
 
-//  Update product
+
 const deleteProduct = asyncHandler(async (req, res) => {
   const { pid } = req.params;
   const product = await Product.findByIdAndDelete(pid);
@@ -269,4 +324,5 @@ module.exports = {
   ratings,
   uploadProductImages,
   addVariant,
+  searchProduct
 };

@@ -8,6 +8,8 @@ import { store, persistor } from './src/store/redux';
 import { ModalPortal } from 'react-native-modals';
 import CustomedLoading from './src/components/common/CustomedLoading';
 import CustomedAlert from './src/components/common/CustomedAlert';
+import { LogBox } from 'react-native';
+LogBox.ignoreAllLogs();
 
 const App = () => {
     return (
@@ -22,10 +24,10 @@ const App = () => {
 const AppContent = () => {
     return (
         <SafeAreaView style={styles.container}>
+               
             <NavigationContainer>
                 <CustomedLoading />
                 <CustomedAlert />
-                <ModalPortal />
                 <StatusBar
                     barStyle="dark-content"
                     backgroundColor="transparent"
@@ -33,6 +35,7 @@ const AppContent = () => {
                 />
                 <AppNavigation />
             </NavigationContainer>
+            <ModalPortal />
         </SafeAreaView>
     );
 

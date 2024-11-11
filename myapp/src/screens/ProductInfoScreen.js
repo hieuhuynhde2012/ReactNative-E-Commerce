@@ -17,8 +17,10 @@ import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useDispatch, useSelector } from "react-redux";
 import { updateCart, addToCart } from "../store/user/userSlice";
 import { showLoading, hideLoading } from "../store/app/appSlice";
+import { useNavigation } from "@react-navigation/native";
 
 const ProductInfoScreen = () => {
+  const navigation = useNavigation();
   const route = useRoute();
   const { width } = Dimensions.get("window");
   const height = (width * 100) / 100;
@@ -32,20 +34,22 @@ const ProductInfoScreen = () => {
     }, 6000);
   };
   const cart = useSelector((state) => state.user.cart);
- // console.log(cart);
+  // console.log(cart);
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       <View style={styles.searchBarContainer}>
+        <Pressable onPress={() => navigation.goBack()}>
+          <Ionicons name="arrow-back-outline" size={24} color="white" />
+        </Pressable>
         <Pressable style={styles.searchBar}>
+          <TextInput style={styles.textInputSearch} placeholder="Search" />
           <AntDesign
             style={styles.searchIcon}
             name="search1"
             size={22}
             color="black"
           />
-          <TextInput placeholder="Search" />
         </Pressable>
-        <Feather name="mic" size={24} color="black" />
       </View>
 
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
@@ -117,7 +121,7 @@ const ProductInfoScreen = () => {
         style={styles.addToCartButton}
       >
         {addedToCart ? (
-          <View >
+          <View>
             <Text style={styles.addToCartText}>Added to Cart</Text>
           </View>
         ) : (
@@ -153,9 +157,14 @@ const styles = StyleSheet.create({
     borderRadius: 3,
     height: 38,
     flex: 1,
+    justifyContent: "space-between",
+  },
+  textInputSearch: {
+    marginLeft: 10,
   },
   searchIcon: {
     paddingLeft: 10,
+    marginRight: 10,
   },
   imageBackground: {
     marginTop: 25,
@@ -277,9 +286,8 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
     marginVertical: 10,
   },
-  addToCartText : {
-    color: 'white'
-
+  addToCartText: {
+    color: "white",
   },
   buyNowButton: {
     backgroundColor: "#ef0505",
