@@ -272,8 +272,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 10,
     borderColor: "#D0d0d0",
-    borderWidth: 1,
-    borderRadius: 3
+    // borderWidth: 1,
+    // borderRadius: 3
     
   },
   pressableContainer: {

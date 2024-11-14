@@ -33,10 +33,20 @@ const ConfirmationScreen = () => {
   const [addresses, setAddresses] = useState([]);
   const [option, setOption] = useState(false);
   const [selectedOption, setSelectedOption] = useState("");
+  const [selectedDelivery, setselectedDelivery] = useState("");
   const [selectedAddress, setselectedAddress] = useState("");
-  const handlePlaceOrder = async() => {
-    
-  }
+  const handlePlaceOrder = async () => {};
+  const optionDelivery = [
+    {
+      id: 1,
+      text: "Tomorrow by 10am - Discount up to 80% with membership",
+    },
+    {
+      id: 2,
+      text: "Tomorrow - Free shipping with paypal payment",
+    },
+  ];
+
   useEffect(() => {
     fetchUserAndAddresses();
   }, []);
@@ -114,7 +124,7 @@ const ConfirmationScreen = () => {
       Alert.alert("Error", "An error occurred. Please try again.");
     }
   };
-  
+
   return (
     <ScrollView style={styles.container}>
       <View style={styles.viewContainer}>
@@ -223,40 +233,24 @@ const ConfirmationScreen = () => {
             Choose your delivery options
           </Text>
 
-          <View style={styles.infoOptionContainer}>
-            {option ? (
-              <FontAwesome6 name="dot-circle" size={20} color="#ee3131" />
-            ) : (
-              <Entypo
-                onPress={() => setOption(!option)}
-                name="circle"
-                size={20}
-                color="gray"
-              />
-            )}
+          <View>
+            {optionDelivery.map((item) => (
+              <Pressable
+                key={item.id}
+                style={styles.infoOptionContainer}
+                onPress={() => setSelectedOption(item.id)}
+              >
+                {selectedOption === item.id ? (
+                  <FontAwesome6 name="dot-circle" size={20} color="#ee3131" />
+                ) : (
+                  <Entypo name="circle" size={20} color="gray" />
+                )}
 
-            <Text style={styles.infoOptionTextContainer}>
-              <Text style={styles.infoOptionText}>Tomorrow by 10am</Text> -
-              Discount up to 80% with membership
-            </Text>
-          </View>
-
-          <View style={styles.infoOptionContainer}>
-            {option ? (
-              <FontAwesome6 name="dot-circle" size={20} color="#ee3131" />
-            ) : (
-              <Entypo
-                onPress={() => setOption(!option)}
-                name="circle"
-                size={20}
-                color="gray"
-              />
-            )}
-
-            <Text style={styles.infoOptionTextContainer}>
-              <Text style={styles.infoOptionText}>Tomorrow</Text> - Free
-              shipping with paypal payment
-            </Text>
+                <Text style={styles.infoOptionTextContainer}>
+                  <Text style={styles.infoOptionText}>{item.text}</Text>
+                </Text>
+              </Pressable>
+            ))}
           </View>
 
           <Pressable
@@ -355,8 +349,8 @@ const ConfirmationScreen = () => {
           </View>
 
           <Pressable style={styles.placeOrderButtonContainer}>
-              <Text style={styles.placeOrderButtonText}>Place your order</Text>
-            </Pressable>
+            <Text style={styles.placeOrderButtonText}>Place your order</Text>
+          </Pressable>
         </View>
       )}
     </ScrollView>
@@ -550,7 +544,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    marginTop: 7
+    marginTop: 7,
   },
   shippingDetailAddressHeader: {
     fontSize: 16,
@@ -579,12 +573,12 @@ const styles = StyleSheet.create({
   },
   payWithInfoText: {
     fontSize: 16,
-    color: "gray"
+    color: "gray",
   },
   payWithInfo: {
     fontSize: 16,
     fontWeight: "600",
-    marginTop: 7
+    marginTop: 7,
   },
   placeOrderButtonContainer: {
     backgroundColor: "#ee3131",
@@ -592,11 +586,10 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 20
+    marginTop: 20,
   },
   placeOrderButtonText: {
-    color: "white"
-  }
-  
+    color: "white",
+  },
 });
 export default ConfirmationScreen;
