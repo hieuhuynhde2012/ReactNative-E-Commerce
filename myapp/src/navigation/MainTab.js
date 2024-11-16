@@ -14,6 +14,7 @@ const Tab = createBottomTabNavigator();
 
 const MainTab = () => {
   const cart = useSelector((state) => state.user.cart);
+  
   return (
     <Tab.Navigator
       screenOptions={{
@@ -46,12 +47,11 @@ const MainTab = () => {
             <MaterialIcons
               name="category"
               size={24}
-              color={focused ? "#ee3131" : "black"} 
+              color={focused ? "#ee3131" : "black"}
             />
           ),
         }}
       />
-
       <Tab.Screen
         name="Cart"
         component={CartScreen}
@@ -59,12 +59,15 @@ const MainTab = () => {
           tabBarLabel: "Cart",
           headerShown: false,
           tabBarIcon: ({ focused }) => (
-            <Entypo name="shopping-cart" size={24}  color={focused ? "#ee3131" : "black"}  />
+            <Entypo
+              name="shopping-cart"
+              size={24}
+              color={focused ? "#ee3131" : "black"}
+            />
           ),
           tabBarBadge: cart.length > 0 ? cart.length : null,
         }}
       />
-
       <Tab.Screen
         name="Account"
         component={AccountScreen}
@@ -75,7 +78,7 @@ const MainTab = () => {
             <Ionicons
               name="person"
               size={24}
-              color={focused ? "#ee3131" : "black"} 
+              color={focused ? "#ee3131" : "black"}
             />
           ),
         }}

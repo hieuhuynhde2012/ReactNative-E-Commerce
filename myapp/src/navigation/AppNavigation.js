@@ -13,15 +13,17 @@ import OrderScreen from "../screens/OrderScreen";
 import EditAddressesScreen from "../screens/EditAddressesScreen";
 import TestScreen from "../screens/TestScreen";
 import { SafeAreaView } from "react-native-safe-area-context";
+
 const Stack = createStackNavigator();
 
 const AppNavigation = () => {
-  const dispatch = useDispatch();
-  const { isLoggedIn, ...data } = useSelector((state) => state.user);
+    const dispatch = useDispatch();
+    const { isLoggedIn, ...data } = useSelector((state) => state.user);
 
-  useEffect(() => {
-    dispatch(getCurrent());
-  }, [dispatch]);
+    useEffect(() => {
+        dispatch(getCurrent());
+        dispatch(getCategories());
+    }, [dispatch]);
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -79,6 +81,7 @@ const AppNavigation = () => {
     </Stack.Navigator>
     </SafeAreaView>
   );
+
 };
 
 export default AppNavigation;
