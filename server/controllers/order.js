@@ -19,6 +19,46 @@ const createOrder = asyncHandler(async (req, res) => {
   });
 });
 
+const createNewOrder = asyncHandler(async (req, res) => {
+  try {
+    const { _id } = req.user;
+    const { cartItems, totalPrice, shippingAddress, paymentMethod } = req.body;
+
+    const user = await User.findById(_id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const products = cartItems.map((item) => ({
+      title: item?.title,
+      quantity: item.quantity,
+      price: item.price,
+      thumbnail: item?.image,
+      color: item?.color,
+    }));
+
+    const orderData = {
+      user: _id,  // Use `orderBy` to reference the user
+      products,
+      totalPrice,
+      shippingAddress,
+      paymentMethod,
+    };
+
+    const newOrder = await Order.create(orderData);
+
+    res.status(200).json({
+      success: true,
+      message: "Order created successfully!",
+      createdOrder: newOrder,
+    });
+  } catch (error) {
+    console.error("Error creating order:", error);  // Log the error
+    res.status(500).json({ message: "Error creating order", error: error.message });  // Send detailed error message
+  }
+});
+
+
 // Update order status
 const updateOrderStatus = asyncHandler(async (req, res) => {
   const { oid } = req.params;
@@ -206,4 +246,5 @@ module.exports = {
   updateOrderStatus,
   getUserOrder,
   getOrders,
+  createNewOrder
 };

@@ -7,13 +7,6 @@ const EditAddressesScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
 
-  const [country, setCountry] = useState(initialCountry || "");
-  const [name, setName] = useState(initialName || "");
-  const [mobileNo, setMobileNo] = useState(initialMobileNo || "");
-  const [houseNo, setHouseNo] = useState(initialHouseNo || "");
-  const [street, setStreet] = useState(initialStreet || "");
-  const [landmark, setLandmark] = useState(initialLandmark || "");
-  const [postalCode, setPostalCode] = useState(initialPostalCode || "");
 
   const {
     id,
@@ -26,19 +19,33 @@ const EditAddressesScreen = () => {
     postalCode: initialPostalCode,
   } = route.params;
 
+  const [name, setName] = useState(initialName);
+  const [houseNo, setHouseNo] = useState(initialHouseNo);
+  const [landmark, setLandmark] = useState(initialLandmark);
+  const [street, setStreet] = useState(initialStreet);
+  const [country, setCountry] = useState(initialCountry);
+  const [mobileNo, setMobileNo] = useState(initialMobileNo);
+  const [postalCode, setPostalCode] = useState(initialPostalCode);
+
   const handleUpdateAddress = async () => {
     const updatedAddress = {
-      country,
-      name,
-      mobileNo,
-      houseNo,
-      street,
-      landmark,
-      postalCode,
+      ...(name !== initialName ? { name } : {}),
+      ...(houseNo !== initialHouseNo ? { houseNo } : {}),
+      ...(landmark !== initialLandmark ? { landmark } : {}),
+      ...(street !== initialStreet ? { street } : {}),
+      ...(country !== initialCountry ? { country } : {}),
+      ...(mobileNo !== initialMobileNo ? { mobileNo } : {}),
+      ...(postalCode !== initialPostalCode ? { postalCode } : {}),
     };
-
+  
+    if (Object.keys(updatedAddress).length === 0) {
+      Alert.alert("No Changes", "No updates to save.");
+      navigation.goBack();
+      return;
+    }
+  
     try {
-      const response = await apiEditAdditionalAddress(id, { address: updatedAddress });
+      const response = await apiEditAdditionalAddress(id, { additionalAddress: updatedAddress });
       if (response.success) {
         Alert.alert("Success", "Address updated successfully!");
         navigation.goBack();
@@ -50,6 +57,7 @@ const EditAddressesScreen = () => {
       Alert.alert("Error", "Failed to update address. Please try again.");
     }
   };
+  
   return (
     <ScrollView style={styles.addressContainer}>
       <View style={styles.addressBlock} />
