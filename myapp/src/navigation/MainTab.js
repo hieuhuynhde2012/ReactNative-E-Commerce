@@ -1,7 +1,6 @@
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import HomeScreen from "../screens/HomeScreen";
-import CategoryScreen from "../screens/CategoryScreen";
 import AccountScreen from "../screens/AccountScreen";
 import Entypo from "@expo/vector-icons/Entypo";
 import AntDesign from "@expo/vector-icons/AntDesign";
@@ -9,6 +8,7 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import CartScreen from "../screens/CartScreen";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useDispatch, useSelector } from "react-redux";
+import CategoryTopTab from "./CategoryTopTab";
 
 const Tab = createBottomTabNavigator();
 
@@ -37,21 +37,21 @@ const MainTab = () => {
           ),
         }}
       />
-      <Tab.Screen
-        name="Category"
-        component={CategoryScreen}
-        options={{
-          tabBarLabel: "Category",
-          headerShown: false,
-          tabBarIcon: ({ focused }) => (
-            <MaterialIcons
-              name="category"
-              size={24}
-              color={focused ? "#ee3131" : "black"}
+<Tab.Screen
+                name="Category"
+                component={CategoryTopTab}
+                options={{
+                    tabBarLabel: 'Category',
+                    headerShown: false,
+                    tabBarIcon: ({ focused }) => (
+                        <MaterialIcons
+                            name="category"
+                            size={24}
+                            color={focused ? '#ee3131' : 'black'}
+                        />
+                    ),
+                }}
             />
-          ),
-        }}
-      />
       <Tab.Screen
         name="Cart"
         component={CartScreen}

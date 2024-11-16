@@ -13,6 +13,7 @@ import OrderScreen from "../screens/OrderScreen";
 import EditAddressesScreen from "../screens/EditAddressesScreen";
 import TestScreen from "../screens/TestScreen";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { getCategories } from "../store/app/asyncActions";
 
 const Stack = createStackNavigator();
 
@@ -26,7 +27,7 @@ const AppNavigation = () => {
     }, [dispatch]);
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+  
     <Stack.Navigator>
       {isLoggedIn ? (
         <>
@@ -79,7 +80,7 @@ const AppNavigation = () => {
         />
       )}
     </Stack.Navigator>
-    </SafeAreaView>
+
   );
 
 };
