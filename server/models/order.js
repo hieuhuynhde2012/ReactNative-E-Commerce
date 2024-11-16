@@ -15,6 +15,40 @@ var orderSchema = new mongoose.Schema({
       title: String,
     },
   ],
+  totalPrice: {
+    type: Number,
+    required: true,
+  },
+  shippingAddress: {
+    name: {
+      type: String,
+      required: true,
+    },
+    mobileNo: {
+      type: String,
+      required: true,
+    },
+    houseNo: {
+      type: String,
+      required: true,
+    },
+    street: {
+      type: String,
+      required: true,
+    },
+    landmark: {
+      type: String,
+      required: true,
+    },
+    postalCode: {
+      type: String,
+      required: true,
+    },
+  },
+  paymentMethod: {
+    type: String,
+    required: true,
+  },
   status: {
     type: String,
     default: "Cancelled",

@@ -16,7 +16,6 @@ import {
   apiGetAdditionalAddress,
   apiGetCurrent,
   apiDeleteAdditionalAddress,
-  apiEditAdditionalAddress,
   apiSetDefaultAddress,
 } from "../apis";
 import Entypo from "@expo/vector-icons/Entypo";
@@ -200,6 +199,7 @@ export default AddAddressScreen;
 const styles = StyleSheet.create({
   addAddressContainer: {
     backgroundColor: "white",
+    
   },
   searchContainer: {
     backgroundColor: "#ee3131",

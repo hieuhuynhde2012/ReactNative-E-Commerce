@@ -42,18 +42,15 @@ const CartScreen = () => {
     <ScrollView style={styles.container}>
       <View style={styles.searchContainer}>
         <Pressable onPress={() => navigation.goBack()}>
-          <Ionicons name="arrow-back-outline" size={24} color="white" />
+          <Ionicons name="arrow-back-outline" size={24} color="#ee3131" />
         </Pressable>
-        <Pressable style={styles.searchBox}>
-          <TextInput style={styles.searchTextInput} placeholder="Search" />
-          <AntDesign
-            style={styles.icon}
-            name="search1"
-            size={22}
-            color="black"
-          />
-        </Pressable>
+
+        <View style={styles.cartContainer}>
+          <Text style={{ fontSize: 24, fontWeight: "400" }}>Cart</Text>
+        </View>
       </View>
+
+      <Text style={styles.seperator}></Text>
 
       <View style={styles.subTotalContainer}>
         <Text style={styles.subTotalText}>Subtotal: </Text>
@@ -156,25 +153,17 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
   },
   searchContainer: {
-    backgroundColor: "#ee3131",
+    backgroundColor: "white",
     padding: 10,
     flexDirection: "row",
     alignItems: "center",
   },
-  searchBox: {
-    flexDirection: "row",
+  cartContainer: {
+    flex: 1, //
     alignItems: "center",
-    justifyContent: "space-between",
-    marginHorizontal: 7,
-    gap: 10,
-    backgroundColor: "white",
-    borderRadius: 3,
-    height: 38,
-    flex: 1,
-    //marginLeft: 10
   },
-  searchTextInput: {
-    marginLeft: 10,
+  cartHeader: {
+    fontSize: 100,
   },
   icon: {
     marginRight: 10,
@@ -222,7 +211,7 @@ const styles = StyleSheet.create({
     resizeMode: "contain",
     borderColor: "#D0d0d0",
     borderWidth: 1,
-    marginLeft: 10
+    marginLeft: 10,
   },
   productInfoContainer: {
     backgroundColor: "white",
@@ -265,7 +254,7 @@ const styles = StyleSheet.create({
     borderRadius: 7,
     borderColor: "#D0d0d0",
     borderWidth: 1,
-    marginLeft: 10
+    marginLeft: 10,
   },
   quantityAdjust: {
     backgroundColor: "white",
@@ -274,7 +263,6 @@ const styles = StyleSheet.create({
     borderColor: "#D0d0d0",
     // borderWidth: 1,
     // borderRadius: 3
-    
   },
   pressableContainer: {
     marginTop: 15,

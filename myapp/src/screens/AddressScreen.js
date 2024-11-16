@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, ScrollView, StyleSheet } from "react-native";
+import { View, Text, ScrollView, StyleSheet, SafeAreaView } from "react-native";
 import { Pressable, TextInput } from "react-native-gesture-handler";
 import { apiAddAdditionalAddress } from "../apis";
 import { Alert } from "react-native";
@@ -14,8 +14,12 @@ const AddressScreen = () => {
   const [street, setStreet] = useState("");
   const [landmark, setLanmark] = useState("");
   const [postalCode, setPostalCode] = useState("");
-
+  
   const handleAddAddress = async () => {
+    if (!name || !mobileNo) {
+      Alert.alert("Error", "Full name and mobile number are required.");
+      return;
+    }
     const address = {
       country,
       name,
@@ -55,7 +59,13 @@ const AddressScreen = () => {
     }
   };
   return (
-    <ScrollView style={styles.addressContainer}>
+    // <View style={styles.container}> 
+
+      
+    //  </View>
+    <SafeAreaView style={styles.container}>
+    <ScrollView keyboardShouldPersistTaps="handled"
+    showsHorizontalScrollIndicator={false} style={styles.addressContainer}>
       <View style={styles.addressBlock} />
 
       <View style={styles.addAddressHeader}>
@@ -140,13 +150,20 @@ const AddressScreen = () => {
         </Pressable>
       </View>
     </ScrollView>
+    </SafeAreaView>
+
   );
 };
 
 export default AddressScreen;
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "blue",
+  },
   addressContainer: {
+    flexGrow: 1,
     backgroundColor: "white",
   },
   addressBlock: {

@@ -11,7 +11,8 @@ import AddAddressScreen from "../screens/AddAddressScreen";
 import ConfirmationScreen from "../screens/ConfirmationScreen";
 import OrderScreen from "../screens/OrderScreen";
 import EditAddressesScreen from "../screens/EditAddressesScreen";
-
+import TestScreen from "../screens/TestScreen";
+import { SafeAreaView } from "react-native-safe-area-context";
 const Stack = createStackNavigator();
 
 const AppNavigation = () => {
@@ -23,6 +24,7 @@ const AppNavigation = () => {
   }, [dispatch]);
 
   return (
+    <SafeAreaView style={{ flex: 1 }}>
     <Stack.Navigator>
       {isLoggedIn ? (
         <>
@@ -61,6 +63,11 @@ const AppNavigation = () => {
             component={EditAddressesScreen}
             options={{ headerShown: false }}
           />
+          <Stack.Screen
+            name="test"
+            component={TestScreen}
+            options={{ headerShown: false }}
+          />
         </>
       ) : (
         <Stack.Screen
@@ -70,6 +77,7 @@ const AppNavigation = () => {
         />
       )}
     </Stack.Navigator>
+    </SafeAreaView>
   );
 };
 

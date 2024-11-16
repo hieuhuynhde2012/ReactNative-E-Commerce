@@ -1,5 +1,13 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { View, Text, StyleSheet, ScrollView, Pressable } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  Pressable,
+  AppState,
+  Alert,
+} from "react-native";
 import Entypo from "@expo/vector-icons/Entypo";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
@@ -8,12 +16,15 @@ import {
   apiGetAdditionalAddress,
   apiGetCurrent,
   apiDeleteAdditionalAddress,
-  apiEditAdditionalAddress,
   apiSetDefaultAddress,
 } from "../apis";
+import { apiCreateOrder } from "../apis";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import { cleanCart } from "../store/user/userSlice";
 
 const ConfirmationScreen = () => {
+  const navigation = useNavigation();
+  const dispatch = useDispatch();
   const steps = [
     { title: "Address", content: "Address Form" },
     { title: "Delivery", content: "Delivery Options" },
@@ -35,7 +46,7 @@ const ConfirmationScreen = () => {
   const [selectedOption, setSelectedOption] = useState("");
   const [selectedDelivery, setselectedDelivery] = useState("");
   const [selectedAddress, setselectedAddress] = useState("");
-  const handlePlaceOrder = async () => {};
+
   const optionDelivery = [
     {
       id: 1,
@@ -43,7 +54,11 @@ const ConfirmationScreen = () => {
     },
     {
       id: 2,
-      text: "Tomorrow - Free shipping with paypal payment",
+      text: "Tomorrow - Free shipping with online payment",
+    },
+    {
+      id: 3,
+      text: "On sunday - Free shipping with order total > $100",
     },
   ];
 
@@ -125,6 +140,39 @@ const ConfirmationScreen = () => {
     }
   };
 
+  const handlePlaceOrder = async () => {
+    try {
+      const userResponse = await apiGetCurrent();
+
+      if (userResponse.success) {
+        const userId = userResponse.rs._id;
+
+        const orderData = {
+          userId: userId,
+          cartItems: cart,
+          totalPrice: total,
+          shippingAddress: selectedAddress,
+          paymentMethod: selectedOption,
+        };
+
+        const response = await apiCreateOrder(orderData);
+        console.log(response.createdOrder);
+
+        if (response.success) {
+          navigation.navigate("Order");
+          console.log("Order created successfully", response.createdOrder);
+          dispatch(cleanCart());
+        } else {
+          console.log("Error creating order", response.createdOrder);
+        }
+      } else {
+        console.log("Failed to fetch user:", userResponse.message);
+      }
+    } catch (error) {
+      console.log("Error in handlePlaceOrder", error.response || error);
+    }
+  };
+
   return (
     <ScrollView style={styles.container}>
       <View style={styles.viewContainer}>
@@ -197,13 +245,33 @@ const ConfirmationScreen = () => {
                     Pin code: {item?.postalCode}
                   </Text>
                   <View style={styles.addressButtonContainer}>
-                    <Pressable style={styles.editAddressButton}>
+                    <Pressable
+                      onPress={() =>
+                        navigation.navigate("EditAddress", {
+                          id: item?._id,
+                          name: item?.name,
+                          houseNo: item?.houseNo,
+                          landmark: item?.landmark,
+                          street: item?.street,
+                          country: item?.country,
+                          mobileNo: item?.mobileNo,
+                          postalCode: item?.postalCode,
+                        })
+                      }
+                      style={styles.editAddressButton}
+                    >
                       <Text style={styles.editAddressText}>Edit</Text>
                     </Pressable>
-                    <Pressable style={styles.editAddressButton}>
+                    <Pressable
+                      onPress={() => onDeleteAddress(item._id)}
+                      style={styles.editAddressButton}
+                    >
                       <Text style={styles.editAddressText}>Remove</Text>
                     </Pressable>
-                    <Pressable style={styles.editAddressButton}>
+                    <Pressable
+                      onPress={() => handleSetDefaultAddress(item?._id)}
+                      style={styles.editAddressButton}
+                    >
                       <Text style={styles.editAddressText}>Set as default</Text>
                     </Pressable>
                   </View>
@@ -348,7 +416,10 @@ const ConfirmationScreen = () => {
             <Text style={styles.payWithInfo}>Pay on delivery (cash)</Text>
           </View>
 
-          <Pressable style={styles.placeOrderButtonContainer}>
+          <Pressable
+            onPress={handlePlaceOrder}
+            style={styles.placeOrderButtonContainer}
+          >
             <Text style={styles.placeOrderButtonText}>Place your order</Text>
           </Pressable>
         </View>

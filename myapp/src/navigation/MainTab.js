@@ -8,10 +8,12 @@ import AntDesign from "@expo/vector-icons/AntDesign";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import CartScreen from "../screens/CartScreen";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import { useDispatch, useSelector } from "react-redux";
 
 const Tab = createBottomTabNavigator();
 
 const MainTab = () => {
+  const cart = useSelector((state) => state.user.cart);
   return (
     <Tab.Navigator
       screenOptions={{
@@ -59,6 +61,7 @@ const MainTab = () => {
           tabBarIcon: ({ focused }) => (
             <Entypo name="shopping-cart" size={24}  color={focused ? "#ee3131" : "black"}  />
           ),
+          tabBarBadge: cart.length > 0 ? cart.length : null,
         }}
       />
 
