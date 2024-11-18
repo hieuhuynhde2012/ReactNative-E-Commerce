@@ -14,7 +14,7 @@ const Tab = createBottomTabNavigator();
 
 const MainTab = () => {
   const cart = useSelector((state) => state.user.cart);
-  
+
   return (
     <Tab.Navigator
       screenOptions={{
@@ -37,21 +37,21 @@ const MainTab = () => {
           ),
         }}
       />
-<Tab.Screen
-                name="Category"
-                component={CategoryTopTab}
-                options={{
-                    tabBarLabel: 'Category',
-                    headerShown: false,
-                    tabBarIcon: ({ focused }) => (
-                        <MaterialIcons
-                            name="category"
-                            size={24}
-                            color={focused ? '#ee3131' : 'black'}
-                        />
-                    ),
-                }}
+      <Tab.Screen
+        name="Category"
+        component={CategoryTopTab}
+        options={{
+          tabBarLabel: "Category",
+          headerShown: false,
+          tabBarIcon: ({ focused }) => (
+            <MaterialIcons
+              name="category"
+              size={24}
+              color={focused ? "#ee3131" : "black"}
             />
+          ),
+        }}
+      />
       <Tab.Screen
         name="Cart"
         component={CartScreen}

@@ -27,7 +27,6 @@ const AppNavigation = () => {
     }, [dispatch]);
 
   return (
-  
     <Stack.Navigator>
       {isLoggedIn ? (
         <>

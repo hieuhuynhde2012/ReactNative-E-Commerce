@@ -18,6 +18,7 @@ import {
   removeFromCart,
 } from "../store/user/userSlice";
 import { useNavigation } from "@react-navigation/native";
+import Icon from "react-native-vector-icons/MaterialIcons";
 const CartScreen = () => {
   const navigation = useNavigation();
   const cart = useSelector((state) => state.user.cart);
@@ -38,15 +39,33 @@ const CartScreen = () => {
   const deleteItem = (item) => {
     dispatch(removeFromCart(item));
   };
-  return (
+  return cart.length === 0 ? (
+    <View style={styles.emptyCartContainer}>
+      <Text style={styles.cartTitle}>Cart</Text>
+      <View style={styles.cartIcon}>
+        <Image
+          source={{
+            uri: "https://img.freepik.com/free-vector/supermarket-shopping-cart-concept-illustration_114360-22408.jpg",
+          }}
+          style={styles.cartImage}
+        />
+      </View>
+      <Text style={styles.emptyTitle}>Your Cart is Empty!</Text>
+      <Text style={styles.emptyMessage}>
+        Must add items on the cart before you proceed to check out.
+      </Text>
+      <Pressable
+        onPress={() => navigation.navigate("Home")}
+        style={styles.emptyButton}
+      >
+        <Text style={styles.emptyButtonText}>SHOPPING NOW</Text>
+      </Pressable>
+    </View>
+  ) : (
     <ScrollView style={styles.container}>
       <View style={styles.searchContainer}>
-        <Pressable onPress={() => navigation.goBack()}>
-          <Ionicons name="arrow-back-outline" size={24} color="#ee3131" />
-        </Pressable>
-
         <View style={styles.cartContainer}>
-          <Text style={{ fontSize: 24, fontWeight: "400" }}>Cart</Text>
+          <Text style={styles.cartTitle}>Cart</Text>
         </View>
       </View>
 
@@ -147,6 +166,59 @@ const CartScreen = () => {
 };
 
 const styles = StyleSheet.create({
+  emptyCartContainer: {
+    flex: 1,
+    //justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
+    backgroundColor: "#fff",
+  },
+  cartIcon: {
+    position: "relative",
+    marginBottom: 20,
+    marginTop: 70,
+  },
+  warningIcon: {
+    position: "absolute",
+    top: 5,
+    right: 5,
+  },
+  emptyTitle: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: "#FF0000",
+    marginBottom: 10,
+  },
+  emptyMessage: {
+    fontSize: 16,
+    color: "#888",
+    textAlign: "center",
+    marginBottom: 20,
+  },
+  emptyButton: {
+    backgroundColor: "#FF0000",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+  },
+  emptyButtonText: {
+    color: "#FFFFFF",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  cartImage: {
+    width: 150,
+    height: 150,
+    resizeMode: "contain",
+    marginBottom: 20,
+  },
+  cartTitle: {
+    fontSize: 28, 
+    fontWeight: "bold", 
+    textAlign: "center", 
+    marginBottom: 20, 
+    color: "#333", 
+  },
   container: {
     //marginTop: 55,
     flex: 1,
