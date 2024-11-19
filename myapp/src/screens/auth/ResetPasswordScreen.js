@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 import CustomedInput from '../../components/CustomedInput';
 import CustomedButton from '../../components/CustomedButton';
-import logo from '../../assets/logo.png';
+import logo from '../../../assets/logo.png';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { apiResetPassword } from '../../apis';

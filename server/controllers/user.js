@@ -339,6 +339,7 @@ const deleteUser = asyncHandler(async (req, res) => {
 const updateUser = asyncHandler(async (req, res) => {
     const { _id } = req.user;
     const { firstname, lastname, email, mobile, address } = req.body;
+
     const data = { firstname, lastname, email, mobile, address };
     if (req.file) data.avatar = req?.file?.path;
     if (!_id || Object.keys(req.body).length === 0)
@@ -360,10 +361,11 @@ const updateUserByAdmin = asyncHandler(async (req, res) => {
 
     const user = await User.findByIdAndUpdate(uid, req.body, {
         new: true,
-    }).select('-refreshToken -password -role');
+    }).select('-refreshToken -password');
     return res.status(200).json({
         success: user ? true : false,
         message: user ? 'Updated' : 'Something went wrong!',
+        user: user ? user : null,
     });
 });
 
@@ -487,9 +489,9 @@ const addAdditionalAddress = asyncHandler(async (req, res) => {
 });
 
 const getAdditionalAddress = asyncHandler(async (req, res) => {
-    const { _id } = req.params; 
+    const { _id } = req.params;
 
-    const user = await User.findById(_id).select('additionalAddress'); 
+    const user = await User.findById(_id).select('additionalAddress');
 
     if (!user) {
         return res.status(404).json({
@@ -508,51 +510,79 @@ const editAdditionalAddress = asyncHandler(async (req, res) => {
     const { _id } = req.user;
     const { addressId } = req.params;
     const { additionalAddress } = req.body;
-  
+
     if (!addressId) {
-      return res.status(400).json({ success: false, message: "Missing address ID" });
+        return res
+            .status(400)
+            .json({ success: false, message: 'Missing address ID' });
     }
     if (!additionalAddress) {
-      return res.status(400).json({ success: false, message: "Missing address data" });
+        return res
+            .status(400)
+            .json({ success: false, message: 'Missing address data' });
     }
-  
+
     const user = await User.findById(_id);
-    if (!user) return res.status(404).json({ success: false, message: "User not found" });
-  
-    const addressIndex = user.additionalAddress.findIndex((addr) => addr._id.toString() === addressId);
-    if (addressIndex === -1) return res.status(404).json({ success: false, message: "Address not found" });
-  
+    if (!user)
+        return res
+            .status(404)
+            .json({ success: false, message: 'User not found' });
+
+    const addressIndex = user.additionalAddress.findIndex(
+        (addr) => addr._id.toString() === addressId,
+    );
+    if (addressIndex === -1)
+        return res
+            .status(404)
+            .json({ success: false, message: 'Address not found' });
+
     const originalAddress = user.additionalAddress[addressIndex];
-  
+
     // Create a new address object that merges provided fields with existing ones
     const updatedAddress = {
-      name: additionalAddress.name !== undefined ? additionalAddress.name : originalAddress.name,
-      mobileNo: additionalAddress.mobileNo !== undefined ? additionalAddress.mobileNo : originalAddress.mobileNo,
-      houseNo: additionalAddress.houseNo !== undefined ? additionalAddress.houseNo : originalAddress.houseNo,
-      street: additionalAddress.street !== undefined ? additionalAddress.street : originalAddress.street,
-      landmark: additionalAddress.landmark !== undefined ? additionalAddress.landmark : originalAddress.landmark,
-      country: additionalAddress.country !== undefined ? additionalAddress.country : originalAddress.country,
-      postalCode: additionalAddress.postalCode !== undefined ? additionalAddress.postalCode : originalAddress.postalCode,
+        name:
+            additionalAddress.name !== undefined
+                ? additionalAddress.name
+                : originalAddress.name,
+        mobileNo:
+            additionalAddress.mobileNo !== undefined
+                ? additionalAddress.mobileNo
+                : originalAddress.mobileNo,
+        houseNo:
+            additionalAddress.houseNo !== undefined
+                ? additionalAddress.houseNo
+                : originalAddress.houseNo,
+        street:
+            additionalAddress.street !== undefined
+                ? additionalAddress.street
+                : originalAddress.street,
+        landmark:
+            additionalAddress.landmark !== undefined
+                ? additionalAddress.landmark
+                : originalAddress.landmark,
+        country:
+            additionalAddress.country !== undefined
+                ? additionalAddress.country
+                : originalAddress.country,
+        postalCode:
+            additionalAddress.postalCode !== undefined
+                ? additionalAddress.postalCode
+                : originalAddress.postalCode,
     };
-  
+
     // Replace the specific address with the updated version
     user.additionalAddress[addressIndex] = updatedAddress;
-  
+
     // Debugging console log
-    console.log("Updated Address Data:", updatedAddress);
-  
+    console.log('Updated Address Data:', updatedAddress);
+
     const updatedUser = await user.save();
-  
+
     return res.status(200).json({
-      success: !!updatedUser,
-      updatedUser: updatedUser || "User not found!",
+        success: !!updatedUser,
+        updatedUser: updatedUser || 'User not found!',
     });
-  });
-  
-  
-
-
-
+});
 
 const deleteAdditionalAddress = asyncHandler(async (req, res) => {
     const { _id } = req.user;
@@ -574,7 +604,7 @@ const deleteAdditionalAddress = asyncHandler(async (req, res) => {
     }
 
     const addressExists = user.additionalAddress.some(
-        (address) => address._id.toString() === addressId
+        (address) => address._id.toString() === addressId,
     );
 
     if (!addressExists) {
@@ -588,7 +618,7 @@ const deleteAdditionalAddress = asyncHandler(async (req, res) => {
     const updatedUser = await User.findByIdAndUpdate(
         _id,
         { $pull: { additionalAddress: { _id: addressId } } },
-        { new: true }
+        { new: true },
     ).select('-refreshToken -password -role');
 
     return res.status(200).json({
@@ -599,15 +629,19 @@ const deleteAdditionalAddress = asyncHandler(async (req, res) => {
 
 const setDefaultAddress = asyncHandler(async (req, res) => {
     const { _id } = req.user;
-    const { addressId } = req.params;  
+    const { addressId } = req.params;
 
     if (!addressId) {
-        return res.status(400).json({ success: false, message: 'Missing address ID' });
+        return res
+            .status(400)
+            .json({ success: false, message: 'Missing address ID' });
     }
 
     const user = await User.findById(_id);
     if (!user) {
-        return res.status(404).json({ success: false, message: 'User not found' });
+        return res
+            .status(404)
+            .json({ success: false, message: 'User not found' });
     }
 
     // Đặt tất cả các địa chỉ thành không mặc định
@@ -616,9 +650,13 @@ const setDefaultAddress = asyncHandler(async (req, res) => {
     });
 
     // Tìm địa chỉ theo ID và đặt làm mặc định
-    const address = user.additionalAddress.find((address) => address._id.toString() === addressId);
+    const address = user.additionalAddress.find(
+        (address) => address._id.toString() === addressId,
+    );
     if (!address) {
-        return res.status(404).json({ success: false, message: 'Address not found' });
+        return res
+            .status(404)
+            .json({ success: false, message: 'Address not found' });
     }
     address.isDefault = true;
 
@@ -689,5 +727,5 @@ module.exports = {
     getAdditionalAddress,
     deleteAdditionalAddress,
     editAdditionalAddress,
-    setDefaultAddress
+    setDefaultAddress,
 };

@@ -11,6 +11,15 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
+    "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow $(myapp) to access your photos",
+          "cameraPermission": "Allow $(myapp) to access your camera"
+        }
+      ]
+    ],
     "developmentClient": true,
     "debug": false,
     "showExpoGo": false,

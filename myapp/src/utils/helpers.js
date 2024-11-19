@@ -52,3 +52,11 @@ export const validate = (payload, setInvalidFields) => {
 
     return invalids;
 };
+
+export const formatCurrency = (value) => {
+    if (!Number(value)) return;
+    return value.toLocaleString('vi-VN', {
+        style: 'currency',
+        currency: 'VND',
+    });
+};

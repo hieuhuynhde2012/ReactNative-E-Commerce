@@ -7,7 +7,7 @@ const dots = (
     <MaterialCommunityIcons name="dots-horizontal" size={20} color="black" />
 );
 
-const pagination = ({
+const Pagination = ({
     currentPage = 1,
     totalCount = 0,
     onCurrentPageChange = () => {},
@@ -114,7 +114,7 @@ const pagination = ({
     );
 };
 
-export default pagination;
+export default Pagination;
 
 const styles = StyleSheet.create({
     container: {

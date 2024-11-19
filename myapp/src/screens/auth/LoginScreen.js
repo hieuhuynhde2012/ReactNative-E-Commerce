@@ -13,12 +13,13 @@ import {
 } from 'react-native';
 import CustomedInput from '../../components/CustomedInput';
 import CustomedButton from '../../components/CustomedButton';
-import logo from '../../assets/logo.png';
+import logo from '../../../assets/logo.png';
 import { apiLogin } from '../../apis';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 
 import { useDispatch } from 'react-redux';
 import { login } from '../../store/user/userSlice';
+import { getCurrent } from '../../store/user/asyncAction';
 import { showLoading, hideLoading, showAlert } from '../../store/app/appSlice';
 import { validate } from '../../utils/helpers';
 

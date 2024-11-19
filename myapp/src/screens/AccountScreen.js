@@ -1,29 +1,33 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     View,
     Text,
-    Button,
     StyleSheet,
     Image,
     TouchableOpacity,
     ScrollView,
+    KeyboardAvoidingView,
+    Platform,
+    Keyboard,
+    TouchableWithoutFeedback,
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../store/user/userSlice';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import PersonalInfomation from '../components/personalAccount/PersonalInfomation';
+import CartDetailScreen from './CartDetailScreen';
+import { images } from '../../assets';
+
+import UserList from '../components/adminAccount/UserList';
 
 const AccountScreen = () => {
     const dispatch = useDispatch();
-    const { current } = useSelector((state) => state.user);
+    const current = useSelector((state) => state.user.current);
+    const [isShowUserWorkspace, setIsShowUserWorkspace] = useState(true);
 
     const handleLogout = () => {
         dispatch(logout());
     };
-
-    // useEffect(() => {
-    //     console.log(current);
-    // });
 
     return (
         <View style={styles.container}>
@@ -44,7 +48,11 @@ const AccountScreen = () => {
                         </Text>
                     </View>
                     <Image
-                        source={{ uri: `${current?.avatar}` }}
+                        source={
+                            current?.avatar
+                                ? { uri: `${current?.avatar}` }
+                                : images.avatar
+                        }
                         style={styles.avt}
                     />
                 </View>
@@ -52,35 +60,108 @@ const AccountScreen = () => {
 
             <View style={styles.bottomWrapper}>
                 <View style={styles.ctrlWrapper}>
-                    <TouchableOpacity style={[styles.btn, styles.activeBtn]}>
-                        <Text style={[styles.text, styles.whiteText]}>
+                    <TouchableOpacity
+                        style={[
+                            styles.btn,
+                            isShowUserWorkspace && styles.activeBtn,
+                        ]}
+                        onPress={() => setIsShowUserWorkspace(true)}
+                    >
+                        <Text
+                            style={[
+                                styles.text,
+                                isShowUserWorkspace && styles.whiteText,
+                            ]}
+                        >
                             User workspace
                         </Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={[styles.btn]}>
-                        <Text style={[styles.text]}>Admin workspace</Text>
+                    <TouchableOpacity
+                        style={[
+                            styles.btn,
+                            !isShowUserWorkspace && styles.activeBtn,
+                        ]}
+                        onPress={() => setIsShowUserWorkspace(false)}
+                    >
+                        <Text
+                            style={[
+                                styles.text,
+                                !isShowUserWorkspace && styles.whiteText,
+                            ]}
+                        >
+                            Admin workspace
+                        </Text>
                     </TouchableOpacity>
                 </View>
-                <ScrollView
-                    style={styles.scrBottomWrapper}
-                    showsVerticalScrollIndicator={false}
-                >
-                    <View>
-                        <Text style={[styles.text, styles.boldText]}>
-                            Personal Information
-                        </Text>
-                        <View
-                            style={{
-                                backgroundColor: '#f0f0f0',
-                                padding: 16,
-                                borderRadius: 26,
-                                marginTop: 12,
-                            }}
-                        >
-                            <PersonalInfomation currentUser={current} />
-                        </View>
-                    </View>
-                </ScrollView>
+                {isShowUserWorkspace ? (
+                    <KeyboardAvoidingView
+                        style={styles.scrBottomWrapper}
+                        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                        keyboardVerticalOffset={
+                            Platform.OS === 'ios' ? 144 : 144
+                        }
+                    >
+                        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+                            <ScrollView showsVerticalScrollIndicator={false}>
+                                <View style={styles.scrBottomItem}>
+                                    <View style={styles.titleWrapper}>
+                                        <Text
+                                            style={[
+                                                styles.text,
+                                                styles.boldText,
+                                            ]}
+                                        >
+                                            Personal Information
+                                        </Text>
+                                    </View>
+                                    <PersonalInfomation currentUser={current} />
+                                </View>
+                                <View style={styles.scrBottomItem}>
+                                    <View style={styles.titleWrapper}>
+                                        <Text
+                                            style={[
+                                                styles.text,
+                                                styles.boldText,
+                                            ]}
+                                        >
+                                            Cart
+                                        </Text>
+                                    </View>
+                                    <CartDetailScreen />
+                                </View>
+                            </ScrollView>
+                        </TouchableWithoutFeedback>
+                    </KeyboardAvoidingView>
+                ) : (
+                    <KeyboardAvoidingView
+                        style={styles.scrBottomWrapper}
+                        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                        keyboardVerticalOffset={
+                            Platform.OS === 'ios' ? 144 : 144
+                        }
+                    >
+                        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+                            <ScrollView
+                                showsVerticalScrollIndicator={false}
+                                keyboardShouldPersistTaps="handled"
+                            >
+                                <View style={styles.scrBottomItem}>
+                                    <View style={styles.titleWrapper}>
+                                        <Text
+                                            style={[
+                                                styles.text,
+                                                styles.boldText,
+                                            ]}
+                                        >
+                                            Manage Users
+                                        </Text>
+                                    </View>
+                                    <UserList />
+                                </View>
+                            </ScrollView>
+                        </TouchableWithoutFeedback>
+                    </KeyboardAvoidingView>
+                )}
             </View>
         </View>
     );
@@ -157,6 +238,23 @@ const styles = StyleSheet.create({
     scrBottomWrapper: {
         flex: 1,
         width: '100%',
+    },
+    scrBottomItem: {
+        position: 'relative',
+        backgroundColor: '#f0f0f0',
+        paddingHorizontal: 16,
+        paddingBottom: 16,
+        paddingTop: 52,
+        borderRadius: 26,
+        marginBottom: 12,
+    },
+    titleWrapper: {
+        position: 'absolute',
+        backgroundColor: '#d0d0d0',
+        paddingVertical: 12,
+        paddingHorizontal: 18,
+        borderTopLeftRadius: 26,
+        borderBottomRightRadius: 26,
     },
     whiteText: { color: 'white' },
     text: { fontSize: 16 },

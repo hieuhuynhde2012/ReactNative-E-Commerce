@@ -1,7 +1,7 @@
 import { configureStore } from '@reduxjs/toolkit';
 import appSlice from './app/appSlice';
 import userSlice from './user/userSlice';
-import { alertMiddleware } from './app/middlewares';
+import { alertMiddleware, modalMiddleware } from './app/middlewares';
 import {
     persistReducer,
     persistStore,
@@ -42,7 +42,9 @@ export const store = configureStore({
                     REGISTER,
                 ],
             },
-        }).concat(alertMiddleware),
+        })
+            .concat(alertMiddleware)
+            .concat(modalMiddleware),
 });
 
 export const persistor = persistStore(store);
