@@ -1,10 +1,26 @@
 import React, { useState } from "react";
-import { View, Text, ScrollView, StyleSheet, SafeAreaView } from "react-native";
+import {
+  View,
+  Text,
+  ScrollView,
+  StyleSheet,
+  SafeAreaView,
+  TouchableWithoutFeedback,
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+} from "react-native";
 import { Pressable, TextInput } from "react-native-gesture-handler";
 import { apiAddAdditionalAddress } from "../apis";
 import { Alert } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-
+import CustomedInput from "../components/CustomedInput";
+import CustomedButton from "../components/CustomedButton";
+import AntDesign from "@expo/vector-icons/AntDesign";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
+import FontAwesome from "@expo/vector-icons/FontAwesome";
+import Entypo from "@expo/vector-icons/Entypo";
 const AddressScreen = () => {
   const navigation = useNavigation();
   const [country, setCountry] = useState("");
@@ -14,7 +30,7 @@ const AddressScreen = () => {
   const [street, setStreet] = useState("");
   const [landmark, setLanmark] = useState("");
   const [postalCode, setPostalCode] = useState("");
-  
+
   const handleAddAddress = async () => {
     if (!name || !mobileNo) {
       Alert.alert("Error", "Full name and mobile number are required.");
@@ -59,99 +75,118 @@ const AddressScreen = () => {
     }
   };
   return (
-    // <View style={styles.container}> 
-
-      
-    //  </View>
-    <SafeAreaView style={styles.container}>
-    <ScrollView keyboardShouldPersistTaps="handled"
-    showsHorizontalScrollIndicator={false} style={styles.addressContainer}>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      keyboardVerticalOffset={Platform.OS === "ios" ? 10 : 10}
+    >
       <View style={styles.addressBlock} />
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <View style={styles.innerContainer}>
+          <ScrollView
+            keyboardShouldPersistTaps="handled"
+            showsHorizontalScrollIndicator={false}
+            style={styles.addressContainer}
+          >
+            <View style={styles.topContent}>
+              <Text style={styles.title}>Add a new Address</Text>
+            </View>
+            <View style={styles.midContent}>
+              <View style={styles.input}>
+                <CustomedInput
+                  LeftIcon={() => (
+                    <AntDesign name="earth" size={24} color="#666" />
+                  )}
+                  placeholder="Enter your country"
+                  value={country}
+                  onChangeText={(text) => setCountry(text)}
+                  nameKey="country"
+                />
 
-      <View style={styles.addAddressHeader}>
-        <Text style={styles.addAddressText}>Add a new Address</Text>
+                <CustomedInput
+                  LeftIcon={() => (
+                    <MaterialCommunityIcons
+                      name="account-outline"
+                      size={24}
+                      color="#666"
+                    />
+                  )}
+                  placeholder="Enter your name"
+                  value={name}
+                  onChangeText={(text) => setName(text)}
+                  nameKey="name"
+                />
 
-        <TextInput
-          value={country}
-          placeholder="Enter your country"
-          onChangeText={(text) => setCountry(text)}
-          placeholderTextColor={"black"}
-          style={styles.addFieldInput}
-        ></TextInput>
+                <CustomedInput
+                  LeftIcon={() => (
+                    <MaterialCommunityIcons
+                      name="cellphone"
+                      size={24}
+                      color="#666"
+                    />
+                  )}
+                  placeholder="Enter your mobile number"
+                  value={mobileNo}
+                  onChangeText={(text) => setMobileNo(text)}
+                  nameKey="mobileNo"
+                />
 
-        <View style={styles.addNameContainer}>
-          <Text style={styles.addField}>Full name (First and last name)</Text>
+                <CustomedInput
+                  LeftIcon={() => (
+                    <FontAwesome5 name="house-user" size={24} color="#666" />
+                  )}
+                  placeholder="Enter your house number"
+                  value={houseNo}
+                  onChangeText={(text) => setHouseNo(text)}
+                  nameKey="houseNo"
+                />
 
-          <TextInput
-            value={name}
-            onChangeText={(text) => setName(text)}
-            placeholderTextColor={"black"}
-            style={styles.addFieldInput}
-            placeholder="Enter your name"
-          />
+                <CustomedInput
+                  LeftIcon={() => (
+                    <FontAwesome name="street-view" size={24} color="#666" />
+                  )}
+                  placeholder="Enter your street"
+                  value={street}
+                  onChangeText={(text) => setStreet(text)}
+                  nameKey="street"
+                />
+
+                <CustomedInput
+                  LeftIcon={() => (
+                    <MaterialCommunityIcons
+                      name="office-building-marker"
+                      size={24}
+                      color="#666"
+                    />
+                  )}
+                  placeholder="Eg near apollo, hospital"
+                  value={landmark}
+                  onChangeText={(text) => setLanmark(text)}
+                  nameKey="landmark"
+                />
+
+                <CustomedInput
+                  LeftIcon={() => (
+                    <Entypo name="location-pin" size={24} color="#666" />
+                  )}
+                  placeholder="Enter pincode"
+                  value={postalCode}
+                  onChangeText={(text) => setPostalCode(text)}
+                  nameKey="postalCode"
+                />
+              </View>
+
+              <View>
+                <CustomedButton
+                  title="Add Address"
+                  handleOnPress={handleAddAddress}
+                />
+              </View>
+            </View>
+          </ScrollView>
         </View>
-
-        <View>
-          <Text style={styles.addField}>Mobile number</Text>
-          <TextInput
-            value={mobileNo}
-            onChangeText={(text) => setMobileNo(text)}
-            placeholderTextColor={"black"}
-            style={styles.addFieldInput}
-            placeholder="Enter your mobile number"
-          />
-        </View>
-        <View>
-          <Text style={styles.addField}>House number, building, company</Text>
-          <TextInput
-            value={houseNo}
-            onChangeText={(text) => setHouseNo(text)}
-            placeholderTextColor={"black"}
-            style={styles.addFieldInput}
-            placeholder="Enter your house number"
-          />
-        </View>
-        <View>
-          <Text style={styles.addField}>Area, street, sector, village</Text>
-          <TextInput
-            value={street}
-            onChangeText={(text) => setStreet(text)}
-            placeholderTextColor={"black"}
-            style={styles.addFieldInput}
-            placeholder="Enter your street"
-          />
-        </View>
-        <View>
-          <Text style={styles.addField}>Landmark</Text>
-          <TextInput
-            value={landmark}
-            onChangeText={(text) => setLanmark(text)}
-            placeholderTextColor={"black"}
-            style={styles.addFieldInput}
-            placeholder="Eg near apollo, hospital"
-          />
-        </View>
-        <View>
-          <Text style={styles.addField}>Pincode</Text>
-          <TextInput
-            value={postalCode}
-            onChangeText={(text) => setPostalCode(text)}
-            placeholderTextColor={"black"}
-            style={styles.addFieldInput}
-            placeholder="Enter pincode"
-          />
-        </View>
-
-        <Pressable
-          style={styles.addAddressButtonContainer}
-          onPress={handleAddAddress}
-        >
-          <Text style={styles.addAddressButtonText}>Add Address</Text>
-        </Pressable>
-      </View>
-    </ScrollView>
-    </SafeAreaView>
-
+      </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
   );
 };
 
@@ -160,11 +195,17 @@ export default AddressScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "blue",
+    justifyContent: "center",
+    alignContent: "center",
+    // marginTop: -20,
+    backgroundColor: "#fff",
   },
   addressContainer: {
     flexGrow: 1,
     backgroundColor: "white",
+  },
+  innerContainer: {
+    padding: 20,
   },
   addressBlock: {
     height: 50,
@@ -172,10 +213,11 @@ const styles = StyleSheet.create({
   },
   addAddressHeader: {
     padding: 10,
+    alignItems: "center",
   },
   addAddressText: {
-    fontSize: 17,
-    fontWeight: "bold",
+    fontSize: 18,
+    marginBottom: 40,
   },
   addFieldInput: {
     padding: 10,
@@ -203,5 +245,21 @@ const styles = StyleSheet.create({
   addAddressButtonText: {
     fontWeight: "bold",
     color: "white",
+  },
+  topContent: {
+    alignItems: "center",
+  },
+  input: {
+    gap: 20,
+    marginBottom: 40,
+  },
+
+  midBtn: {
+    alignItems: "center",
+    marginBottom: 20,
+  },
+  title: {
+    fontSize: 18,
+    marginBottom: 40,
   },
 });

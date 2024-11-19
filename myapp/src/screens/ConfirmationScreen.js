@@ -7,6 +7,7 @@ import {
   Pressable,
   AppState,
   Alert,
+  Image
 } from "react-native";
 import Entypo from "@expo/vector-icons/Entypo";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
@@ -209,89 +210,111 @@ const ConfirmationScreen = () => {
       {currentStep == 0 && (
         <View style={styles.deliveryContainer}>
           <Text style={styles.deliveryText}>Select delivery address</Text>
+          {addresses && addresses.length > 0 ? (
+            <Pressable>
+              {addresses?.map((item, index) => (
+                <Pressable style={styles.addressContainer}>
+                  {selectedAddress && selectedAddress._id === item?._id ? (
+                    <FontAwesome6 name="dot-circle" size={20} color="#ee3131" />
+                  ) : (
+                    <Entypo
+                      onPress={() => setselectedAddress(item)}
+                      name="circle"
+                      size={20}
+                      color="gray"
+                    />
+                  )}
 
-          <Pressable>
-            {addresses?.map((item, index) => (
-              <Pressable style={styles.addressContainer}>
-                {selectedAddress && selectedAddress._id === item?._id ? (
-                  <FontAwesome6 name="dot-circle" size={20} color="#ee3131" />
-                ) : (
-                  <Entypo
-                    onPress={() => setselectedAddress(item)}
-                    name="circle"
-                    size={20}
-                    color="gray"
-                  />
-                )}
-
-                <View style={styles.addressesInfoBorderContainer}>
-                  <View style={styles.addressesInfoContainer}>
-                    <Text style={styles.addressesInfoText}>{item?.name}</Text>
-                    <Entypo name="location-pin" size={24} color="#ee3131" />
-                  </View>
-                  <Text style={styles.addressesDetailInfoText}>
-                    {item?.houseNo}, {item?.landmark}
-                  </Text>
-                  <Text style={styles.addressesDetailInfoText}>
-                    {item?.street}
-                  </Text>
-                  <Text style={styles.addressesDetailInfoText}>
-                    {item?.country}
-                  </Text>
-                  <Text style={styles.addressesDetailInfoText}>
-                    Phone number: {item?.mobileNo}
-                  </Text>
-                  <Text style={styles.addressesDetailInfoText}>
-                    Pin code: {item?.postalCode}
-                  </Text>
-                  <View style={styles.addressButtonContainer}>
-                    <Pressable
-                      onPress={() =>
-                        navigation.navigate("EditAddress", {
-                          id: item?._id,
-                          name: item?.name,
-                          houseNo: item?.houseNo,
-                          landmark: item?.landmark,
-                          street: item?.street,
-                          country: item?.country,
-                          mobileNo: item?.mobileNo,
-                          postalCode: item?.postalCode,
-                        })
-                      }
-                      style={styles.editAddressButton}
-                    >
-                      <Text style={styles.editAddressText}>Edit</Text>
-                    </Pressable>
-                    <Pressable
-                      onPress={() => onDeleteAddress(item._id)}
-                      style={styles.editAddressButton}
-                    >
-                      <Text style={styles.editAddressText}>Remove</Text>
-                    </Pressable>
-                    <Pressable
-                      onPress={() => handleSetDefaultAddress(item?._id)}
-                      style={styles.editAddressButton}
-                    >
-                      <Text style={styles.editAddressText}>Set as default</Text>
-                    </Pressable>
-                  </View>
-
-                  <View>
-                    {selectedAddress && selectedAddress._id === item?._id && (
+                  <View style={styles.addressesInfoBorderContainer}>
+                    <View style={styles.addressesInfoContainer}>
+                      <Text style={styles.addressesInfoText}>{item?.name}</Text>
+                      <Entypo name="location-pin" size={24} color="#ee3131" />
+                    </View>
+                    <Text style={styles.addressesDetailInfoText}>
+                      {item?.houseNo}, {item?.landmark}
+                    </Text>
+                    <Text style={styles.addressesDetailInfoText}>
+                      {item?.street}
+                    </Text>
+                    <Text style={styles.addressesDetailInfoText}>
+                      {item?.country}
+                    </Text>
+                    <Text style={styles.addressesDetailInfoText}>
+                      Phone number: {item?.mobileNo}
+                    </Text>
+                    <Text style={styles.addressesDetailInfoText}>
+                      Pin code: {item?.postalCode}
+                    </Text>
+                    <View style={styles.addressButtonContainer}>
                       <Pressable
-                        onPress={() => setCurrentStep(1)}
-                        style={styles.addressFrame}
+                        onPress={() =>
+                          navigation.navigate("EditAddress", {
+                            id: item?._id,
+                            name: item?.name,
+                            houseNo: item?.houseNo,
+                            landmark: item?.landmark,
+                            street: item?.street,
+                            country: item?.country,
+                            mobileNo: item?.mobileNo,
+                            postalCode: item?.postalCode,
+                          })
+                        }
+                        style={styles.editAddressButton}
                       >
-                        <Text style={styles.addressFrameText}>
-                          Deliver to this address
+                        <Text style={styles.editAddressText}>Edit</Text>
+                      </Pressable>
+                      <Pressable
+                        onPress={() => onDeleteAddress(item._id)}
+                        style={styles.editAddressButton}
+                      >
+                        <Text style={styles.editAddressText}>Remove</Text>
+                      </Pressable>
+                      <Pressable
+                        onPress={() => handleSetDefaultAddress(item?._id)}
+                        style={styles.editAddressButton}
+                      >
+                        <Text style={styles.editAddressText}>
+                          Set as default
                         </Text>
                       </Pressable>
-                    )}
+                    </View>
+
+                    <View>
+                      {selectedAddress && selectedAddress._id === item?._id && (
+                        <Pressable
+                          onPress={() => setCurrentStep(1)}
+                          style={styles.addressFrame}
+                        >
+                          <Text style={styles.addressFrameText}>
+                            Deliver to this address
+                          </Text>
+                        </Pressable>
+                      )}
+                    </View>
                   </View>
-                </View>
+                </Pressable>
+              ))}
+            </Pressable>
+          ) : (
+            <View style={styles.noAddressContainer}>
+              <Image
+                source={{
+                  uri: "https://cdni.iconscout.com/illustration/premium/thumb/no-address-found-illustration-download-in-svg-png-gif-file-formats--location-app-finding-permission-results-empty-state-error-pack-design-development-illustrations-3613886.png",
+                }}
+                style={styles.noaddressiconImage}
+              />
+              <Text style={styles.titleNo}>No Address Added</Text>
+              <Text style={styles.noAddressText}>
+                Add an address to ensure smooth delivery.
+              </Text>
+              <Pressable
+                onPress={() => navigation.navigate("Add")}
+                style={styles.addAddressButton}
+              >
+                <Text style={styles.addAddressText}>+ Add Address</Text>
               </Pressable>
-            ))}
-          </Pressable>
+            </View>
+          )}
         </View>
       )}
 
@@ -526,6 +549,50 @@ const styles = StyleSheet.create({
   },
   addressFrameText: {
     color: "white",
+  },
+  noAddressContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 20,
+    backgroundColor: '#f2f2f2',
+    borderRadius: 12,
+    marginTop: 20,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 5 },
+  },
+  noaddressiconImage: {
+    width: 80,
+    height: 80,
+    marginBottom: 20,
+    tintColor: '#ee3131',
+  },
+  titleNo: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#333',
+    marginBottom: 5,
+  },
+  noAddressText: {
+    fontSize: 16,
+    color: '#666', 
+    marginBottom: 15,
+    textAlign: 'center',
+    lineHeight: 22,
+  },
+  addAddressButton: {
+    backgroundColor: '#ee3131',
+    paddingVertical: 12,
+    paddingHorizontal: 25,
+    borderRadius: 8,
+    marginTop: 10,
+  },
+  addAddressText: {
+    fontSize: 16,
+    color: '#fff',
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
   deliveryOptionText: {
     fontSize: 20,

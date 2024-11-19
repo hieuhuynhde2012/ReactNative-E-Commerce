@@ -1,12 +1,28 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, ScrollView, TextInput, StyleSheet, Alert, Pressable } from "react-native";
+import {
+  View,
+  Text,
+  ScrollView,
+  StyleSheet,
+  SafeAreaView,
+  TouchableWithoutFeedback,
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+  Alert
+} from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { apiEditAdditionalAddress } from "../apis";
-
+import CustomedInput from "../components/CustomedInput";
+import CustomedButton from "../components/CustomedButton";
+import AntDesign from "@expo/vector-icons/AntDesign";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
+import FontAwesome from "@expo/vector-icons/FontAwesome";
+import Entypo from "@expo/vector-icons/Entypo";
 const EditAddressesScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
-
 
   const {
     id,
@@ -37,15 +53,17 @@ const EditAddressesScreen = () => {
       ...(mobileNo !== initialMobileNo ? { mobileNo } : {}),
       ...(postalCode !== initialPostalCode ? { postalCode } : {}),
     };
-  
+
     if (Object.keys(updatedAddress).length === 0) {
       Alert.alert("No Changes", "No updates to save.");
       navigation.goBack();
       return;
     }
-  
+
     try {
-      const response = await apiEditAdditionalAddress(id, { additionalAddress: updatedAddress });
+      const response = await apiEditAdditionalAddress(id, {
+        additionalAddress: updatedAddress,
+      });
       if (response.success) {
         Alert.alert("Success", "Address updated successfully!");
         navigation.goBack();
@@ -57,100 +75,138 @@ const EditAddressesScreen = () => {
       Alert.alert("Error", "Failed to update address. Please try again.");
     }
   };
-  
+
   return (
-    <ScrollView style={styles.addressContainer}>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      keyboardVerticalOffset={Platform.OS === "ios" ? 10 : 10}
+    >
       <View style={styles.addressBlock} />
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <View style={styles.innerContainer}>
+          <ScrollView
+            keyboardShouldPersistTaps="handled"
+            showsHorizontalScrollIndicator={false}
+            style={styles.addressContainer}
+          >
+            <View style={styles.topContent}>
+              <Text style={styles.title}>Edit your Address</Text>
+            </View>
+            <View style={styles.midContent}>
+              <View style={styles.input}>
+                <CustomedInput
+                  LeftIcon={() => (
+                    <AntDesign name="earth" size={24} color="#666" />
+                  )}
+                  placeholder="Enter your country"
+                  value={country}
+                  onChangeText={(text) => setCountry(text)}
+                  nameKey="country"
+                />
 
-      <View style={styles.addAddressHeader}>
-        <Text style={styles.addAddressText}>Edit Address</Text>
+                <CustomedInput
+                  LeftIcon={() => (
+                    <MaterialCommunityIcons
+                      name="account-outline"
+                      size={24}
+                      color="#666"
+                    />
+                  )}
+                  placeholder="Enter your name"
+                  value={name}
+                  onChangeText={(text) => setName(text)}
+                  nameKey="name"
+                />
 
-        <TextInput
-          value={country}
-          placeholder="Enter your country"
-          onChangeText={(text) => setCountry(text)}
-          placeholderTextColor={"black"}
-          style={styles.addFieldInput}
-        ></TextInput>
+                <CustomedInput
+                  LeftIcon={() => (
+                    <MaterialCommunityIcons
+                      name="cellphone"
+                      size={24}
+                      color="#666"
+                    />
+                  )}
+                  placeholder="Enter your mobile number"
+                  value={mobileNo}
+                  onChangeText={(text) => setMobileNo(text)}
+                  nameKey="mobileNo"
+                />
 
-        <View style={styles.addNameContainer}>
-          <Text style={styles.addField}>Full name (First and last name)</Text>
+                <CustomedInput
+                  LeftIcon={() => (
+                    <FontAwesome5 name="house-user" size={24} color="#666" />
+                  )}
+                  placeholder="Enter your house number"
+                  value={houseNo}
+                  onChangeText={(text) => setHouseNo(text)}
+                  nameKey="houseNo"
+                />
 
-          <TextInput
-            value={name}
-            onChangeText={(text) => setName(text)}
-            placeholderTextColor={"black"}
-            style={styles.addFieldInput}
-            placeholder="Enter your name"
-          />
-        </View>
+                <CustomedInput
+                  LeftIcon={() => (
+                    <FontAwesome name="street-view" size={24} color="#666" />
+                  )}
+                  placeholder="Enter your street"
+                  value={street}
+                  onChangeText={(text) => setStreet(text)}
+                  nameKey="street"
+                />
 
-        <View>
-          <Text style={styles.addField}>Mobile number</Text>
-          <TextInput
-            value={mobileNo}
-            onChangeText={(text) => setMobileNo(text)}
-            placeholderTextColor={"black"}
-            style={styles.addFieldInput}
-            placeholder="Enter your mobile number"
-          />
-        </View>
-        <View>
-          <Text style={styles.addField}>House number, building, company</Text>
-          <TextInput
-            value={houseNo}
-            onChangeText={(text) => setHouseNo(text)}
-            placeholderTextColor={"black"}
-            style={styles.addFieldInput}
-            placeholder="Enter your house number"
-          />
-        </View>
-        <View>
-          <Text style={styles.addField}>Area, street, sector, village</Text>
-          <TextInput
-            value={street}
-            onChangeText={(text) => setStreet(text)}
-            placeholderTextColor={"black"}
-            style={styles.addFieldInput}
-            placeholder="Enter your street"
-          />
-        </View>
-        <View>
-          <Text style={styles.addField}>Landmark</Text>
-          <TextInput
-            value={landmark}
-            onChangeText={(text) => setLandmark(text)}
-            placeholderTextColor={"black"}
-            style={styles.addFieldInput}
-            placeholder="Eg near apollo, hospital"
-          />
-        </View>
-        <View>
-          <Text style={styles.addField}>Pincode</Text>
-          <TextInput
-            value={postalCode}
-            onChangeText={(text) => setPostalCode(text)}
-            placeholderTextColor={"black"}
-            style={styles.addFieldInput}
-            placeholder="Enter pincode"
-          />
-        </View>
+                <CustomedInput
+                  LeftIcon={() => (
+                    <MaterialCommunityIcons
+                      name="office-building-marker"
+                      size={24}
+                      color="#666"
+                    />
+                  )}
+                  placeholder="Eg near apollo, hospital"
+                  value={landmark}
+                  onChangeText={(text) => setLanmark(text)}
+                  nameKey="landmark"
+                />
 
-        <Pressable
-          style={styles.addAddressButtonContainer}
-          onPress={handleUpdateAddress}
-        >
-          <Text style={styles.addAddressButtonText}>Save Changes</Text>
-        </Pressable>
-      </View>
-    </ScrollView>
+                <CustomedInput
+                  LeftIcon={() => (
+                    <Entypo name="location-pin" size={24} color="#666" />
+                  )}
+                  placeholder="Enter pincode"
+                  value={postalCode}
+                  onChangeText={(text) => setPostalCode(text)}
+                  nameKey="postalCode"
+                />
+              </View>
+
+              <View>
+                <CustomedButton
+                  title="Save Changes"
+                  handleOnPress={handleUpdateAddress}
+                />
+              </View>
+            </View>
+          </ScrollView>
+        </View>
+      </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
   );
 };
 
 export default EditAddressesScreen;
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignContent: "center",
+    // marginTop: -20,
+    backgroundColor: "#fff",
+  },
   addressContainer: {
+    flexGrow: 1,
     backgroundColor: "white",
+  },
+  innerContainer: {
+    padding: 20,
   },
   addressBlock: {
     height: 50,
@@ -158,10 +214,11 @@ const styles = StyleSheet.create({
   },
   addAddressHeader: {
     padding: 10,
+    alignItems: "center",
   },
   addAddressText: {
-    fontSize: 17,
-    fontWeight: "bold",
+    fontSize: 18,
+    marginBottom: 40,
   },
   addFieldInput: {
     padding: 10,
@@ -189,5 +246,21 @@ const styles = StyleSheet.create({
   addAddressButtonText: {
     fontWeight: "bold",
     color: "white",
+  },
+  topContent: {
+    alignItems: "center",
+  },
+  input: {
+    gap: 20,
+    marginBottom: 40,
+  },
+
+  midBtn: {
+    alignItems: "center",
+    marginBottom: 20,
+  },
+  title: {
+    fontSize: 18,
+    marginBottom: 40,
   },
 });

@@ -73,3 +73,9 @@ export const apiSearchProduct = (key) =>
     url: `/product/search/${key}`,
     method: "get",
   });
+
+export const apiGetProductCategories = () =>
+  axios({
+    url: "/productcategory",
+    method: "get",
+  });

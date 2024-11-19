@@ -124,7 +124,7 @@ const HomeScreen = () => {
         }, 6000);
     };
     const cart = useSelector((state) => state.user.cart);
-
+    const [categories, setCategories] = useState([]);
     const list = [
         {
             id: '0',
@@ -230,6 +230,28 @@ const HomeScreen = () => {
         };
         fetchOffers();
     }, []);
+
+    // useEffect(() => {
+    //     const fetchCategories = async () => {
+    //         try {
+    //             const response = await apiGetProductCategories();
+    //             if (response.data.success) {
+    //                 // Map category data to fit the display data structure
+    //                 const categoryList = response.data.productCategories.map((category) => ({
+    //                     id: category._id,
+    //                     name: category.title,
+    //                     image: category.image,
+    //                 }));
+    //                 console.log(categoryList);
+    //                 setCategories(categoryList);
+    //             }
+    //         } catch (error) {
+    //             console.error('Error fetching category list:', error);
+    //         }
+    //     };
+    //     fetchCategories();
+    // }, []);
+    
 
     const onGenderOpen = useCallback(() => {
         setOpen(true);

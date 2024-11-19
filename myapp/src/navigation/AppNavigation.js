@@ -21,6 +21,7 @@ const AppNavigation = () => {
     const { isLoggedIn } = useSelector((state) => state.user);
 
     useEffect(() => {
+
         const setTimeoutId = setTimeout(() => {
             dispatch(showLoading());
             dispatch(getCategories());
@@ -31,6 +32,7 @@ const AppNavigation = () => {
             clearTimeout(setTimeoutId);
         };
     }, [isLoggedIn, dispatch]);
+
 
     return (
         <Stack.Navigator>
