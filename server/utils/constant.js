@@ -1,41 +1,21 @@
-exports.users =[
+exports.roles = [
     {
-      email: 'user-01@gmail.com',
-      password: 123456,
-      firstname: 'User01',
-      lastname: 'Test',
-      mobile: '0123456789',
+        code: 1999,
+        value: 'Admin',
     },
     {
-      email: 'user-02@gmail.com',
-      password: 123456,
-      firstname: 'User02',
-      lastname: 'Test',
-      mobile: '0123456788',
+        code: 1998,
+        value: 'User',
     },
-    {
-      email: 'user-03@gmail.com',
-      password: 123456,
-      firstname: 'User03',
-      lastname: 'Test',
-      mobile: '0123456787',
-    },
-    {
-      email: 'user-04@gmail.com',
-      password: 123456,
-      firstname: 'User04',
-      lastname: 'Test',
-      mobile: '0123456786',
-    },
-  ]
+];
 
-  exports.roles = [
-    {
-      code: 1999,
-      value: 'Admin',
-    },
-    {
-      code: 1998,
-      value: 'User',
-    },
-  ]
+exports.users = Array.from({ length: 20 }, (_, index) => {
+    const userId = String(index + 1).padStart(2, '0');
+    return {
+        email: `user${userId}@gmail.com`,
+        password: 123456,
+        firstname: `User${userId}`,
+        lastname: 'Test',
+        mobile: `01234567${80 + index}`,
+    };
+});

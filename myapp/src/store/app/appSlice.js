@@ -13,7 +13,9 @@ export const appSlice = createSlice({
             message: '',
             onConfirmText: '',
             onCancelText: '',
+            closable: false,
         },
+        isShownModal: false,
     },
     reducers: {
         showLoading: (state) => {
@@ -30,10 +32,17 @@ export const appSlice = createSlice({
                 message: action.payload.message,
                 onConfirmText: action.payload.onConfirmText || 'OK',
                 onCancelText: action.payload.onCancelText || 'Cancel',
+                closable: action.payload.closable || false,
             };
         },
         hideAlert: (state) => {
             state.alert.isShown = false;
+        },
+        showModal: (state) => {
+            state.isShownModal = true;
+        },
+        hideModal: (state) => {
+            state.isShownModal = false;
         },
     },
     extraReducers: (builder) => {
@@ -53,6 +62,12 @@ export const appSlice = createSlice({
     },
 });
 
-export const { showLoading, hideLoading, showAlert, hideAlert } =
-    appSlice.actions;
+export const {
+    showLoading,
+    hideLoading,
+    showAlert,
+    hideAlert,
+    showModal,
+    hideModal,
+} = appSlice.actions;
 export default appSlice.reducer;

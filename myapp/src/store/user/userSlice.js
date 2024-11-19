@@ -77,8 +77,11 @@ export const userSlice = createSlice({
         },
     },
     extraReducers: (builder) => {
+        builder.addCase(actions.getCurrent.pending, (state, action) => {
+            state.s;
+        });
         builder.addCase(actions.getCurrent.fulfilled, (state, action) => {
-            state.current = action.payload.rs;
+            state.current = action.payload;
             state.isLoggedIn = true;
             state.currentCart = action.payload.cart;
         });

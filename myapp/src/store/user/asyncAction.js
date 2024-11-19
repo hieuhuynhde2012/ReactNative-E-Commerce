@@ -6,7 +6,7 @@ export const getCurrent = createAsyncThunk(
     async (data, { rejectWithValue }) => {
         try {
             const response = await apis.apiGetCurrent();
-            return response;
+            return response.rs;
         } catch (error) {
             return rejectWithValue(error);
         }

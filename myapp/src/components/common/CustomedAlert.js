@@ -6,8 +6,15 @@ import { alertCallback } from '../../store/app/middlewares';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
 const CustomedAlert = () => {
-    const { isShown, title, icon, message, onConfirmText, onCancelText } =
-        useSelector((state) => state.app.alert);
+    const {
+        isShown,
+        title,
+        icon,
+        message,
+        onConfirmText,
+        onCancelText,
+        closable,
+    } = useSelector((state) => state.app.alert);
 
     const dispatch = useDispatch();
 
@@ -30,6 +37,20 @@ const CustomedAlert = () => {
             {isShown && (
                 <View style={styles.overlay}>
                     <View style={styles.alertBox}>
+                        {closable && (
+                            <TouchableOpacity
+                                style={styles.clodeBtn}
+                                onPress={() => {
+                                    dispatch(hideAlert());
+                                }}
+                            >
+                                <Ionicons
+                                    name="close"
+                                    size={24}
+                                    color="white"
+                                />
+                            </TouchableOpacity>
+                        )}
                         {icon && (
                             <Ionicons name={icon} size={24} color="black" />
                         )}
@@ -75,7 +96,7 @@ const styles = StyleSheet.create({
         left: 0,
         right: 0,
         bottom: 0,
-        zIndex: 1,
+        zIndex: 10,
         flex: 1,
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
         justifyContent: 'center',
@@ -83,12 +104,23 @@ const styles = StyleSheet.create({
         animation: 'fade',
     },
     alertBox: {
+        position: 'relative',
         width: '80%',
         padding: 20,
         backgroundColor: 'white',
         borderRadius: 10,
         alignItems: 'center',
         elevation: 5,
+    },
+    clodeBtn: {
+        position: 'absolute',
+        top: 0,
+        right: 0,
+        zIndex: 1,
+        backgroundColor: '#ee3131',
+        padding: 4,
+        borderBottomLeftRadius: 10,
+        borderTopRightRadius: 10,
     },
     header: {
         flexDirection: 'row',
@@ -114,17 +146,18 @@ const styles = StyleSheet.create({
     },
     cancelBtn: {
         padding: 10,
-        borderRadius: 5,
+        borderRadius: 10,
         flex: 1,
         alignItems: 'center',
-        backgroundColor: '#eee',
+        backgroundColor: '#ee3131',
     },
     cancelBtnText: {
+        color: 'white',
         fontWeight: 'bold',
     },
     confirmBtn: {
         padding: 10,
-        borderRadius: 5,
+        borderRadius: 10,
         flex: 1,
         alignItems: 'center',
         backgroundColor: '#ee3131',

@@ -2,6 +2,7 @@ import { StyleSheet, Text, View, Pressable, Image } from 'react-native';
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { addToCart } from '../store/user/userSlice';
+import { formatCurrency } from '../utils/helpers';
 
 const ProductItem = ({ item }) => {
     const dispatch = useDispatch();
@@ -14,19 +15,16 @@ const ProductItem = ({ item }) => {
         }, 6000);
     };
     const cart = useSelector((state) => state.user.cart);
-    // console.log(cart);
+
     return (
         <Pressable style={styles.container}>
             <Image style={styles.image} source={{ uri: item?.thumb }} />
-
             <Text numberOfLines={1} style={styles.title}>
                 {item?.title}
             </Text>
-            <View style={styles.infoContainer}>
-                <Text style={styles.price}>
-                    {(item?.price / 24000).toFixed(2)} $
-                </Text>
 
+            <View style={styles.infoContainer}>
+                <Text style={styles.price}>{formatCurrency(item?.price)}</Text>
                 <Text style={styles.rating}>{item?.totalRating} ⭐️</Text>
             </View>
 

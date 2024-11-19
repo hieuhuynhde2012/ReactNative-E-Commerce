@@ -11,10 +11,11 @@ const CustomedInput = ({
     nameKey = '',
     invalidFields = [],
     setInvalidFields = () => {},
+    editable = true,
     RightIcon = null,
 }) => {
     return (
-        <>
+        <View style={styles.outerContainer}>
             {invalidFields?.some((item) => item.name === nameKey) && (
                 <View style={styles.errorWrapper}>
                     <Ionicons name="warning" size={18} color="#ee3131" />
@@ -29,6 +30,7 @@ const CustomedInput = ({
             <View
                 style={[
                     styles.container,
+                    !editable && { borderColor: '#aaa' },
                     invalidFields.some((item) => item.name === nameKey) && {
                         borderColor: '#ee3131',
                     },
@@ -36,7 +38,7 @@ const CustomedInput = ({
             >
                 {LeftIcon && <LeftIcon />}
                 <TextInput
-                    style={styles.input}
+                    style={[styles.input, !editable && styles.unenabledInput]}
                     placeholder={placeholder}
                     value={value}
                     keyboardType={type === 'number' ? 'numeric' : 'default'}
@@ -46,22 +48,26 @@ const CustomedInput = ({
                         onChangeText(value);
                         setInvalidFields([]);
                     }}
+                    editable={editable}
                 />
                 {RightIcon && <RightIcon />}
             </View>
-        </>
+        </View>
     );
 };
 
 export default CustomedInput;
 
 const styles = StyleSheet.create({
+    outerContainer: {
+        position: 'relative',
+    },
     container: {
         flexDirection: 'row',
         alignItems: 'center',
         paddingHorizontal: 16,
         borderWidth: 1,
-        borderColor: '#aaa',
+        borderColor: '#666',
         borderRadius: 10,
         gap: 10,
     },
@@ -69,7 +75,13 @@ const styles = StyleSheet.create({
         flex: 1,
         paddingVertical: 16,
     },
+    unenabledInput: {
+        color: '#aaa',
+    },
     errorWrapper: {
+        position: 'absolute',
+        top: -18,
+        right: 0,
         flexDirection: 'row',
         alignItems: 'center',
         gap: 4,

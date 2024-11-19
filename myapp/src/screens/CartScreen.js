@@ -1,17 +1,17 @@
-import React from "react";
+import React from 'react';
 import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  Pressable,
-  TextInput,
-  Image,
-} from "react-native";
-import AntDesign from "@expo/vector-icons/AntDesign";
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import Ionicons from "@expo/vector-icons/Ionicons";
-import { useDispatch, useSelector } from "react-redux";
+    View,
+    Text,
+    StyleSheet,
+    ScrollView,
+    Pressable,
+    TextInput,
+    Image,
+} from 'react-native';
+import AntDesign from '@expo/vector-icons/AntDesign';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   incementQuantity,
   decrementQuantity,
@@ -128,15 +128,15 @@ const CartScreen = () => {
 
                 <Pressable style={styles.quantityAdjust}>
                   <Text>{item?.quantity}</Text>
+
                 </Pressable>
 
-                <Pressable
-                  onPress={() => increaseQuantity(item)}
-                  style={styles.styleIcon}
-                >
-                  <AntDesign name="plus" size={24} color="black" />
-                </Pressable>
-              </View>
+                <View style={styles.cartContainer}>
+                    <Text style={{ fontSize: 24, fontWeight: '400' }}>
+                        Cart
+                    </Text>
+                </View>
+            </View>
 
               <Pressable
                 onPress={() => deleteItem(item)}
@@ -155,12 +155,116 @@ const CartScreen = () => {
                 <Text>See more like this</Text>
               </Pressable>
             </Pressable> */}
+
             <Text style={styles.seperator}></Text>
-          </View>
-        ))}
-      </View>
-    </ScrollView>
-  );
+
+            <View style={styles.subTotalContainer}>
+                <Text style={styles.subTotalText}>Subtotal: </Text>
+                <Text style={styles.subTotalNumber}>{total} $</Text>
+            </View>
+
+            <Text style={styles.cartHeader}>Cart detail available</Text>
+
+            <Pressable
+                onPress={() => navigation.navigate('Confirm')}
+                style={styles.buyButtonContainer}
+            >
+                <Text style={styles.buyButtonText}>
+                    Proceed to Buy ({cart.length}) items
+                </Text>
+            </Pressable>
+
+            <Text style={styles.seperator}></Text>
+
+            <View style={styles.productInfoContainer}>
+                {cart?.map((item, index) => (
+                    <View key={index}>
+                        <Pressable style={styles.productInfo}>
+                            <View>
+                                <Image
+                                    style={styles.imageContainer}
+                                    source={{ uri: item?.thumb }}
+                                />
+                            </View>
+
+                            <View>
+                                <Text
+                                    numberOfLines={2}
+                                    style={styles.productTitle}
+                                >
+                                    {item?.title}
+                                </Text>
+                                <Text style={styles.productPrice}>
+                                    {(item?.price / 24000).toFixed(2)} $
+                                </Text>
+                                <Text style={styles.inStockText}>In Stock</Text>
+                            </View>
+                        </Pressable>
+                        <Pressable style={styles.pressableContainer}>
+                            <View style={styles.iconCotainer}>
+                                {item?.quantity > 1 ? (
+                                    <Pressable
+                                        onPress={() => decreaseQuantity(item)}
+                                        style={styles.styleIcon}
+                                    >
+                                        <AntDesign
+                                            name="minus"
+                                            size={24}
+                                            color="black"
+                                        />
+                                    </Pressable>
+                                ) : (
+                                    <Pressable
+                                        onPress={() => deleteItem(item)}
+                                        style={styles.styleIcon}
+                                    >
+                                        <MaterialIcons
+                                            name="delete"
+                                            size={24}
+                                            color="black"
+                                        />
+                                    </Pressable>
+                                )}
+
+                                <Pressable style={styles.quantityAdjust}>
+                                    <Text>{item?.quantity}</Text>
+                                </Pressable>
+
+                                <Pressable
+                                    onPress={() => increaseQuantity(item)}
+                                    style={styles.styleIcon}
+                                >
+                                    <AntDesign
+                                        name="plus"
+                                        size={24}
+                                        color="black"
+                                    />
+                                </Pressable>
+                            </View>
+
+                            <Pressable
+                                onPress={() => deleteItem(item)}
+                                style={styles.customButton}
+                            >
+                                <Text>Delete</Text>
+                            </Pressable>
+                        </Pressable>
+
+                        <Pressable style={styles.boderPressable}>
+                            <Pressable style={styles.customButton}>
+                                <Text>Save for later</Text>
+                            </Pressable>
+
+                            <Pressable style={styles.customButton}>
+                                <Text>See more like this</Text>
+                            </Pressable>
+                        </Pressable>
+                        <Text style={styles.seperator}></Text>
+                    </View>
+                ))}
+            </View>
+        </ScrollView>
+    );
 };
 
 const styles = StyleSheet.create({
@@ -360,6 +464,7 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     marginLeft: 10,
   },
+
 });
 
 export default CartScreen;

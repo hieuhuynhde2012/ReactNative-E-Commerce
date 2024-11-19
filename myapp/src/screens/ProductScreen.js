@@ -12,7 +12,7 @@ import { apiGetProducts } from '../apis/product';
 import { useDispatch } from 'react-redux';
 import { showLoading, hideLoading } from '../store/app/appSlice';
 import CustomedCheckbox from '../components/common/CustomedCheckbox';
-import Pagination from '../components/pagination/pagination';
+import Pagination from '../components/pagination/Pagination';
 import { priceOptions, colorOptions, sortOptions } from '../utils/constants';
 
 const ProductScreen = ({ category = 'all' }) => {
@@ -218,11 +218,13 @@ const ProductScreen = ({ category = 'all' }) => {
                 <FlatList
                     ref={flatListRef}
                     data={products}
-                    renderItem={({ item }) => (
-                        <View style={styles.productItemWrapper}>
-                            <ProductItem item={item} />
-                        </View>
-                    )}
+                    renderItem={({ item }) => {
+                        return (
+                            <View style={styles.productItemWrapper}>
+                                <ProductItem item={item} />
+                            </View>
+                        );
+                    }}
                     keyExtractor={(item) => item._id}
                     numColumns={2}
                     showsVerticalScrollIndicator={false}
