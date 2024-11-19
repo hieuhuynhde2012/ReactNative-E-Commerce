@@ -63,10 +63,8 @@ const CartScreen = () => {
     </View>
   ) : (
     <ScrollView style={styles.container}>
-      <View style={styles.searchContainer}>
-        <View style={styles.cartContainer}>
-          <Text style={styles.cartTitle}>Cart</Text>
-        </View>
+      <View style={styles.cartContainer}>
+        <Text style={styles.cartTitle}>Cart</Text>
       </View>
 
       <Text style={styles.seperator}></Text>
@@ -100,7 +98,7 @@ const CartScreen = () => {
                 />
               </View>
 
-              <View>
+              <View style={{marginRight: 10}}>
                 <Text numberOfLines={2} style={styles.productTitle}>
                   {item?.title}
                 </Text>
@@ -148,7 +146,7 @@ const CartScreen = () => {
               </Pressable>
             </Pressable>
 
-            <Pressable style={styles.boderPressable}>
+            {/* <Pressable style={styles.boderPressable}>
               <Pressable style={styles.customButton}>
                 <Text>Save for later</Text>
               </Pressable>
@@ -156,7 +154,7 @@ const CartScreen = () => {
               <Pressable style={styles.customButton}>
                 <Text>See more like this</Text>
               </Pressable>
-            </Pressable>
+            </Pressable> */}
             <Text style={styles.seperator}></Text>
           </View>
         ))}
@@ -177,6 +175,7 @@ const styles = StyleSheet.create({
     position: "relative",
     marginBottom: 20,
     marginTop: 70,
+
   },
   warningIcon: {
     position: "absolute",
@@ -213,11 +212,11 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   cartTitle: {
-    fontSize: 28, 
-    fontWeight: "bold", 
-    textAlign: "center", 
-    marginBottom: 20, 
-    color: "#333", 
+    fontSize: 28,
+    fontWeight: "bold",
+    textAlign: "center",
+    marginBottom: 20,
+    color: "#333",
   },
   container: {
     //marginTop: 55,
@@ -233,6 +232,7 @@ const styles = StyleSheet.create({
   cartContainer: {
     flex: 1, //
     alignItems: "center",
+    marginBottom: -20
   },
   cartHeader: {
     fontSize: 100,
@@ -345,11 +345,13 @@ const styles = StyleSheet.create({
   },
   customButton: {
     backgroundColor: "white",
-    paddingHorizontal: 8,
-    paddingVertical: 10,
-    borderRadius: 5,
-    borderColor: "#D0D0D0",
-    borderWidth: 0.6,
+    paddingHorizontal: 12,
+    paddingVertical: 14,
+    borderRadius: 7,
+    borderColor: "#D0d0d0",
+    borderWidth: 1,
+    marginLeft: 5,
+    
   },
   boderPressable: {
     flexDirection: "row",

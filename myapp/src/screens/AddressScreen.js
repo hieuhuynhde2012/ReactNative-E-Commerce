@@ -113,7 +113,7 @@ const AddressScreen = () => {
                   )}
                   placeholder="Enter your name"
                   value={name}
-                  onChangeText={(text) => setCountry(text)}
+                  onChangeText={(text) => setName(text)}
                   nameKey="name"
                 />
 
