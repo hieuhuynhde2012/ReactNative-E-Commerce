@@ -19,10 +19,10 @@ import {
 } from "../store/user/userSlice";
 import { useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/MaterialIcons";
+
 const CartScreen = () => {
   const navigation = useNavigation();
   const cart = useSelector((state) => state.user.cart);
-  //console.log(cart);
   const total = parseFloat(
     cart
       ?.map((item) => (item.price / 24000) * item.quantity)
@@ -30,15 +30,19 @@ const CartScreen = () => {
       .toFixed(2)
   );
   const dispatch = useDispatch();
+
   const increaseQuantity = (item) => {
     dispatch(incementQuantity(item));
   };
+
   const decreaseQuantity = (item) => {
     dispatch(decrementQuantity(item));
   };
+
   const deleteItem = (item) => {
     dispatch(removeFromCart(item));
   };
+
   return cart.length === 0 ? (
     <View style={styles.emptyCartContainer}>
       <Text style={styles.cartTitle}>Cart</Text>
@@ -125,19 +129,16 @@ const CartScreen = () => {
                     <MaterialIcons name="delete" size={24} color="black" />
                   </Pressable>
                 )}
-
                 <Pressable style={styles.quantityAdjust}>
                   <Text>{item?.quantity}</Text>
-
                 </Pressable>
-
-                <View style={styles.cartContainer}>
-                    <Text style={{ fontSize: 24, fontWeight: '400' }}>
-                        Cart
-                    </Text>
-                </View>
-            </View>
-
+                <Pressable
+                  onPress={() => increaseQuantity(item)}
+                  style={styles.styleIcon}
+                >
+                  <AntDesign name="plus" size={24} color="black" />
+                </Pressable>
+              </View>
               <Pressable
                 onPress={() => deleteItem(item)}
                 style={styles.customButton}
@@ -145,132 +146,25 @@ const CartScreen = () => {
                 <Text>Delete</Text>
               </Pressable>
             </Pressable>
-
-            {/* <Pressable style={styles.boderPressable}>
+            <Pressable style={styles.boderPressable}>
               <Pressable style={styles.customButton}>
                 <Text>Save for later</Text>
               </Pressable>
-
               <Pressable style={styles.customButton}>
                 <Text>See more like this</Text>
               </Pressable>
-            </Pressable> */}
-
-            <Text style={styles.seperator}></Text>
-
-            <View style={styles.subTotalContainer}>
-                <Text style={styles.subTotalText}>Subtotal: </Text>
-                <Text style={styles.subTotalNumber}>{total} $</Text>
-            </View>
-
-            <Text style={styles.cartHeader}>Cart detail available</Text>
-
-            <Pressable
-                onPress={() => navigation.navigate('Confirm')}
-                style={styles.buyButtonContainer}
-            >
-                <Text style={styles.buyButtonText}>
-                    Proceed to Buy ({cart.length}) items
-                </Text>
             </Pressable>
-
             <Text style={styles.seperator}></Text>
-
-            <View style={styles.productInfoContainer}>
-                {cart?.map((item, index) => (
-                    <View key={index}>
-                        <Pressable style={styles.productInfo}>
-                            <View>
-                                <Image
-                                    style={styles.imageContainer}
-                                    source={{ uri: item?.thumb }}
-                                />
-                            </View>
-
-                            <View>
-                                <Text
-                                    numberOfLines={2}
-                                    style={styles.productTitle}
-                                >
-                                    {item?.title}
-                                </Text>
-                                <Text style={styles.productPrice}>
-                                    {(item?.price / 24000).toFixed(2)} $
-                                </Text>
-                                <Text style={styles.inStockText}>In Stock</Text>
-                            </View>
-                        </Pressable>
-                        <Pressable style={styles.pressableContainer}>
-                            <View style={styles.iconCotainer}>
-                                {item?.quantity > 1 ? (
-                                    <Pressable
-                                        onPress={() => decreaseQuantity(item)}
-                                        style={styles.styleIcon}
-                                    >
-                                        <AntDesign
-                                            name="minus"
-                                            size={24}
-                                            color="black"
-                                        />
-                                    </Pressable>
-                                ) : (
-                                    <Pressable
-                                        onPress={() => deleteItem(item)}
-                                        style={styles.styleIcon}
-                                    >
-                                        <MaterialIcons
-                                            name="delete"
-                                            size={24}
-                                            color="black"
-                                        />
-                                    </Pressable>
-                                )}
-
-                                <Pressable style={styles.quantityAdjust}>
-                                    <Text>{item?.quantity}</Text>
-                                </Pressable>
-
-                                <Pressable
-                                    onPress={() => increaseQuantity(item)}
-                                    style={styles.styleIcon}
-                                >
-                                    <AntDesign
-                                        name="plus"
-                                        size={24}
-                                        color="black"
-                                    />
-                                </Pressable>
-                            </View>
-
-                            <Pressable
-                                onPress={() => deleteItem(item)}
-                                style={styles.customButton}
-                            >
-                                <Text>Delete</Text>
-                            </Pressable>
-                        </Pressable>
-
-                        <Pressable style={styles.boderPressable}>
-                            <Pressable style={styles.customButton}>
-                                <Text>Save for later</Text>
-                            </Pressable>
-
-                            <Pressable style={styles.customButton}>
-                                <Text>See more like this</Text>
-                            </Pressable>
-                        </Pressable>
-                        <Text style={styles.seperator}></Text>
-                    </View>
-                ))}
-            </View>
-        </ScrollView>
-    );
+          </View>
+        ))}
+      </View>
+    </ScrollView>
+  );
 };
 
 const styles = StyleSheet.create({
   emptyCartContainer: {
     flex: 1,
-    //justifyContent: "center",
     alignItems: "center",
     padding: 20,
     backgroundColor: "#fff",
@@ -279,12 +173,6 @@ const styles = StyleSheet.create({
     position: "relative",
     marginBottom: 20,
     marginTop: 70,
-
-  },
-  warningIcon: {
-    position: "absolute",
-    top: 5,
-    right: 5,
   },
   emptyTitle: {
     fontSize: 24,
@@ -323,26 +211,16 @@ const styles = StyleSheet.create({
     color: "#333",
   },
   container: {
-    //marginTop: 55,
     flex: 1,
     backgroundColor: "white",
   },
-  searchContainer: {
-    backgroundColor: "white",
-    padding: 10,
-    flexDirection: "row",
-    alignItems: "center",
-  },
   cartContainer: {
-    flex: 1, //
+    flex: 1,
     alignItems: "center",
-    marginBottom: -20
+    marginBottom: -20,
   },
   cartHeader: {
     fontSize: 100,
-  },
-  icon: {
-    marginRight: 10,
   },
   subTotalContainer: {
     padding: 10,
@@ -355,10 +233,7 @@ const styles = StyleSheet.create({
   },
   subTotalNumber: {
     fontSize: 20,
-    fontWeight: "bolde",
-  },
-  cartHeader: {
-    marginHorizontal: 10,
+    fontWeight: "bold",
   },
   buyButtonContainer: {
     backgroundColor: "#ee3131",
@@ -434,37 +309,29 @@ const styles = StyleSheet.create({
   },
   quantityAdjust: {
     backgroundColor: "white",
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    borderColor: "#D0d0d0",
-    // borderWidth: 1,
-    // borderRadius: 3
+    paddingHorizontal: 10,
+    paddingVertical: 5,
   },
   pressableContainer: {
-    marginTop: 15,
-    marginBottom: 10,
     flexDirection: "row",
     alignItems: "center",
-    gap: 10,
+    justifyContent: "space-between",
   },
   customButton: {
-    backgroundColor: "white",
-    paddingHorizontal: 12,
-    paddingVertical: 14,
-    borderRadius: 7,
-    borderColor: "#D0d0d0",
-    borderWidth: 1,
-    marginLeft: 5,
-    
+    paddingHorizontal: 10,
+    paddingVertical: 5,
   },
   boderPressable: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 10,
-    marginBottom: 15,
-    marginLeft: 10,
+    justifyContent: "space-between",
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderColor: "#D0d0d0",
+    borderWidth: 1,
+    borderRadius: 5,
+    marginTop: 5,
   },
-
 });
 
 export default CartScreen;
