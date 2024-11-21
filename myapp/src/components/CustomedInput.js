@@ -12,6 +12,7 @@ const CustomedInput = ({
     invalidFields = [],
     setInvalidFields = () => {},
     editable = true,
+    multiline = false,
     RightIcon = null,
 }) => {
     return (
@@ -38,7 +39,11 @@ const CustomedInput = ({
             >
                 {LeftIcon && <LeftIcon />}
                 <TextInput
-                    style={[styles.input, !editable && styles.unenabledInput]}
+                    style={[
+                        styles.input,
+                        !editable && styles.unenabledInput,
+                        multiline && { height: 160 },
+                    ]}
                     placeholder={placeholder}
                     value={value}
                     keyboardType={type === 'number' ? 'numeric' : 'default'}
@@ -49,6 +54,7 @@ const CustomedInput = ({
                         setInvalidFields([]);
                     }}
                     editable={editable}
+                    multiline={multiline}
                 />
                 {RightIcon && <RightIcon />}
             </View>

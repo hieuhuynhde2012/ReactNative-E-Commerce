@@ -1,13 +1,30 @@
 export const validate = (payload, setInvalidFields) => {
     let invalids = 0;
     const formatPayload = Object.entries(payload);
+
     for (let arr of formatPayload) {
-        if (arr[1].trim() === '') {
-            invalids++;
-            setInvalidFields((prev) => [
-                ...prev,
-                { name: arr[0], message: 'This field is required!' },
-            ]);
+        if (arr[0] === 'description' || arr[0] === 'images') {
+            if (arr[1].length === 0) {
+                invalids++;
+                setInvalidFields((prev) => [
+                    ...prev,
+                    { name: arr[0], message: 'This field is required!' },
+                ]);
+            }
+        } else {
+            if (typeof arr[1] === 'string' && arr[1].trim() === '') {
+                invalids++;
+                setInvalidFields((prev) => [
+                    ...prev,
+                    { name: arr[0], message: 'This field is required!' },
+                ]);
+            } else if (Number(arr[1]) === 0) {
+                invalids++;
+                setInvalidFields((prev) => [
+                    ...prev,
+                    { name: arr[0], message: 'This field is required!' },
+                ]);
+            }
         }
     }
 

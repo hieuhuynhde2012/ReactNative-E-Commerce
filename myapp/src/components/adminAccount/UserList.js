@@ -167,6 +167,7 @@ const styles = StyleSheet.create({
         width: 80,
         height: 80,
         resizeMode: 'contain',
+        borderRadius: '50%',
     },
     inforWrapper: {
         width: '50%',

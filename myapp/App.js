@@ -30,9 +30,9 @@ const AppContent = () => {
     return (
         <SafeAreaView style={styles.container}>
             <NavigationContainer>
-                <CustomedLoading />
                 <CustomedAlert />
                 <CustomedModal />
+                <CustomedLoading />
                 <StatusBar
                     barStyle="dark-content"
                     backgroundColor="transparent"

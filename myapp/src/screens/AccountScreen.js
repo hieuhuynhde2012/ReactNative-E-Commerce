@@ -8,17 +8,15 @@ import {
     ScrollView,
     KeyboardAvoidingView,
     Platform,
-    Keyboard,
-    TouchableWithoutFeedback,
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../store/user/userSlice';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import PersonalInfomation from '../components/personalAccount/PersonalInfomation';
-import CartDetailScreen from './CartDetailScreen';
 import { images } from '../../assets';
 
 import UserList from '../components/adminAccount/UserList';
+import ProductList from '../components/adminAccount/ProductList';
 
 const AccountScreen = () => {
     const dispatch = useDispatch();
@@ -101,36 +99,22 @@ const AccountScreen = () => {
                             Platform.OS === 'ios' ? 144 : 144
                         }
                     >
-                        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-                            <ScrollView showsVerticalScrollIndicator={false}>
-                                <View style={styles.scrBottomItem}>
-                                    <View style={styles.titleWrapper}>
-                                        <Text
-                                            style={[
-                                                styles.text,
-                                                styles.boldText,
-                                            ]}
-                                        >
-                                            Personal Information
-                                        </Text>
-                                    </View>
-                                    <PersonalInfomation currentUser={current} />
+                        <ScrollView showsVerticalScrollIndicator={false}>
+                            <View style={styles.scrBottomItem}>
+                                <View style={styles.titleWrapper}>
+                                    <Text
+                                        style={[
+                                            styles.text,
+                                            styles.boldText,
+                                            styles.whiteText,
+                                        ]}
+                                    >
+                                        Personal Information
+                                    </Text>
                                 </View>
-                                <View style={styles.scrBottomItem}>
-                                    <View style={styles.titleWrapper}>
-                                        <Text
-                                            style={[
-                                                styles.text,
-                                                styles.boldText,
-                                            ]}
-                                        >
-                                            Cart
-                                        </Text>
-                                    </View>
-                                    <CartDetailScreen />
-                                </View>
-                            </ScrollView>
-                        </TouchableWithoutFeedback>
+                                <PersonalInfomation currentUser={current} />
+                            </View>
+                        </ScrollView>
                     </KeyboardAvoidingView>
                 ) : (
                     <KeyboardAvoidingView
@@ -140,26 +124,39 @@ const AccountScreen = () => {
                             Platform.OS === 'ios' ? 144 : 144
                         }
                     >
-                        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-                            <ScrollView
-                                showsVerticalScrollIndicator={false}
-                                keyboardShouldPersistTaps="handled"
-                            >
-                                <View style={styles.scrBottomItem}>
-                                    <View style={styles.titleWrapper}>
-                                        <Text
-                                            style={[
-                                                styles.text,
-                                                styles.boldText,
-                                            ]}
-                                        >
-                                            Manage Users
-                                        </Text>
-                                    </View>
-                                    <UserList />
+                        <ScrollView
+                            showsVerticalScrollIndicator={false}
+                            keyboardShouldPersistTaps="handled"
+                        >
+                            <View style={styles.scrBottomItem}>
+                                <View style={styles.titleWrapper}>
+                                    <Text
+                                        style={[
+                                            styles.text,
+                                            styles.boldText,
+                                            styles.whiteText,
+                                        ]}
+                                    >
+                                        Manage Users
+                                    </Text>
                                 </View>
-                            </ScrollView>
-                        </TouchableWithoutFeedback>
+                                <UserList />
+                            </View>
+                            <View style={styles.scrBottomItem}>
+                                <View style={styles.titleWrapper}>
+                                    <Text
+                                        style={[
+                                            styles.text,
+                                            styles.boldText,
+                                            styles.whiteText,
+                                        ]}
+                                    >
+                                        Manage Products
+                                    </Text>
+                                </View>
+                                <ProductList />
+                            </View>
+                        </ScrollView>
                     </KeyboardAvoidingView>
                 )}
             </View>
@@ -250,7 +247,7 @@ const styles = StyleSheet.create({
     },
     titleWrapper: {
         position: 'absolute',
-        backgroundColor: '#d0d0d0',
+        backgroundColor: '#ee3131',
         paddingVertical: 12,
         paddingHorizontal: 18,
         borderTopLeftRadius: 26,
