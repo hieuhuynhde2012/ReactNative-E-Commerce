@@ -7,33 +7,46 @@ const ProductBar = ({ numberOfProducts, totalProducts }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Remain {numberOfProducts} / {totalProducts}</Text>
-      <View style={styles.barContainer}>
-        <View style={[styles.bar, { width: `${barWidth}%` }]} />
+    <View style={styles.barContainer}>
+      <View style={[styles.bar, { width: `${barWidth}%` }]}>
       </View>
+      <Text style={styles.title}>
+        Remain {numberOfProducts} / {totalProducts}
+      </Text>
     </View>
+  </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
-    margin: 20,
+    margin: 7,
+    paddingLeft: 4,
+    paddingRight: 2
   },
   title: {
-    fontSize: 16,
-    marginBottom: 10,
+    fontSize: 12,
+    color: 'white',
+    zIndex: 2,
+    marginLeft: 25,
+    marginTop: 2
   },
   barContainer: {
-    width: '100%',
+    width: '117%',
     height: 20,
-    backgroundColor: '#e0e0e0',
-    borderRadius: 10,
+    backgroundColor: '#eeCCCC',
+    borderRadius: 16,
     overflow: 'hidden',
+    position: 'relative',
+   
   },
   bar: {
+    position: 'absolute',
+    left: 0,
     height: '100%',
     backgroundColor: '#ee3131',
+    zIndex: 1,
   },
 });
 

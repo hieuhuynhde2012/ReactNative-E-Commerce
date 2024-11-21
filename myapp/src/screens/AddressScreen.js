@@ -10,7 +10,6 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from "react-native";
-import { Pressable, TextInput } from "react-native-gesture-handler";
 import { apiAddAdditionalAddress } from "../apis";
 import { Alert } from "react-native";
 import { useNavigation } from "@react-navigation/native";
@@ -30,6 +29,7 @@ const AddressScreen = () => {
   const [street, setStreet] = useState("");
   const [landmark, setLanmark] = useState("");
   const [postalCode, setPostalCode] = useState("");
+  
 
   const handleAddAddress = async () => {
     if (!name || !mobileNo) {
@@ -75,6 +75,7 @@ const AddressScreen = () => {
     }
   };
   return (
+    <SafeAreaView style={{flex: 1, zIndex: 30000}}>
     <KeyboardAvoidingView
       style={styles.container}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -102,7 +103,6 @@ const AddressScreen = () => {
                   onChangeText={(text) => setCountry(text)}
                   nameKey="country"
                 />
-
                 <CustomedInput
                   LeftIcon={() => (
                     <MaterialCommunityIcons
@@ -187,6 +187,8 @@ const AddressScreen = () => {
         </View>
       </TouchableWithoutFeedback>
     </KeyboardAvoidingView>
+    </SafeAreaView>
+
   );
 };
 
@@ -199,6 +201,7 @@ const styles = StyleSheet.create({
     alignContent: "center",
     // marginTop: -20,
     backgroundColor: "#fff",
+    
   },
   addressContainer: {
     flexGrow: 1,

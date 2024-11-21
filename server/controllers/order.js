@@ -38,7 +38,7 @@ const createNewOrder = asyncHandler(async (req, res) => {
     }));
 
     const orderData = {
-      user: _id,  // Use `orderBy` to reference the user
+      user: _id,  
       products,
       totalPrice,
       shippingAddress,
@@ -47,16 +47,23 @@ const createNewOrder = asyncHandler(async (req, res) => {
 
     const newOrder = await Order.create(orderData);
 
+    await User.findByIdAndUpdate(
+      _id,
+      { $set: { cart: [] } }, 
+      { new: true }
+    );
+
     res.status(200).json({
       success: true,
       message: "Order created successfully!",
       createdOrder: newOrder,
     });
   } catch (error) {
-    console.error("Error creating order:", error);  // Log the error
-    res.status(500).json({ message: "Error creating order", error: error.message });  // Send detailed error message
+    console.error("Error creating order:", error); 
+    res.status(500).json({ message: "Error creating order", error: error.message }); 
   }
 });
+
 
 
 // Update order status

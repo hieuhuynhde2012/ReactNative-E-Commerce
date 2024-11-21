@@ -22,6 +22,8 @@ import {
 import { apiCreateOrder } from "../apis";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { cleanCart } from "../store/user/userSlice";
+import { formatCurrency } from "../utils/helpers";
+
 
 const ConfirmationScreen = () => {
   const navigation = useNavigation();
@@ -32,13 +34,13 @@ const ConfirmationScreen = () => {
     { title: "Payment", content: "Payment Details" },
     { title: "Place Order", content: "Order Sumary" },
   ];
-  const cart = useSelector((state) => state.user.cart);
+  const { currentCart, current } = useSelector((state) => state.user);
   //console.log(cart);
-  const total = parseFloat(
-    cart
-      ?.map((item) => (item.price / 24000) * item.quantity)
-      .reduce((curr, prev) => curr + prev, 0)
-      .toFixed(2)
+  const total = formatCurrency(
+    currentCart?.reduce(
+      (sum, el) => sum + Number(el?.price * el?.quantity),
+      0,
+  ),
   );
 
   const [currentStep, setCurrentStep] = useState(0);
