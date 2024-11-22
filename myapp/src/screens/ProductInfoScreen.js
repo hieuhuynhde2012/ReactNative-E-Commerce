@@ -5,20 +5,18 @@ import {
   Text,
   ScrollView,
   Pressable,
-  TextInput,
   ImageBackground,
   Dimensions,
+  Image,
 } from "react-native";
-import AntDesign from "@expo/vector-icons/AntDesign";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import Feather from "@expo/vector-icons/Feather";
 import { useRoute } from "@react-navigation/native";
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useDispatch, useSelector } from "react-redux";
 import { updateCart, addToCart } from "../store/user/userSlice";
-import { showLoading, hideLoading } from "../store/app/appSlice";
 import { useNavigation } from "@react-navigation/native";
-
+import { formatCurrency } from "../utils/helpers";
+import logo from "../../assets/logo.png";
+import { apiUpdateCart } from "../apis";
 const ProductInfoScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
@@ -26,29 +24,48 @@ const ProductInfoScreen = () => {
   const height = (width * 100) / 100;
   const [addedToCart, setAddedToCart] = useState(false);
   const dispatch = useDispatch();
-  const addItemToCart = (item) => {
-    setAddedToCart(true);
-    dispatch(addToCart(item));
-    setTimeout(() => {
-      setAddedToCart(false);
-    }, 6000);
-  };
   const cart = useSelector((state) => state.user.cart);
-  // console.log(cart);
+  const [loading, setLoading] = useState(false);
+  const addItemToCart = async (item) => {
+    setAddedToCart(true);
+    setLoading(true);
+
+    try {
+      const newItem = {
+        pid: item._id,
+        color: item.color,
+        quantity: 1,
+        price: item.price,
+        thumbnail: item.thumb,
+        title: item.title,
+        actionType: 'increase'
+      };
+
+      const response = await apiUpdateCart(newItem);
+      // console.log(response);
+      if (response.success) {
+        console.log("Item added to cart successfully");
+        dispatch(addToCart(newItem));
+      } else {
+        console.error("Failed to add item to cart:", response.data.message);
+      }
+    } catch (error) {
+      console.error("API Error:", error);
+    } finally {
+      setLoading(false);
+      setTimeout(() => {
+        setAddedToCart(false);
+      }, 6000);
+    }
+  };
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       <View style={styles.searchBarContainer}>
         <Pressable onPress={() => navigation.goBack()}>
-          <Ionicons name="arrow-back-outline" size={24} color="white" />
+          <Ionicons name="arrow-back-outline" size={32} color="black" />
         </Pressable>
-        <Pressable style={styles.searchBar}>
-          <TextInput style={styles.textInputSearch} placeholder="Search" />
-          <AntDesign
-            style={styles.searchIcon}
-            name="search1"
-            size={22}
-            color="black"
-          />
+        <Pressable onPress={() => navigation.navigate("Home")}>
+          <Image style={styles.logo} source={logo} />
         </Pressable>
       </View>
 
@@ -58,37 +75,21 @@ const ProductInfoScreen = () => {
             style={[styles.imageBackground, { width, height }]}
             source={{ uri: item }}
             key={index}
-          >
-            <View style={styles.imageHeader}>
-              <View style={styles.discountBadge}>
-                <Text style={styles.discountText}>40% off</Text>
-              </View>
-              <View style={styles.shareButton}>
-                <MaterialCommunityIcons
-                  name="share-variant"
-                  size={24}
-                  color="black"
-                />
-              </View>
-            </View>
-            <View style={styles.heartButton}>
-              <AntDesign name="hearto" size={24} color="black" />
-            </View>
-          </ImageBackground>
+          ></ImageBackground>
         ))}
       </ScrollView>
 
       <View style={styles.infoContainer}>
         <Text style={styles.productTitle}>{route?.params?.title}</Text>
         <Text style={styles.productPrice}>
-          {(route?.params.price / 24000).toFixed(2)} $
+          {formatCurrency(route?.params.price)}
         </Text>
       </View>
 
       <Text style={styles.separator} />
 
       <View style={styles.colorContainer}>
-        <Text>Color:</Text>
+        <Text style={styles.descriptionTitle}>Color:</Text>
         <Text style={styles.colorText}>{route?.params?.color}</Text>
       </View>
 
@@ -118,7 +119,8 @@ const ProductInfoScreen = () => {
 
       <Pressable
         onPress={() => addItemToCart(route?.params?.item)}
-        style={styles.addToCartButton}
+        style={[styles.addToCartButton, loading && { opacity: 0.7 }]}
+        disabled={loading}
       >
         {addedToCart ? (
           <View>
@@ -127,10 +129,6 @@ const ProductInfoScreen = () => {
         ) : (
           <Text style={styles.addToCartText}>Add to Cart</Text>
         )}
-      </Pressable>
-
-      <Pressable style={styles.buyNowButton}>
-        <Text style={styles.addToCartText}>Buy Now</Text>
       </Pressable>
     </ScrollView>
   );
@@ -143,10 +141,15 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
   },
   searchBarContainer: {
-    backgroundColor: "#ee3131",
+    backgroundColor: "#f0f0f0",
     padding: 10,
     flexDirection: "row",
+    justifyContent: "space-between",
     alignItems: "center",
+  },
+  logo: {
+    width: 160,
+    objectFit: "contain",
   },
   searchBar: {
     flexDirection: "row",
@@ -233,7 +236,6 @@ const styles = StyleSheet.create({
   },
   colorText: {
     fontSize: 15,
-    fontWeight: "bold",
   },
   descriptionContainer: {
     padding: 10,
@@ -288,15 +290,6 @@ const styles = StyleSheet.create({
   },
   addToCartText: {
     color: "white",
-  },
-  buyNowButton: {
-    backgroundColor: "#ef0505",
-    padding: 10,
-    borderRadius: 20,
-    justifyContent: "center",
-    alignItems: "center",
-    marginHorizontal: 10,
-    marginVertical: 10,
   },
 });
 

@@ -10,10 +10,11 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { useDispatch, useSelector } from "react-redux";
 import CategoryTopTab from "./CategoryTopTab";
 
+
 const Tab = createBottomTabNavigator();
 
 const MainTab = () => {
-  const cart = useSelector((state) => state.user.cart);
+  const { currentCart, current } = useSelector((state) => state.user);
 
   return (
     <Tab.Navigator
@@ -65,7 +66,7 @@ const MainTab = () => {
               color={focused ? "#ee3131" : "black"}
             />
           ),
-          tabBarBadge: cart.length > 0 ? cart.length : null,
+          tabBarBadge: currentCart.length > 0 ? currentCart.length : null,
         }}
       />
       <Tab.Screen

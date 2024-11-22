@@ -9,8 +9,9 @@ import {
   Keyboard,
   KeyboardAvoidingView,
   Platform,
+  Image,
+  Pressable
 } from "react-native";
-import { Pressable, TextInput } from "react-native-gesture-handler";
 import { apiAddAdditionalAddress } from "../apis";
 import { Alert } from "react-native";
 import { useNavigation } from "@react-navigation/native";
@@ -21,6 +22,8 @@ import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import Entypo from "@expo/vector-icons/Entypo";
+import logo from "../../assets/logo.png";
+import Ionicons from "@expo/vector-icons/Ionicons";
 const AddressScreen = () => {
   const navigation = useNavigation();
   const [country, setCountry] = useState("");
@@ -75,118 +78,126 @@ const AddressScreen = () => {
     }
   };
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      keyboardVerticalOffset={Platform.OS === "ios" ? 10 : 10}
-    >
-      <View style={styles.addressBlock} />
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <View style={styles.innerContainer}>
-          <ScrollView
-            keyboardShouldPersistTaps="handled"
-            showsHorizontalScrollIndicator={false}
-            style={styles.addressContainer}
-          >
-            <View style={styles.topContent}>
-              <Text style={styles.title}>Add a new Address</Text>
-            </View>
-            <View style={styles.midContent}>
-              <View style={styles.input}>
-                <CustomedInput
-                  LeftIcon={() => (
-                    <AntDesign name="earth" size={24} color="#666" />
-                  )}
-                  placeholder="Enter your country"
-                  value={country}
-                  onChangeText={(text) => setCountry(text)}
-                  nameKey="country"
-                />
-
-                <CustomedInput
-                  LeftIcon={() => (
-                    <MaterialCommunityIcons
-                      name="account-outline"
-                      size={24}
-                      color="#666"
-                    />
-                  )}
-                  placeholder="Enter your name"
-                  value={name}
-                  onChangeText={(text) => setName(text)}
-                  nameKey="name"
-                />
-
-                <CustomedInput
-                  LeftIcon={() => (
-                    <MaterialCommunityIcons
-                      name="cellphone"
-                      size={24}
-                      color="#666"
-                    />
-                  )}
-                  placeholder="Enter your mobile number"
-                  value={mobileNo}
-                  onChangeText={(text) => setMobileNo(text)}
-                  nameKey="mobileNo"
-                />
-
-                <CustomedInput
-                  LeftIcon={() => (
-                    <FontAwesome5 name="house-user" size={24} color="#666" />
-                  )}
-                  placeholder="Enter your house number"
-                  value={houseNo}
-                  onChangeText={(text) => setHouseNo(text)}
-                  nameKey="houseNo"
-                />
-
-                <CustomedInput
-                  LeftIcon={() => (
-                    <FontAwesome name="street-view" size={24} color="#666" />
-                  )}
-                  placeholder="Enter your street"
-                  value={street}
-                  onChangeText={(text) => setStreet(text)}
-                  nameKey="street"
-                />
-
-                <CustomedInput
-                  LeftIcon={() => (
-                    <MaterialCommunityIcons
-                      name="office-building-marker"
-                      size={24}
-                      color="#666"
-                    />
-                  )}
-                  placeholder="Eg near apollo, hospital"
-                  value={landmark}
-                  onChangeText={(text) => setLanmark(text)}
-                  nameKey="landmark"
-                />
-
-                <CustomedInput
-                  LeftIcon={() => (
-                    <Entypo name="location-pin" size={24} color="#666" />
-                  )}
-                  placeholder="Enter pincode"
-                  value={postalCode}
-                  onChangeText={(text) => setPostalCode(text)}
-                  nameKey="postalCode"
-                />
-              </View>
-
-              <View>
-                <CustomedButton
-                  title="Add Address"
-                  handleOnPress={handleAddAddress}
-                />
-              </View>
-            </View>
-          </ScrollView>
+    <SafeAreaView style={{ flex: 1, zIndex: 30000 }}>
+      <KeyboardAvoidingView
+        style={styles.container}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 10 : 10}
+      >
+        <View style={styles.searchBarContainer}>
+          <Pressable onPress={() => navigation.goBack()}>
+            <Ionicons name="arrow-back-outline" size={32} color="black" />
+          </Pressable>
+          <Pressable onPress={() => navigation.navigate("Home")}>
+            <Image style={styles.logo} source={logo} />
+          </Pressable>
         </View>
-      </TouchableWithoutFeedback>
-    </KeyboardAvoidingView>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <View style={styles.innerContainer}>
+            <ScrollView
+              keyboardShouldPersistTaps="handled"
+              showsHorizontalScrollIndicator={false}
+              style={styles.addressContainer}
+            >
+              <View style={styles.topContent}>
+                <Text style={styles.title}>Add a new Address</Text>
+              </View>
+              <View style={styles.midContent}>
+                <View style={styles.input}>
+                  <CustomedInput
+                    LeftIcon={() => (
+                      <AntDesign name="earth" size={24} color="#666" />
+                    )}
+                    placeholder="Enter your country"
+                    value={country}
+                    onChangeText={(text) => setCountry(text)}
+                    nameKey="country"
+                  />
+                  <CustomedInput
+                    LeftIcon={() => (
+                      <MaterialCommunityIcons
+                        name="account-outline"
+                        size={24}
+                        color="#666"
+                      />
+                    )}
+                    placeholder="Enter your name"
+                    value={name}
+                    onChangeText={(text) => setName(text)}
+                    nameKey="name"
+                  />
+
+                  <CustomedInput
+                    LeftIcon={() => (
+                      <MaterialCommunityIcons
+                        name="cellphone"
+                        size={24}
+                        color="#666"
+                      />
+                    )}
+                    placeholder="Enter your mobile number"
+                    value={mobileNo}
+                    onChangeText={(text) => setMobileNo(text)}
+                    nameKey="mobileNo"
+                  />
+
+                  <CustomedInput
+                    LeftIcon={() => (
+                      <FontAwesome5 name="house-user" size={24} color="#666" />
+                    )}
+                    placeholder="Enter your house number"
+                    value={houseNo}
+                    onChangeText={(text) => setHouseNo(text)}
+                    nameKey="houseNo"
+                  />
+
+                  <CustomedInput
+                    LeftIcon={() => (
+                      <FontAwesome name="street-view" size={24} color="#666" />
+                    )}
+                    placeholder="Enter your street"
+                    value={street}
+                    onChangeText={(text) => setStreet(text)}
+                    nameKey="street"
+                  />
+
+                  <CustomedInput
+                    LeftIcon={() => (
+                      <MaterialCommunityIcons
+                        name="office-building-marker"
+                        size={24}
+                        color="#666"
+                      />
+                    )}
+                    placeholder="Eg near apollo, hospital"
+                    value={landmark}
+                    onChangeText={(text) => setLanmark(text)}
+                    nameKey="landmark"
+                  />
+
+                  <CustomedInput
+                    LeftIcon={() => (
+                      <Entypo name="location-pin" size={24} color="#666" />
+                    )}
+                    placeholder="Enter pincode"
+                    value={postalCode}
+                    onChangeText={(text) => setPostalCode(text)}
+                    nameKey="postalCode"
+                  />
+                </View>
+
+                <View>
+                  <CustomedButton
+                    title="Add Address"
+                    handleOnPress={handleAddAddress}
+                  />
+                </View>
+              </View>
+            </ScrollView>
+          </View>
+        </TouchableWithoutFeedback>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 };
 
@@ -207,9 +218,17 @@ const styles = StyleSheet.create({
   innerContainer: {
     padding: 20,
   },
-  addressBlock: {
-    height: 50,
-    backgroundColor: "#ee3131",
+  searchBarContainer: {
+    backgroundColor: "#f0f0f0",
+    padding: 10,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginTop: -40
+  },
+  logo: {
+    width: 160,
+    objectFit: "contain",
   },
   addAddressHeader: {
     padding: 10,

@@ -9,7 +9,9 @@ import {
   Keyboard,
   KeyboardAvoidingView,
   Platform,
-  Alert
+  Alert,
+  Pressable,
+  Image,
 } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { apiEditAdditionalAddress } from "../apis";
@@ -20,6 +22,8 @@ import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import Entypo from "@expo/vector-icons/Entypo";
+import logo from "../../assets/logo.png";
+import Ionicons from "@expo/vector-icons/Ionicons";
 const EditAddressesScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
@@ -82,7 +86,14 @@ const EditAddressesScreen = () => {
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       keyboardVerticalOffset={Platform.OS === "ios" ? 10 : 10}
     >
-      <View style={styles.addressBlock} />
+      <View style={styles.searchBarContainer}>
+        <Pressable onPress={() => navigation.goBack()}>
+          <Ionicons name="arrow-back-outline" size={32} color="black" />
+        </Pressable>
+        <Pressable onPress={() => navigation.navigate("Home")}>
+          <Image style={styles.logo} source={logo} />
+        </Pressable>
+      </View>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View style={styles.innerContainer}>
           <ScrollView
@@ -208,9 +219,17 @@ const styles = StyleSheet.create({
   innerContainer: {
     padding: 20,
   },
-  addressBlock: {
-    height: 50,
-    backgroundColor: "#ee3131",
+  searchBarContainer: {
+    backgroundColor: "#f0f0f0",
+    padding: 10,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginTop: -40
+  },
+  logo: {
+    width: 160,
+    objectFit: "contain",
   },
   addAddressHeader: {
     padding: 10,

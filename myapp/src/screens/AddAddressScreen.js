@@ -6,6 +6,8 @@ import {
   Pressable,
   TextInput,
   Alert,
+  Image,
+  SafeAreaView
 } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import AntDesign from "@expo/vector-icons/AntDesign";
@@ -19,9 +21,12 @@ import {
   apiSetDefaultAddress,
 } from "../apis";
 import Entypo from "@expo/vector-icons/Entypo";
+import logo from "../../assets/logo.png";
+
 
 const AddAddressScreen = () => {
   const navigation = useNavigation();
+  const [modalVisible, setModalVisible] = useState(false);
 
   const [addresses, setAddresses] = useState([]);
   useEffect(() => {
@@ -102,25 +107,24 @@ const AddAddressScreen = () => {
       Alert.alert("Error", "An error occurred. Please try again.");
     }
   };
+  useFocusEffect(
+    React.useCallback(() => {
+      
+      setModalVisible(false);
+    }, [])
+  );
 
   return (
     <ScrollView
       showsHorizontalScrollIndicator={false}
       style={styles.addAddressContainer}
     >
-      <View style={styles.searchContainer}>
+      <View style={styles.searchBarContainer}>
         <Pressable onPress={() => navigation.goBack()}>
-          <Ionicons name="arrow-back-outline" size={24} color="white" />
+          <Ionicons name="arrow-back-outline" size={32} color="black" />
         </Pressable>
-
-        <Pressable style={styles.searchBox}>
-          <AntDesign
-            style={styles.icon}
-            name="search1"
-            size={22}
-            color="black"
-          />
-          <TextInput placeholder="Search" />
+        <Pressable onPress={() => navigation.navigate("Home")}>
+          <Image style={styles.logo} source={logo} />
         </Pressable>
       </View>
 
@@ -199,13 +203,25 @@ export default AddAddressScreen;
 const styles = StyleSheet.create({
   addAddressContainer: {
     backgroundColor: "white",
+    flex: 1
     
+  },
+  searchBarContainer: {
+    backgroundColor: "#f0f0f0",
+    padding: 10,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   searchContainer: {
     backgroundColor: "#ee3131",
     padding: 10,
     flexDirection: "row",
     alignItems: "center",
+  },
+  logo: {
+    width: 160,
+    objectFit: "contain",
   },
   searchBox: {
     flexDirection: "row",

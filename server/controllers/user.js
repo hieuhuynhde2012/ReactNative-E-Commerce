@@ -384,58 +384,66 @@ const updateUserAddress = asyncHandler(async (req, res) => {
     });
 });
 
-// Update user cart
 const updateUserCart = asyncHandler(async (req, res) => {
     const { _id } = req.user;
-    const { pid, quantity = 1, color, price, thumbnail, title } = req.body;
+    const { pid, quantity = 1, color, price, thumbnail, title, actionType } = req.body;
+  
     if (!pid || !color) throw new Error('Missing inputs');
+  
     const user = await User.findById(_id).select('cart');
     const alreadyAdded = user?.cart?.find(
-        (el) => el?.product.toString() === pid && el?.color === color,
+      (el) => el?.product.toString() === pid && el?.color === color,
     );
+  
     if (alreadyAdded) {
-        console.log(alreadyAdded);
-        const response = await User.updateOne(
-            { cart: { $elemMatch: alreadyAdded } },
-            {
-                $set: {
-                    'cart.$.quantity': quantity,
-                    'cart.$.price': price,
-                    'cart.$.thumbnail': thumbnail,
-                    'cart.$.title': title,
-                },
-            },
-            { new: true },
-        );
-        return res.status(200).json({
-            success: response ? true : false,
-            message: response
-                ? 'Your cart has been updated'
-                : `User not found!`,
-        });
+      const updateQuery = actionType === 'increase'
+        ? { $inc: { "cart.$.quantity": 1 } } 
+        : { $inc: { "cart.$.quantity": -1 } }; 
+  
+      const response = await User.updateOne(
+        { _id, "cart.product": pid, "cart.color": color },
+        {
+          ...updateQuery,
+          $set: {
+            "cart.$.price": price,
+            "cart.$.thumbnail": thumbnail,
+            "cart.$.title": title,
+          },
+        },
+        { new: true },
+      );
+  
+      return res.status(200).json({
+        success: response ? true : false,
+        message: response ? 'Your cart has been updated' : `User not found!`,
+      });
     } else {
-        const response = await User.findByIdAndUpdate(
-            _id,
-            {
-                $push: {
-                    cart: {
-                        product: pid,
-                        quantity,
-                        color,
-                        price,
-                        thumbnail,
-                        title,
-                    },
-                },
+      const response = await User.findByIdAndUpdate(
+        _id,
+        {
+          $push: {
+            cart: {
+              product: pid,
+              quantity,
+              color,
+              price,
+              thumbnail,
+              title,
             },
-            { new: true },
-        );
-        return res.status(200).json({
-            success: response ? true : false,
-            message: response ? 'Your cart has been update' : `User not found!`,
-        });
+          },
+        },
+        { new: true },
+      );
+  
+      return res.status(200).json({
+        success: response ? true : false,
+        message: response ? 'Your cart has been updated' : `User not found!`,
+      });
     }
-});
+  });
+  
+
+
 
 // Remove product from cart
 const removeProductFromCart = asyncHandler(async (req, res) => {
