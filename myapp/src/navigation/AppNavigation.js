@@ -35,7 +35,6 @@ const AppNavigation = () => {
   }, [isLoggedIn, dispatch]);
 
   return (
-    <SafeAreaView style={{flex: 1}}>
     <Stack.Navigator >
       {isLoggedIn ? (
         <>
@@ -94,7 +93,6 @@ const AppNavigation = () => {
         />
       )}
     </Stack.Navigator>
-    </SafeAreaView>
   );
 };
 
