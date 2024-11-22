@@ -152,7 +152,7 @@ const CartScreen = () => {
       <View style={styles.totalContainer}>
         <View style={styles.subTotalContainer}>
           <Text style={styles.subTotalText}>Subtotal: </Text>
-          <Text style={styles.subTotalNumber}>{total} $</Text>
+          <Text style={styles.subTotalNumber}>{total} </Text>
         </View>
 
         <Text style={styles.cartHeader}>Cart detail available</Text>
