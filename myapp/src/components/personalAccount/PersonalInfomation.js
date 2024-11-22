@@ -136,9 +136,9 @@ const PersonalInfomation = ({ currentUser }) => {
                     title: 'Update successfully',
                     icon: 'shield-checkmark',
                     message: 'Your information has been updated successfully!',
+                    onConfirm: () => dispatch(getCurrent()),
                 }),
             );
-            dispatch(getCurrent());
         } else {
             dispatch(
                 showAlert({
@@ -321,6 +321,15 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         padding: 6,
         borderRadius: 12,
+
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 1,
+        },
+        shadowOpacity: 0.1,
+        shadowRadius: 2,
+        elevation: 2,
     },
     updateBtnWrapper: {
         position: 'absolute',

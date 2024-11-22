@@ -74,6 +74,10 @@ const ProductScreen = ({ category = 'all' }) => {
         fetchData({});
     }, [category]);
 
+    useEffect(() => {
+        fetchData({});
+    }, []);
+
     const handleSelectedColorOptionsChange = (options) => {
         setSelectedColorOptions(options);
     };

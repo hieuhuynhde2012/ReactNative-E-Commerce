@@ -9,7 +9,7 @@ import CartScreen from "../screens/CartScreen";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useDispatch, useSelector } from "react-redux";
 import CategoryTopTab from "./CategoryTopTab";
-import CartDetailScreen from "../screens/CartDetailScreen";
+
 
 const Tab = createBottomTabNavigator();
 

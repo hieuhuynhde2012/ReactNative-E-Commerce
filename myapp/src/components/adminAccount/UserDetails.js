@@ -69,12 +69,13 @@ const UserDetails = ({ data = {}, onUpdatedUser = () => {} }) => {
             isBlocked: !isActive,
         };
 
+        dispatch(showLoading());
         const res = await apiUpdateUsers(updatedData, data?._id);
+        dispatch(hideLoading());
 
         if (res?.success) {
             console.log('res', res);
             onUpdatedUser({ limit: 100 });
-            setIsUpdated(true);
 
             setFirstname(res?.user?.firstname);
             setLastname(res?.user?.lastname);
@@ -89,7 +90,6 @@ const UserDetails = ({ data = {}, onUpdatedUser = () => {} }) => {
                     message: 'Your information has been updated successfully!',
                 }),
             );
-
             setIsShowUpdateBtn(false);
         }
     };
@@ -105,12 +105,25 @@ const UserDetails = ({ data = {}, onUpdatedUser = () => {} }) => {
                     style={styles.scrContainer}
                     showsVerticalScrollIndicator={false}
                 >
-                    <TouchableOpacity
-                        style={styles.closeBtn}
-                        onPress={() => dispatch(hideModal())}
-                    >
-                        <Ionicons name="close" size={24} color="white" />
-                    </TouchableOpacity>
+                    <View style={styles.header}>
+                        <View style={styles.titleWrapper}>
+                            <Text
+                                style={[
+                                    styles.text,
+                                    styles.boldText,
+                                    styles.primaryText,
+                                ]}
+                            >
+                                Edit user
+                            </Text>
+                        </View>
+                        <TouchableOpacity
+                            style={styles.closeBtn}
+                            onPress={() => dispatch(hideModal())}
+                        >
+                            <Ionicons name="close" size={24} color="white" />
+                        </TouchableOpacity>
+                    </View>
                     <View style={styles.content}>
                         <View style={styles.infoWrapper}>
                             <Text style={[styles.text, styles.boldText]}>
@@ -277,13 +290,32 @@ const styles = StyleSheet.create({
         width: '100%',
     },
 
-    closeBtn: {
+    header: {
         position: 'absolute',
-        backgroundColor: '#ee3131',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        width: '50%',
         top: 0,
         right: 0,
-        padding: 6,
+
+        borderWidth: 1,
+        borderColor: '#ee3131',
         borderTopRightRadius: 10,
+        borderBottomLeftRadius: 10,
+        overflow: 'hidden',
+    },
+
+    titleWrapper: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+
+    closeBtn: {
+        backgroundColor: '#ee3131',
+        padding: 6,
+        // borderTopRightRadius: 10,
         borderBottomLeftRadius: 10,
     },
     content: {
@@ -319,6 +351,9 @@ const styles = StyleSheet.create({
         padding: 12,
         borderTopLeftRadius: 12,
         borderBottomRightRadius: 12,
+    },
+    primaryText: {
+        color: '#ee3131',
     },
     whiteText: {
         color: 'white',

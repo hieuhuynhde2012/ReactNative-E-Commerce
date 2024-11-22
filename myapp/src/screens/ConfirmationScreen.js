@@ -45,9 +45,7 @@ const ConfirmationScreen = () => {
 
   const [currentStep, setCurrentStep] = useState(0);
   const [addresses, setAddresses] = useState([]);
-  const [option, setOption] = useState(false);
   const [selectedOption, setSelectedOption] = useState("");
-  const [selectedDelivery, setselectedDelivery] = useState("");
   const [selectedAddress, setselectedAddress] = useState("");
 
   const optionDelivery = [

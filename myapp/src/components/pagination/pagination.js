@@ -11,9 +11,12 @@ const Pagination = ({
     currentPage = 1,
     totalCount = 0,
     onCurrentPageChange = () => {},
+    itemsPerPage = 10,
 }) => {
     const [ownedCurrentPage, setOwnedCurrentPage] = useState(currentPage);
-    const [totalPages, setTotalPages] = useState(Math.ceil(totalCount / 10));
+    const [totalPages, setTotalPages] = useState(
+        Math.ceil(totalCount / itemsPerPage),
+    );
     const [paginationArray, setPaginationArray] = useState([]);
 
     const generateArray = (length) => {
@@ -27,7 +30,7 @@ const Pagination = ({
 
         if (totalPages > 6) {
             if (ownedCurrentPage <= 3) {
-                return [1, 2, 3, dots, totalPages];
+                return [1, 2, 3, 4, dots, totalPages];
             }
 
             if (ownedCurrentPage > 3 && ownedCurrentPage < totalPages - 2) {
@@ -43,7 +46,14 @@ const Pagination = ({
             }
 
             if (ownedCurrentPage >= totalPages - 2) {
-                return [1, dots, totalPages - 2, totalPages - 1, totalPages];
+                return [
+                    1,
+                    dots,
+                    totalPages - 3,
+                    totalPages - 2,
+                    totalPages - 1,
+                    totalPages,
+                ];
             }
         }
     };
@@ -63,7 +73,7 @@ const Pagination = ({
     };
 
     useEffect(() => {
-        const NumOfPages = Math.ceil(totalCount / 10);
+        const NumOfPages = Math.ceil(totalCount / itemsPerPage);
         setTotalPages(NumOfPages);
         setPaginationArray(generatePaginationArray(NumOfPages, currentPage));
         setOwnedCurrentPage(currentPage);
@@ -120,7 +130,7 @@ const styles = StyleSheet.create({
     container: {
         width: '80%',
         flexDirection: 'row',
-        justifyContent: 'space-around',
+        justifyContent: 'center',
         alignItems: 'center',
     },
     wrapper: {
