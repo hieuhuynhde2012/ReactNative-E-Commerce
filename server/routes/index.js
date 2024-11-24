@@ -8,6 +8,7 @@ const couponRouter = require('./coupon');
 const orderRouter = require('./order');
 const insertDataRouter = require('./insertData');
 const zaloPayment = require('./zaloPayment');
+const momoPayment = require('./momoPayment');
 const { notFound, errorHandler } = require('../middlewares/errorHandler');
 
 const initRoutes = (app) => {
@@ -15,6 +16,7 @@ const initRoutes = (app) => {
     app.use('/api/product', productRouter);
     app.use('/api/productcategory', productCategoryRouter);
     app.use('/api/zalo-payment', zaloPayment);
+    app.use('/api/momo-payment', momoPayment);
     app.use('/api/blogcategory', blogCategoryRouter);
     app.use('/api/blog', blogRouter);
     app.use('/api/brand', brandRouter);

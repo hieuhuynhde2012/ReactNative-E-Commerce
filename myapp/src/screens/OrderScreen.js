@@ -5,54 +5,54 @@ import { useNavigation } from '@react-navigation/native';
 
 const OrderScreen = () => {
     const navigation = useNavigation();
+
     useEffect(() => {
-        setTimeout(() => {
+        const timeoutId = setTimeout(() => {
             navigation.replace('MainTab');
-        }, 5300);
+        }, 4000);
+
+        return () => {
+            clearTimeout(timeoutId);
+        };
     }, []);
+
     return (
         <SafeAreaView style={{ backgroundColor: 'white', flex: 1 }}>
-            <LottieView
-                source={require('../../assets/animations/cart_loading.json')}
-                // ref={animation}
-                style={{
-                    height: 260,
-                    width: 300,
-                    alignSelf: 'center',
-                    marginTop: 40,
-                    justifyContent: 'center',
-                }}
-                autoPlay
-                loop={false}
-                speed={0.7}
-            />
-            <Text
-                style={{
-                    marginTop: 20,
-                    fontSize: 19,
-                    fontWeight: '600',
-                    textAlign: 'center',
-                }}
-            >
-                Your Order Has been Recieved
-            </Text>
-            <LottieView
-                source={require('../../assets/animations/sparkle.json')}
-                style={{
-                    height: 300,
-                    position: 'absolute',
-                    top: 100,
-                    width: 300,
-                    alignSelf: 'center',
-                }}
-                autoPlay
-                loop={false}
-                speed={0.7}
-            />
+            <View style={styles.container}>
+                <LottieView
+                    source={require('../../assets/animations/cart_loading.json')}
+                    style={{
+                        height: 400,
+                        width: 400,
+                        alignSelf: 'center',
+                        justifyContent: 'center',
+                        marginTop: -86,
+                    }}
+                    autoPlay
+                    loop={false}
+                    speed={1}
+                />
+                <Text
+                    style={{
+                        marginTop: 0,
+                        fontSize: 20,
+                        fontWeight: '600',
+                        textAlign: 'center',
+                    }}
+                >
+                    Your Order Has been Placed
+                </Text>
+            </View>
         </SafeAreaView>
     );
 };
 
 export default OrderScreen;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+});

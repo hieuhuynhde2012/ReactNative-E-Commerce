@@ -21,6 +21,7 @@
     "axios": "^1.7.7",
     "expo": "^52.0.6",
     "expo-av": "~15.0.1",
+    "expo-checkbox": "~4.0.0",
     "expo-image-picker": "~16.0.2",
     "expo-status-bar": "~2.0.0",
     "lottie-react-native": "^7.0.0",
@@ -33,8 +34,10 @@
     "react-native-dotenv": "^3.4.11",
     "react-native-dropdown-picker": "^5.4.6",
     "react-native-elements": "^3.4.3",
+    "react-native-extra-dimensions-android": "^1.2.5",
     "react-native-gesture-handler": "~2.20.2",
     "react-native-image-slider-box": "github:megamaxs1234/react-native-image-slider-box",
+    "react-native-modal": "^13.0.1",
     "react-native-modals": "^0.22.3",
     "react-native-pager-view": "6.4.1",
     "react-native-reanimated": "~3.16.1",
@@ -50,8 +53,7 @@
     "redux": "^5.0.1",
     "redux-persist": "^6.0.0",
     "sweetalert2": "^11.14.1",
-    "voice": "^0.0.0",
-    "expo-checkbox": "~4.0.0"
+    "voice": "^0.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"

@@ -24,16 +24,18 @@ const CategoryTopTab = () => {
             {allCategories.length > 0 &&
                 allCategories.map((item) => (
                     <Tab.Screen
-                        key={item._id}
-                        name={item.title}
-                        children={() => <ProductScreen category={item.title} />}
+                        key={item?._id}
+                        name={item?.title}
+                        children={() => (
+                            <ProductScreen category={item?.title} />
+                        )}
                         options={{
                             tabBarIcon: () => (
                                 <>
-                                    {item.image && (
+                                    {item?.image && (
                                         <Image
                                             style={styles.image}
-                                            source={{ uri: item.image }}
+                                            source={{ uri: item?.image }}
                                         />
                                     )}
                                 </>

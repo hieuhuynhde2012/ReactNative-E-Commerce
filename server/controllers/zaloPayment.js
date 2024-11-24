@@ -12,8 +12,16 @@ const config = {
 
 const createPayment = async (req, res) => {
     const embed_data = {
-        redirecturl: 'https://phongthuytaman.com',
+        redirecturl: '',
     };
+
+    const { amount } = req.body;
+
+    if (!amount) {
+        return res
+            .status(200)
+            .json({ success: false, message: 'Amount is required' });
+    }
 
     const items = [];
     const transID = Math.floor(Math.random() * 1000000);
@@ -25,10 +33,10 @@ const createPayment = async (req, res) => {
         app_time: Date.now(),
         item: JSON.stringify(items),
         embed_data: JSON.stringify(embed_data),
-        amount: 30000,
+        amount: amount,
         callback_url:
             'https://a31a-2402-800-6388-30bc-8c7f-1f73-be1a-1e80.ngrok-free.app/api/zalo-payment/callback',
-        description: `Lazada - Payment for the order #${transID}`,
+        description: `Digital World - Payment for the order #${transID}`,
         bank_code: '',
     };
 
@@ -39,6 +47,11 @@ const createPayment = async (req, res) => {
         const result = await axios.post(config.endpoint, null, {
             params: order,
         });
+
+        if (result?.data) {
+            result.data.app_trans_id = order?.app_trans_id;
+        }
+
         res.status(200).json(result.data);
     } catch (error) {
         console.error(error);

@@ -3,7 +3,8 @@ import { API_URI } from '@env';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const instance = axios.create({
-    baseURL: 'http://192.168.1.3:5000/api',
+    baseURL: 'http://192.168.1.15:5000/api',
+    // baseURL: 'https://f212-42-116-6-42.ngrok-free.app/api',
 });
 
 // Add a request interceptor
