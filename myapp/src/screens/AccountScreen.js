@@ -17,8 +17,9 @@ import { images } from '../../assets';
 
 import UserList from '../components/adminAccount/UserList';
 import ProductList from '../components/adminAccount/ProductList';
+import OrderList from '../components/order/OrderList';
 
-const AccountScreen = () => {
+const AccountScreen = ({ navigation }) => {
     const dispatch = useDispatch();
     const current = useSelector((state) => state.user.current);
     const [isShowUserWorkspace, setIsShowUserWorkspace] = useState(true);
@@ -114,50 +115,88 @@ const AccountScreen = () => {
                                 </View>
                                 <PersonalInfomation currentUser={current} />
                             </View>
+                            <View style={styles.scrBottomItem}>
+                                <View style={styles.titleWrapper}>
+                                    <Text
+                                        style={[
+                                            styles.text,
+                                            styles.boldText,
+                                            styles.whiteText,
+                                        ]}
+                                    >
+                                        Order History
+                                    </Text>
+                                </View>
+                                <OrderList currentUser={current} />
+                            </View>
                         </ScrollView>
                     </KeyboardAvoidingView>
                 ) : (
-                    <KeyboardAvoidingView
-                        style={styles.scrBottomWrapper}
-                        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-                        keyboardVerticalOffset={
-                            Platform.OS === 'ios' ? 144 : 144
-                        }
-                    >
-                        <ScrollView
-                            showsVerticalScrollIndicator={false}
-                            keyboardShouldPersistTaps="handled"
-                        >
-                            <View style={styles.scrBottomItem}>
-                                <View style={styles.titleWrapper}>
-                                    <Text
-                                        style={[
-                                            styles.text,
-                                            styles.boldText,
-                                            styles.whiteText,
-                                        ]}
-                                    >
-                                        Manage Users
-                                    </Text>
+                    <>
+                        {current?.role === '1999' ? (
+                            <KeyboardAvoidingView
+                                style={styles.scrBottomWrapper}
+                                behavior={
+                                    Platform.OS === 'ios' ? 'padding' : 'height'
+                                }
+                                keyboardVerticalOffset={
+                                    Platform.OS === 'ios' ? 144 : 144
+                                }
+                            >
+                                <ScrollView
+                                    showsVerticalScrollIndicator={false}
+                                    keyboardShouldPersistTaps="handled"
+                                >
+                                    <View style={styles.scrBottomItem}>
+                                        <View style={styles.titleWrapper}>
+                                            <Text
+                                                style={[
+                                                    styles.text,
+                                                    styles.boldText,
+                                                    styles.whiteText,
+                                                ]}
+                                            >
+                                                Manage Users
+                                            </Text>
+                                        </View>
+                                        <UserList />
+                                    </View>
+                                    <View style={styles.scrBottomItem}>
+                                        <View style={styles.titleWrapper}>
+                                            <Text
+                                                style={[
+                                                    styles.text,
+                                                    styles.boldText,
+                                                    styles.whiteText,
+                                                ]}
+                                            >
+                                                Manage Products
+                                            </Text>
+                                        </View>
+                                        <ProductList />
+                                    </View>
+                                </ScrollView>
+                            </KeyboardAvoidingView>
+                        ) : (
+                            <View style={styles.userContainer}>
+                                <View style={styles.userImgWrapper}>
+                                    <Image
+                                        style={styles.userImg}
+                                        source={images.oops}
+                                    />
+                                    <Image
+                                        style={styles.userImg}
+                                        source={images.oops}
+                                    />
+                                    <Image
+                                        style={styles.userImg}
+                                        source={images.oops}
+                                    />
                                 </View>
-                                <UserList />
+                                <Text>Admin role is mandatory here! </Text>
                             </View>
-                            <View style={styles.scrBottomItem}>
-                                <View style={styles.titleWrapper}>
-                                    <Text
-                                        style={[
-                                            styles.text,
-                                            styles.boldText,
-                                            styles.whiteText,
-                                        ]}
-                                    >
-                                        Manage Products
-                                    </Text>
-                                </View>
-                                <ProductList />
-                            </View>
-                        </ScrollView>
-                    </KeyboardAvoidingView>
+                        )}
+                    </>
                 )}
             </View>
         </View>
@@ -252,6 +291,24 @@ const styles = StyleSheet.create({
         paddingHorizontal: 18,
         borderTopLeftRadius: 26,
         borderBottomRightRadius: 26,
+    },
+    userContainer: {
+        flex: 1,
+        marginTop: -36,
+        justifyContent: 'center',
+        alignItems: 'center',
+        gap: 16,
+    },
+    userImgWrapper: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        gap: 12,
+    },
+    userImg: {
+        width: 46,
+        height: 46,
+        resizeMode: 'contain',
     },
     whiteText: { color: 'white' },
     text: { fontSize: 16 },

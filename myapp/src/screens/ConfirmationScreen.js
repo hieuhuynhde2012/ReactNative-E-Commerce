@@ -5,7 +5,6 @@ import {
     StyleSheet,
     ScrollView,
     Pressable,
-    AppState,
     Alert,
     Image,
     TouchableOpacity,
@@ -23,9 +22,10 @@ import {
 import { apiCreateOrder } from '../apis';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { cleanCart } from '../store/user/userSlice';
+import { getCurrent } from '../store/user/asyncAction';
 import { formatCurrency } from '../utils/helpers';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import ZaloPayment from '../components/payment/ZaloPayment';
+import Payment from '../components/payment/Payment';
 
 const ConfirmationScreen = () => {
     const navigation = useNavigation();
@@ -166,8 +166,9 @@ const ConfirmationScreen = () => {
             setIsShownPayment(false);
 
             if (response?.success) {
-                navigation.navigate('Order');
                 dispatch(cleanCart());
+                dispatch(getCurrent());
+                navigation.navigate('Order');
             }
         } catch (error) {
             setSelectedOption('');
@@ -494,7 +495,7 @@ const ConfirmationScreen = () => {
                 {currentStep == 2 && (
                     <View style={styles.paymentContainer}>
                         {isShownPayment ? (
-                            <ZaloPayment
+                            <Payment
                                 order={{
                                     products: currentCart,
                                     total: totalPrice,

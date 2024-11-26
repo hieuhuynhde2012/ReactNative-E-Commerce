@@ -50,7 +50,8 @@ const ProductItem = ({ item }) => {
                     id: item._id,
                     title: item.title,
                     price: item?.price,
-                    carouseImages: item.images,
+                    carouseImages:
+                        item?.images.length > 0 ? item?.images : [item?.thumb],
                     color: item?.color,
                     description: item?.description,
                     item: item,

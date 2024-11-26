@@ -20,6 +20,7 @@ import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import logo from '../../assets/logo.png';
 import { apiRemoveCart, apiUpdateCart } from '../apis';
 import Lottie from 'lottie-react-native';
+import { images } from '../../assets';
 
 const CartScreen = () => {
     const navigation = useNavigation();
@@ -119,7 +120,6 @@ const CartScreen = () => {
     return (
         <>
             <View style={styles.headerContainer}>
-                {/* <Text style={styles.textHeader}>Cart</Text> */}
                 <View style={styles.headerAnimation}>
                     <Lottie
                         source={require('../../assets/animations/cart_loading.json')}
@@ -151,9 +151,7 @@ const CartScreen = () => {
                     <View style={styles.emptyCartContainer}>
                         <View style={styles.cartIcon}>
                             <Image
-                                source={{
-                                    uri: 'https://img.freepik.com/free-vector/supermarket-shopping-cart-concept-illustration_114360-22408.jpg',
-                                }}
+                                source={images?.cart_empty}
                                 style={styles.cartImage}
                             />
                         </View>

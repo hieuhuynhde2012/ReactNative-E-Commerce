@@ -4,16 +4,30 @@ import LoginScreen from '../screens/auth/LoginScreen';
 import RegisterScreen from '../screens/auth/RegisterScreen';
 import EmailVerificationScreen from '../screens/auth/EmailVerificationScreen';
 import ResetPasswordScreen from '../screens/auth/ResetPasswordScreen';
+import IntroScreen from '../screens/IntroScreen';
+import { useSelector } from 'react-redux';
 
 const Stack = createStackNavigator();
 
 const AuthStack = () => {
+    const { isAlreadyShownIntro } = useSelector((state) => state.app);
+
     return (
         <Stack.Navigator>
+            {!isAlreadyShownIntro && (
+                <Stack.Screen
+                    name="Intro"
+                    component={IntroScreen}
+                    options={{ headerShown: false }}
+                />
+            )}
+
             <Stack.Screen
                 name="Login"
                 component={LoginScreen}
-                options={{ headerShown: false }}
+                options={{
+                    headerShown: false,
+                }}
             />
             <Stack.Screen
                 name="EmailVerification"

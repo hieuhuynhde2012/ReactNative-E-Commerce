@@ -15,7 +15,11 @@ export const appSlice = createSlice({
             onCancelText: '',
             closable: false,
         },
-        isShownModal: false,
+        modal: {
+            isShownModal: false,
+            backdropClosable: false,
+        },
+        isAlreadyShownIntro: false,
     },
     reducers: {
         showLoading: (state) => {
@@ -38,11 +42,17 @@ export const appSlice = createSlice({
         hideAlert: (state) => {
             state.alert.isShown = false;
         },
-        showModal: (state) => {
-            state.isShownModal = true;
+        showModal: (state, action) => {
+            state.modal.isShownModal = true;
+            state.modal.backdropClosable =
+                action.payload.backdropClosable || false;
         },
         hideModal: (state) => {
-            state.isShownModal = false;
+            state.modal.isShownModal = false;
+            state.modal.backdropClosable = false;
+        },
+        setIsAlreadyShownIntro: (state, action) => {
+            state.isAlreadyShownIntro = action.payload.isAlreadyShownIntro;
         },
     },
     extraReducers: (builder) => {
@@ -69,5 +79,6 @@ export const {
     hideAlert,
     showModal,
     hideModal,
+    setIsAlreadyShownIntro,
 } = appSlice.actions;
 export default appSlice.reducer;

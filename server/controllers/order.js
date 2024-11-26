@@ -32,7 +32,13 @@ const createNewOrder = asyncHandler(async (req, res) => {
 
     await User.findByIdAndUpdate(_id, { cart: [] });
 
-    const orderData = { products, total, shippingAddress, paymentMethod };
+    const orderData = {
+        products,
+        total,
+        shippingAddress,
+        paymentMethod,
+        orderBy: _id,
+    };
 
     if (paymentMethod === 'cash') {
         orderData.status = 'Pending';
@@ -84,34 +90,6 @@ const getUserOrder = asyncHandler(async (req, res) => {
         (matchedEl) => `$${matchedEl}`,
     );
     const formattedQueries = JSON.parse(queryString);
-    //   let colorQueryObject = {};
-
-    //   // Filtering
-    //   if (queries?.title) {
-    //     formattedQueries.title = { $regex: queries.title, $options: "i" };
-    //   }
-    //   if (queries?.category) {
-    //     formattedQueries.category = { $regex: queries.category, $options: "i" };
-    //   }
-    //   if (queries?.color) {
-    //     delete formattedQueries.color;
-    //     const colorArr = queries.color?.split(",");
-    //     const colorQuery = colorArr.map((el) => ({
-    //       color: { $regex: el, $options: "i" },
-    //     }));
-    //     colorQueryObject = { $or: colorQuery };
-    //   }
-
-    //   if (req.query.q) {
-    //     delete formattedQueries.q;
-    //     formattedQueries["$or"] = [
-    //       { title: { $regex: req.query.q, $options: "i" } },
-    //       { brand: { $regex: req.query.q, $options: "i" } },
-    //       { category: { $regex: req.query.q, $options: "i" } },
-    //       { description: { $regex: req.query.q, $options: "i" } },
-    //       { color: { $regex: req.query.q, $options: "i" } },
-    //     ];
-    //   }
 
     const qr = { ...formattedQueries, orderBy: _id };
     let queryCommand = Order.find(qr);
@@ -129,8 +107,6 @@ const getUserOrder = asyncHandler(async (req, res) => {
     }
 
     // Pagination
-    // - litmit: number of results per API call
-    // - skip: number of results to skip
     const page = +req.query.page || 1;
     const limit = +req.query.limit || process.env.PAGINATION_LIMIT;
     const skip = (page - 1) * limit;

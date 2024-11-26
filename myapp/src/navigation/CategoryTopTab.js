@@ -3,12 +3,10 @@ import React, { useEffect } from 'react';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import ProductScreen from '../screens/ProductScreen';
 import { useSelector } from 'react-redux';
-import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 
 const addingCategory = [
     {
         _id: '0',
-
         title: 'All',
     },
 ];
@@ -22,38 +20,43 @@ const CategoryTopTab = () => {
     return (
         <Tab.Navigator>
             {allCategories.length > 0 &&
-                allCategories.map((item) => (
-                    <Tab.Screen
-                        key={item?._id}
-                        name={item?.title}
-                        children={() => (
-                            <ProductScreen category={item?.title} />
-                        )}
-                        options={{
-                            tabBarIcon: () => (
-                                <>
-                                    {item?.image && (
-                                        <Image
-                                            style={styles.image}
-                                            source={{ uri: item?.image }}
-                                        />
-                                    )}
-                                </>
-                            ),
-                            tabBarScrollEnabled: true,
-                            tabBarActiveTintColor: '#EE3131',
-                            tabBarInactiveTintColor: '#B0B0B0',
-                            tabBarIndicatorStyle: {
-                                backgroundColor: '#EE3131',
-                            },
-                            tabBarLabelStyle: {
-                                fontSize: 16,
-                                fontWeight: 'bold',
-                            },
-                            tabBarIconStyle: { width: 32, height: 32 },
-                        }}
-                    />
-                ))}
+                allCategories.map((item) => {
+                    return (
+                        <Tab.Screen
+                            key={item?._id}
+                            // key={item?._id}
+                            name={item?.title}
+                            children={() => {
+                                return <ProductScreen category={item?.title} />;
+                            }}
+                            options={{
+                                tabBarIcon: () => (
+                                    <View>
+                                        {item?.image ? (
+                                            <Image
+                                                style={styles.image}
+                                                source={{
+                                                    uri: item?.image,
+                                                }}
+                                            />
+                                        ) : null}
+                                    </View>
+                                ),
+                                tabBarScrollEnabled: true,
+                                tabBarActiveTintColor: '#EE3131',
+                                tabBarInactiveTintColor: '#B0B0B0',
+                                tabBarIndicatorStyle: {
+                                    backgroundColor: '#EE3131',
+                                },
+                                tabBarLabelStyle: {
+                                    fontSize: 16,
+                                    fontWeight: 'bold',
+                                },
+                                tabBarIconStyle: { width: 32, height: 32 },
+                            }}
+                        />
+                    );
+                })}
         </Tab.Navigator>
     );
 };

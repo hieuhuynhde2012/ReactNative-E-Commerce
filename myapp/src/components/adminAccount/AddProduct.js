@@ -336,7 +336,11 @@ const AddProduct = ({ onAddProduct = () => {} }) => {
                                 </View>
                             )}
                             <ScrollView
-                                style={[styles.pickerScrWrapper]}
+                                style={[
+                                    styles.pickerScrWrapper,
+                                    { height: categoryOpen ? 134 : 'auto' },
+                                    { zIndex: 2 },
+                                ]}
                                 horizontal
                                 bounces={false}
                             >
@@ -347,9 +351,9 @@ const AddProduct = ({ onAddProduct = () => {} }) => {
                                             (item) => item.name === 'category',
                                         ) && { borderColor: '#ee3131' },
                                     ]}
-                                    dropDownContainerStyle={
-                                        styles.dropDownContainer
-                                    }
+                                    dropDownContainerStyle={[
+                                        styles.dropDownContainer,
+                                    ]}
                                     open={categoryOpen}
                                     value={category}
                                     items={categories?.map((item) => ({
@@ -359,7 +363,7 @@ const AddProduct = ({ onAddProduct = () => {} }) => {
                                     placeholder="Select a category"
                                     setOpen={setCategoryOpen}
                                     setValue={setCategory}
-                                    maxHeight={80}
+                                    maxHeight={84}
                                 />
                             </ScrollView>
                         </View>
@@ -389,7 +393,10 @@ const AddProduct = ({ onAddProduct = () => {} }) => {
 
                             <ScrollView
                                 horizontal
-                                style={styles.pickerScrWrapper}
+                                style={[
+                                    styles.pickerScrWrapper,
+                                    { height: brandOpen ? 134 : 'auto' },
+                                ]}
                                 scrollEnabled={false}
                             >
                                 <DropDownPicker
@@ -408,7 +415,7 @@ const AddProduct = ({ onAddProduct = () => {} }) => {
                                     placeholder="Select a brand"
                                     setOpen={setBrandOpen}
                                     setValue={setBrand}
-                                    maxHeight={80}
+                                    maxHeight={84}
                                 />
                             </ScrollView>
                         </View>
@@ -629,16 +636,15 @@ const styles = StyleSheet.create({
         flex: 1,
         position: 'relative',
         width: '100%',
-        marginBottom: 136,
+        marginBottom: 66,
     },
     pickerScrWrapper: {
         position: 'absolute',
         zIndex: 1,
         top: 22,
-        height: 134,
     },
     picker: {
-        backgroundColor: 'transparent',
+        backgroundColor: '#fff',
         borderColor: '#666',
         borderRadius: 10,
         width: 260,
@@ -655,13 +661,13 @@ const styles = StyleSheet.create({
     },
     infoWrapper: {
         width: '100%',
-        marginBottom: 76,
+        marginBottom: 12,
         gap: 6,
     },
     imgWrapper: {
         position: 'relative',
         width: '100%',
-        marginBottom: 76,
+        marginBottom: 12,
         gap: 6,
     },
     imgErrorWrapper: {
@@ -702,7 +708,7 @@ const styles = StyleSheet.create({
     },
     btnWrapper: {
         width: '100%',
-        marginBottom: 76,
+        marginBottom: 16,
         flex: 1,
         justifyContent: 'flex-end',
         alignItems: 'center',

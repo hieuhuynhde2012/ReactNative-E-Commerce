@@ -13,6 +13,7 @@ import {
     FlatList,
     TouchableOpacity,
     Dimensions,
+    Alert,
 } from 'react-native';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import Ionicons from '@expo/vector-icons/Ionicons';
@@ -108,7 +109,6 @@ const HomeScreen = () => {
                     limit: 100,
                     //sort: "-totalRating",
                 });
-                //console.log('response', response);
                 setProducts(response.productData);
             } catch (error) {
                 console.log('error message', error);
@@ -296,7 +296,7 @@ const HomeScreen = () => {
                         <Ionicons
                             name="location-outline"
                             size={24}
-                            color="#fff"
+                            color="#000"
                         />
 
                         <Pressable>
@@ -307,14 +307,14 @@ const HomeScreen = () => {
                                 </Text>
                             ) : (
                                 <Text style={styles.locationText}>
-                                    Add a Adress
+                                    Add an address
                                 </Text>
                             )}
                         </Pressable>
                         <MaterialIcons
                             name="keyboard-arrow-down"
                             size={24}
-                            color="#fff"
+                            color="#000"
                         />
                     </Pressable>
 
@@ -359,7 +359,7 @@ const HomeScreen = () => {
                     />
 
                     <Text style={styles.trendingDealsTitle}>
-                        Trending Deals of the week
+                        Trending deals of the week
                     </Text>
                     <View style={styles.productsContainer}>
                         {deals.slice(0, 4).map((item, index) => (
@@ -421,7 +421,7 @@ const HomeScreen = () => {
                         ))}
                     </View>
                     <Text style={styles.separator} />
-                    <Text style={styles.dealsTitle}>Today's Deals</Text>
+                    <Text style={styles.dealsTitle}>Today's deals</Text>
                     <ScrollView
                         horizontal
                         showsHorizontalScrollIndicator={false}
@@ -448,17 +448,27 @@ const HomeScreen = () => {
                         ))}
                     </ScrollView>
                     <Text style={styles.separator} />
-                    <View
-                        style={{
-                            marginHorizontal: 10,
-                            width: '45%',
-                            marginBottom: open ? 50 : 15,
-                            marginTop: 20,
-                        }}
-                    >
-                        <View style={{ zIndex: 3000 }}>
+                    <Text style={styles.moreProducts}>More products</Text>
+
+                    <View style={styles.dropdownContainer}>
+                        <ScrollView
+                            horizontal
+                            bounces={false}
+                            style={[
+                                {
+                                    height: open ? 260 : 'auto',
+                                },
+                                styles.srcDropdownContainer,
+                            ]}
+                        >
                             <DropDownPicker
-                                style={[{ marginBottom: open ? 150 : 1 }]}
+                                style={styles.dropdown}
+                                containerStyle={{
+                                    width: 168,
+                                }}
+                                dropDownContainerStyle={{
+                                    borderColor: '#a0a0a0',
+                                }}
                                 open={open}
                                 value={category}
                                 items={items}
@@ -468,11 +478,10 @@ const HomeScreen = () => {
                                 placeholder="Choose category"
                                 placeholderStyle={{ color: 'gray' }}
                                 onOpen={onGenderOpen}
-                                zIndex={3000}
-                                zIndexInverse={1000}
                             />
-                        </View>
+                        </ScrollView>
                     </View>
+
                     <View style={styles.productsFilterContainer}>
                         {products
                             ?.filter(
@@ -481,7 +490,7 @@ const HomeScreen = () => {
                                     item.category === category,
                             )
                             .map((item) => (
-                                <ProductItem item={item} />
+                                <ProductItem key={item?._id} item={item} />
                             ))}
                     </View>
                 </ScrollView>
@@ -523,7 +532,7 @@ const HomeScreen = () => {
                             showsHorizontalScrollIndicator={false}
                         >
                             {addresses?.map((item, index) => (
-                                <Pressable
+                                <TouchableOpacity
                                     key={index}
                                     onPress={() => setSelectedAddress(item)}
                                     style={[
@@ -563,9 +572,9 @@ const HomeScreen = () => {
                                     >
                                         {item?.country}
                                     </Text>
-                                </Pressable>
+                                </TouchableOpacity>
                             ))}
-                            <Pressable
+                            <TouchableOpacity
                                 onPress={() => {
                                     setModalVisible(false);
                                     navigation.navigate('Address');
@@ -575,7 +584,7 @@ const HomeScreen = () => {
                                 <Text style={styles.addAdressText}>
                                     Add an Address or pick-up point
                                 </Text>
-                            </Pressable>
+                            </TouchableOpacity>
                         </ScrollView>
                     </View>
 
@@ -675,8 +684,8 @@ const styles = StyleSheet.create({
         backgroundColor: '#ee3131',
         zIndex: 1,
     },
-    locationText: { fontSize: 13, fontWeight: '500', color: 'white' },
-    selectedLocationText: { fontSize: 13, fontWeight: '500', color: 'white' },
+    locationText: { fontSize: 13, fontWeight: '500', color: '#000' },
+    selectedLocationText: { fontSize: 13, fontWeight: '500', color: '#000' },
     srcListItemContainer: {
         width: '100%',
         paddingVertical: 10,
@@ -766,6 +775,28 @@ const styles = StyleSheet.create({
         resizeMode: 'contain',
         borderRadius: 6,
     },
+    moreProducts: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        padding: 10,
+    },
+
+    dropdownContainer: {
+        position: 'relative',
+    },
+    srcDropdownContainer: {
+        width: 200,
+        position: 'absolute',
+        zIndex: 1,
+        marginTop: 4,
+        marginHorizontal: 12,
+    },
+    dropdown: {
+        borderColor: '#a0a0a0',
+        width: 168,
+        borderRadius: 12,
+        borderColor: '#a0a0a0',
+    },
     productImage: { width: 150, height: 150, resizeMode: 'contain' },
     productTitle: { width: 150, marginTop: 10 },
     productInfo: {
@@ -823,20 +854,14 @@ const styles = StyleSheet.create({
         fontSize: 13,
         fontWeight: 'bold',
     },
-    dropdownContainer: {
-        borderColor: 'white',
-        height: 30,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.25,
-        shadowRadius: 3.84,
-    },
+
     productsFilterContainer: {
         flexDirection: 'row',
         alignItems: 'center',
         flexWrap: 'wrap',
         justifyContent: 'space-around',
         marginHorizontal: 5,
+        marginTop: 58,
     },
     modal: {
         margin: 0,

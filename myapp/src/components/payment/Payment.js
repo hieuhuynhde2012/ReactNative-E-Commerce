@@ -6,6 +6,7 @@ import {
     Linking,
     Image,
     Dimensions,
+    Button,
 } from 'react-native';
 import React, { useState, useEffect, useRef } from 'react';
 import {
@@ -18,47 +19,64 @@ import { formatCurrency } from '../../utils/helpers';
 import { images } from '../../../assets';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-const { useDispatch } = require('react-redux');
+import { useDispatch } from 'react-redux';
+import { showModal, hideModal } from '../../store/app/appSlice';
+import Ionicons from '@expo/vector-icons/Ionicons';
+
 import { showLoading, hideLoading } from '../../store/app/appSlice';
 
 const { width } = Dimensions.get('window');
 
-const ZaloPayment = ({ order = {}, onPaid = () => {} }) => {
+const Payment = ({ order = {}, onPaid = () => {} }) => {
     const dispatch = useDispatch();
     let intervalIdRef = useRef(null);
-    let timeoutIdRef = useRef(null);
 
-    useEffect(() => {
-        return () => {
-            if (intervalIdRef.current) {
-                clearInterval(intervalIdRef.current);
-            }
-            if (timeoutIdRef.current) {
-                clearTimeout(timeoutIdRef.current);
-            }
-        };
-    }, []);
+    const clearPreviousInterval = () => {
+        if (intervalIdRef.current) {
+            clearInterval(intervalIdRef.current);
+            intervalIdRef.current = null;
+        }
+    };
 
     const handleZaloCheckOrderStatus = (data) => {
         let res;
-        const duration = 10 * 60 * 1000;
+        const duration = 2 * 60 * 1000;
         const startTime = Date.now();
         const endTime = startTime + duration;
 
+        clearPreviousInterval();
+
         intervalIdRef.current = setInterval(async () => {
-            dispatch(showLoading());
             res = await apiZaloCheckOrderStatus(data);
-            dispatch(hideLoading());
 
             if (res?.return_code === 1) {
-                clearInterval(intervalIdRef.current);
+                clearPreviousInterval();
                 onPaid();
             }
 
             if (Date.now() >= endTime) {
-                clearInterval(intervalIdRef.current);
+                clearPreviousInterval();
+                dispatch(
+                    showModal({
+                        children: (
+                            <View style={styles.modal}>
+                                <Ionicons
+                                    name="warning"
+                                    size={24}
+                                    color="#fff"
+                                />
+                                <Text
+                                    style={[styles.whiteText, styles.modalText]}
+                                >
+                                    Failed to pay your order, please try later!
+                                </Text>
+                            </View>
+                        ),
+                        backdropClosable: true,
+                    }),
+                );
             }
-        }, 2000);
+        }, 1000);
     };
 
     const handleZaloCreatePayment = async () => {
@@ -66,7 +84,6 @@ const ZaloPayment = ({ order = {}, onPaid = () => {} }) => {
         const res = await apiZaloCreatePayment({
             amount: order?.total,
         });
-        dispatch(hideLoading());
 
         if (res?.return_code === 1) {
             const isSupported = await Linking.canOpenURL(res?.order_url);
@@ -77,42 +94,56 @@ const ZaloPayment = ({ order = {}, onPaid = () => {} }) => {
                 return;
             }
 
-            let orderStatusRes;
-            timeoutIdRef.current = setTimeout(() => {
-                orderStatusRes = handleZaloCheckOrderStatus({
-                    app_trans_id: res?.app_trans_id,
-                });
-            }, 6000);
+            const orderStatusRes = handleZaloCheckOrderStatus({
+                app_trans_id: res?.app_trans_id,
+            });
 
             if (orderStatusRes?.return_code === 1) {
                 onPaid();
-                clearTimeout(timeoutIdRef.current);
             }
         }
+        dispatch(hideLoading());
     };
 
     const handleMomoCheckOrderStatus = async (data) => {
         let res;
-        const duration = 10 * 60 * 1000;
+        const duration = 2 * 60 * 1000;
         const startTime = Date.now();
         const endTime = startTime + duration;
 
-        res = await apiMomoCheckOrderStatus(data);
+        clearPreviousInterval();
 
         intervalIdRef.current = setInterval(async () => {
-            dispatch(showLoading());
             res = await apiMomoCheckOrderStatus(data);
-            dispatch(hideLoading());
 
             if (res?.resultCode === 0) {
-                clearInterval(intervalIdRef.current);
+                clearPreviousInterval();
                 onPaid();
             }
 
             if (Date.now() >= endTime) {
-                clearInterval(intervalIdRef.current);
+                clearPreviousInterval();
+                dispatch(
+                    showModal({
+                        children: (
+                            <View style={styles.modal}>
+                                <Ionicons
+                                    name="warning"
+                                    size={24}
+                                    color="#fff"
+                                />
+                                <Text
+                                    style={[styles.whiteText, styles.modalText]}
+                                >
+                                    Failed to pay your order, please try later!
+                                </Text>
+                            </View>
+                        ),
+                        backdropClosable: true,
+                    }),
+                );
             }
-        }, 2000);
+        }, 1000);
     };
 
     const handleMomoCreatePayment = async () => {
@@ -120,7 +151,6 @@ const ZaloPayment = ({ order = {}, onPaid = () => {} }) => {
         const res = await apiMomoCreatePayment({
             amount: order?.total,
         });
-        dispatch(hideLoading());
 
         if (res?.resultCode === 0) {
             const isSupported = await Linking.canOpenURL(res?.payUrl);
@@ -131,18 +161,15 @@ const ZaloPayment = ({ order = {}, onPaid = () => {} }) => {
                 return;
             }
 
-            let orderStatusRes;
-            timeoutIdRef.current = setTimeout(() => {
-                orderStatusRes = handleMomoCheckOrderStatus({
-                    orderId: res?.orderId,
-                });
-            }, 6000);
+            const orderStatusRes = handleMomoCheckOrderStatus({
+                orderId: res?.orderId,
+            });
 
             if (orderStatusRes?.return_code === 1) {
                 onPaid();
-                clearTimeout(timeoutIdRef.current);
             }
         }
+        dispatch(hideLoading());
     };
 
     return (
@@ -197,7 +224,7 @@ const ZaloPayment = ({ order = {}, onPaid = () => {} }) => {
     );
 };
 
-export default ZaloPayment;
+export default Payment;
 
 const styles = StyleSheet.create({
     container: {
@@ -251,6 +278,19 @@ const styles = StyleSheet.create({
         width: 100,
         height: 40,
         resizeMode: 'contain',
+    },
+    modal: {
+        maxWidth: 200,
+        borderRadius: 12,
+        padding: 12,
+        justifyContent: 'space-around',
+        alignItems: 'center',
+        gap: 12,
+        backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    },
+    modalText: {
+        fontWeight: '600',
+        textAlign: 'center',
     },
     whiteText: {
         color: 'white',

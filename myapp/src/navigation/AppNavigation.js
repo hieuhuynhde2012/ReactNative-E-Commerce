@@ -10,17 +10,18 @@ import AddAddressScreen from '../screens/AddAddressScreen';
 import ConfirmationScreen from '../screens/ConfirmationScreen';
 import OrderScreen from '../screens/OrderScreen';
 import EditAddressesScreen from '../screens/EditAddressesScreen';
+import IntroScreen from '../screens/IntroScreen';
 
 import { getCategories } from '../store/app/asyncActions';
 import { showLoading, hideLoading } from '../store/app/appSlice';
 import ProductItem from '../components/ProductItem';
-import { SafeAreaView, View, Platform } from 'react-native';
 
 const Stack = createStackNavigator();
 
 const AppNavigation = () => {
     const dispatch = useDispatch();
     const { isLoggedIn } = useSelector((state) => state.user);
+    const { isAlreadyShownIntro } = useSelector((state) => state.app);
 
     useEffect(() => {
         const setTimeoutId = setTimeout(() => {
@@ -38,6 +39,13 @@ const AppNavigation = () => {
         <Stack.Navigator>
             {isLoggedIn ? (
                 <>
+                    {!isAlreadyShownIntro && (
+                        <Stack.Screen
+                            name="Intro"
+                            component={IntroScreen}
+                            options={{ headerShown: false }}
+                        />
+                    )}
                     <Stack.Screen
                         name="MainTab"
                         component={MainTab}

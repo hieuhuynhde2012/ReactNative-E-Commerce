@@ -48,12 +48,12 @@ const ProductInfoScreen = () => {
 
         try {
             const newItem = {
-                pid: item._id,
-                color: item.color,
+                pid: item?._id,
+                color: item?.color,
                 quantity: 1,
-                price: item.price,
-                thumbnail: item.thumb,
-                title: item.title,
+                price: item?.price,
+                thumbnail: item?.thumb,
+                title: item?.title,
                 actionType: 'increase',
             };
 

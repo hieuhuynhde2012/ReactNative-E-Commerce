@@ -370,7 +370,13 @@ const EditProduct = ({ data = {}, onUpdateProduct = () => {} }) => {
                                 </View>
                             )}
                             <ScrollView
-                                style={[styles.pickerScrWrapper]}
+                                style={[
+                                    styles.pickerScrWrapper,
+                                    {
+                                        height: categoryOpen ? 134 : 'auto',
+                                        zIndex: 2,
+                                    },
+                                ]}
                                 horizontal
                                 bounces={false}
                             >
@@ -395,7 +401,7 @@ const EditProduct = ({ data = {}, onUpdateProduct = () => {} }) => {
                                     setValue={(value) =>
                                         handleCategoryChange(value)
                                     }
-                                    maxHeight={80}
+                                    maxHeight={84}
                                 />
                             </ScrollView>
                         </View>
@@ -425,7 +431,10 @@ const EditProduct = ({ data = {}, onUpdateProduct = () => {} }) => {
 
                             <ScrollView
                                 horizontal
-                                style={styles.pickerScrWrapper}
+                                style={[
+                                    styles.pickerScrWrapper,
+                                    { height: brandOpen ? 134 : 'auto' },
+                                ]}
                                 scrollEnabled={false}
                             >
                                 <DropDownPicker
@@ -447,7 +456,7 @@ const EditProduct = ({ data = {}, onUpdateProduct = () => {} }) => {
                                     placeholder="Select a brand"
                                     setOpen={setBrandOpen}
                                     setValue={setBrand}
-                                    maxHeight={80}
+                                    maxHeight={84}
                                 />
                             </ScrollView>
                         </View>
@@ -674,7 +683,7 @@ const styles = StyleSheet.create({
         flex: 1,
         position: 'relative',
         width: '100%',
-        marginBottom: 136,
+        marginBottom: 66,
     },
     pickerScrWrapper: {
         position: 'absolute',
@@ -700,13 +709,13 @@ const styles = StyleSheet.create({
     },
     infoWrapper: {
         width: '100%',
-        marginBottom: 76,
+        marginBottom: 12,
         gap: 6,
     },
     imgWrapper: {
         position: 'relative',
         width: '100%',
-        marginBottom: 76,
+        marginBottom: 12,
         gap: 6,
     },
     imgErrorWrapper: {
@@ -749,10 +758,11 @@ const styles = StyleSheet.create({
     },
 
     bottomBtnWrapper: {
-        position: 'absolute',
+        marginTop: 12,
         flexDirection: 'row',
+        justifyContent: 'flex-end',
         gap: 16,
-        bottom: 12,
+        marginBottom: 16,
         right: 0,
     },
     btn: {

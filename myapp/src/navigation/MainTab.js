@@ -13,7 +13,7 @@ import CategoryTopTab from './CategoryTopTab';
 const Tab = createBottomTabNavigator();
 
 const MainTab = () => {
-    const { currentCart, current } = useSelector((state) => state.user);
+    const { currentCart } = useSelector((state) => state.user);
 
     return (
         <Tab.Navigator

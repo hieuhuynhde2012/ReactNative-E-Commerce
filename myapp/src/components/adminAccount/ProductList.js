@@ -342,8 +342,8 @@ const styles = StyleSheet.create({
         alignItems: 'flex-start',
     },
     img: {
-        width: '100%',
-        height: 80,
+        width: 86,
+        height: 86,
         resizeMode: 'contain',
         borderRadius: 12,
     },
