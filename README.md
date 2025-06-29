@@ -37,13 +37,13 @@ Watch demo on YouTube: [https://youtu.be/-uD5XiofwNU?si=bprXDUGyWzKpYWxM](https:
 ## 📁 Project Structure
 
 ```
-├── frontend/            # React Native source code
-├── backend/             # Node.js API server
-├── postman_collection/  # Postman API testing collection
-├── test_cases/          # Manual test cases in Excel
-├── bug_reports/         # Bug documentation (DOCX or PDF)
-├── test_plan/           # Full test plan document
-└── README.md            # This file
+├── data/           
+├── myapp (frontend)/            
+├── server (backend)/  
+├── test_cases/          
+├── reports/         
+├── test_plan/           
+└── README.md           
 ```
 
 ---
@@ -85,8 +85,7 @@ As a tester, the following were implemented:
 ---
 
 ## 👨‍💻 Authors
-
-- **Phan Tấn Cảnh** – 22540002  
+ 
 - **Nguyễn Tấn Đạt** – 22540003  
 - **Huỳnh Trung Hiếu** – 22540006
 
