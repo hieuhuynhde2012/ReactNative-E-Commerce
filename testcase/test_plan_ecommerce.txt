@@ -1,0 +1,81 @@
+
+Test Plan – Dự án eCommerce App (React Native + Node.js)
+---------------------------------------------------------
+
+1. Tổng quan
+-------------
+- Tên dự án: eCommerce Mobile App
+- Nền tảng: React Native (Mobile), Node.js (Backend API)
+- Mục tiêu kiểm thử: Đảm bảo toàn bộ chức năng chính của ứng dụng hoạt động ổn định, đúng yêu cầu, dữ liệu đồng bộ và không có lỗi nghiêm trọng.
+
+2. Phạm vi kiểm thử
+--------------------
+Chức năng sẽ kiểm thử:
+- Đăng ký/Đăng nhập
+- Tìm kiếm & lọc sản phẩm
+- Thêm vào giỏ hàng
+- Đặt hàng và thanh toán (COD)
+- Theo dõi đơn hàng
+- Kiểm thử API backend (sử dụng Postman)
+- Kiểm tra dữ liệu backend qua câu lệnh SQL
+
+Ngoài phạm vi:
+- Tính năng thanh toán ví điện tử (chưa tích hợp)
+- Hiệu năng (load test, stress test)
+- UI nâng cao trên iOS (chỉ test Android)
+
+3. Chiến lược kiểm thử
+------------------------
+- Kiểm thử thủ công: Dựa trên test case được viết trong Excel
+- Kiểm thử API: Dùng Postman để kiểm tra các API quan trọng (đăng nhập, danh sách sản phẩm, tạo đơn hàng)
+- Kiểm thử hồi quy: Thực hiện lại toàn bộ test case sau mỗi lần cập nhật hệ thống
+- Kiểm tra dữ liệu backend: Dùng SQL để xác nhận dữ liệu lưu trữ chính xác sau khi thao tác trên frontend
+
+4. Công cụ sử dụng
+--------------------
+- Viết test case: Excel / Google Sheet
+- Test API: Postman
+- Báo cáo lỗi: Google Docs
+- Quản lý mã nguồn: Git + GitHub
+- Kiểm tra database: MongoDB (host local)
+
+5. Môi trường kiểm thử
+------------------------
+- Thiết bị: Android (Samsung A51, Iphone 13)
+- Backend: Chạy local bằng Node.js (port 3000)
+- Database: PostgreSQL (local hoặc Docker)
+- Trình duyệt: Chrome (để kiểm thử admin page nếu có)
+
+6. Tài liệu liên quan
+-----------------------
+- Test case chi tiết: full_test_case_ecommerce.xlsx
+- Postman collection: postman_collection.json
+- Mẫu báo cáo lỗi: bug_report_sample.docx
+- Mã nguồn: GitHub (đường link repo riêng)
+
+7. Lịch kiểm thử (tham khảo)
+------------------------------
+- Ngày 1: Nắm yêu cầu, viết test case
+- Ngày 2-3: Thực thi test case, ghi nhận lỗi
+- Ngày 4: Test API bằng Postman, kiểm tra dữ liệu bằng SQL
+- Ngày 5: Retest lỗi đã sửa, thực hiện regression test
+
+8. Tiêu chí đạt
+-----------------
+- Tất cả chức năng chính hoạt động ổn định, đúng nghiệp vụ
+- Không có bug nghiêm trọng (mất dữ liệu, crash app)
+- API phản hồi chính xác, dữ liệu hiển thị đúng
+- Dữ liệu backend khớp với hành vi người dùng
+
+9. Rủi ro và biện pháp
+------------------------
+| Rủi ro                            | Biện pháp xử lý                         |
+|----------------------------------|-----------------------------------------|
+| Không có thiết bị iOS            | Tập trung test Android                  |
+| Thiếu thời gian kiểm thử toàn diện | Ưu tiên kiểm thử chức năng quan trọng |
+| Dữ liệu test không đồng bộ       | Tạo lại dữ liệu mẫu, reset database     |
+
+10. Kết luận
+-------------
+Tài liệu test plan này giúp định hướng và quản lý quá trình kiểm thử cho ứng dụng eCommerce. Mục tiêu là đảm bảo phần mềm ổn định, đúng nghiệp vụ và sẵn sàng cho người dùng cuối. Việc áp dụng quy trình kiểm thử bài bản dù ở cấp độ fresher thể hiện sự chuyên nghiệp và thái độ nghiêm túc với vai trò kiểm thử phần mềm.
+
